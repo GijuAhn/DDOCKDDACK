@@ -15,13 +15,11 @@ public class MemberModifyReq {
     @Schema(name = "유저 Name", example = "ddockddack")
     String email;
 
+
     @NotBlank
     String nickname;
 
     @NotBlank
     String profile;
-
-    @NotBlank
-    String token;
 
 }
