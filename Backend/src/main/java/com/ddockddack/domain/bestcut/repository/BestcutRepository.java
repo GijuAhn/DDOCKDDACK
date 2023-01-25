@@ -19,4 +19,9 @@ public class BestcutRepository {
     public Optional<Bestcut> findById(Long bestcutId) {
         return Optional.ofNullable(em.find(Bestcut.class, bestcutId));
     }
+
+    public void delete(Bestcut bestcut) {
+        em.remove(bestcut);
+    }
+
 }

@@ -11,7 +11,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -46,6 +48,23 @@ public class BestcutApiController {
         return ResponseEntity.ok().build();
     }
 
+    @DeleteMapping("/{bestcutId}")
+    @Operation(summary = "베스트 컷 삭제")
+    @ApiResponses({
+            @ApiResponse(description = "베스트컷 삭제 성공", responseCode = "200"),
+            @ApiResponse(description = "권한 없음", responseCode = "401"),
+            @ApiResponse(description = "존재하지 않는 베스트컷", responseCode = "404"),
+            @ApiResponse(description = "존재하지 않는 멤버", responseCode = "404"),
+    })
+    public ResponseEntity bestcutDelete(@PathVariable Long bestcutId,
+            @RequestHeader(value = "access-token", required = false) String accessToken) {
+        Long memberId = getMemberId(accessToken);
+        bestcutService.removeBestcut(bestcutId, memberId);
+
+        return ResponseEntity.ok().build();
+    }
+
+    //accessToken에서 memberId 추출 코드 필요
     private Long getMemberId(String accessToken) {
         if (accessToken == null) {
             return 0L;

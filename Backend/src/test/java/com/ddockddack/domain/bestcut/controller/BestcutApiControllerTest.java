@@ -4,6 +4,8 @@ import com.ddockddack.domain.bestcut.entity.Bestcut;
 import com.ddockddack.domain.bestcut.repository.BestcutRepository;
 import com.ddockddack.domain.member.entity.Member;
 import com.ddockddack.domain.member.entity.Role;
+import com.ddockddack.global.error.ErrorCode;
+import com.ddockddack.global.error.exception.NotFoundException;
 import java.time.LocalDateTime;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -41,6 +43,22 @@ class BestcutApiControllerTest {
         Assertions.assertThat(stubBestcut.getId()).isEqualTo(savedId);
         Assertions.assertThat(stubBestcut.getMember()).isSameAs(findBestcut.getMember());
         Assertions.assertThat(stubBestcut.getTitle()).isSameAs(findBestcut.getTitle());
+    }
+
+    @Test
+    @DisplayName("repository: DB에서 베스트컷이 삭제되는지 확인")
+    public void 베스트컷_삭제() {
+        //given
+        Bestcut stubBestcut = getStubBestcut();
+
+        //when
+        Long savedId = bestcutRepository.save(stubBestcut);
+        bestcutRepository.delete(stubBestcut);
+
+        //then
+        Assertions.assertThatThrownBy(() -> bestcutRepository.findById(savedId)
+                        .orElseThrow(() -> new NotFoundException(ErrorCode.BESTCUT_NOT_FOUND)))
+                .isInstanceOf(NotFoundException.class);
     }
 
 
