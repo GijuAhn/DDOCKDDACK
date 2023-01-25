@@ -8,6 +8,7 @@ public enum ErrorCode {
     LOGIN_REQUIRED(401, "login required"),
     NOT_AUTHORIZED(401, "not authorized"),
     BESTCUT_NOT_FOUND(404, "bestcut not found"),
+    BESTCUT_LIKE_NOT_FOUND(404, "bestcut_like not found"),
     MEMBER_NOT_FOUND(404, "member not found"),
     EXCEED_FILE_SIZE(413, "file size can't exceed 2MB"),
     EXCEED_FILE_NUMBER(414, "number of files can't exceed 10")

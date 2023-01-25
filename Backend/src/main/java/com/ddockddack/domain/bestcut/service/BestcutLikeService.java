@@ -39,4 +39,11 @@ public class BestcutLikeService {
 
         bestcutLikeRepository.save(bestcutLike);
     }
+
+    @Transactional
+    public void removeBestcutLike(Long bestcutId, Long memberId) {
+        BestcutLike bestcutLike = bestcutLikeRepository.findOne(bestcutId, memberId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.BESTCUT_LIKE_NOT_FOUND));
+        bestcutLikeRepository.delete(bestcutLike);
+    }
 }

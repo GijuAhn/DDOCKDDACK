@@ -86,6 +86,24 @@ public class BestcutApiController {
         return ResponseEntity.ok().build();
     }
 
+    @DeleteMapping("/dislike/{bestcutId}")
+    @Operation(summary = "베스트 컷 좋아요 취소")
+    @ApiResponses({
+            @ApiResponse(description = "베스트컷 좋아요 취소 성공", responseCode = "200"),
+            @ApiResponse(description = "로그인 필요", responseCode = "401"),
+            @ApiResponse(description = "존재하지 않는 베스트컷", responseCode = "404"),
+            @ApiResponse(description = "존재하지 않는 멤버", responseCode = "404"),
+    })
+    public ResponseEntity bestcutDislike(@PathVariable Long bestcutId,
+            @RequestHeader(value = "access-token", required = false) String accessToken) {
+        checkLogin(accessToken);
+
+        Long memberId = getMemberId(accessToken);
+        bestcutLikeService.removeBestcutLike(bestcutId, memberId);
+
+        return ResponseEntity.ok().build();
+    }
+
     //accessToken에서 memberId 추출 코드 필요
     private Long getMemberId(String accessToken) {
         if (accessToken == null) {

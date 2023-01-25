@@ -31,4 +31,9 @@ public class BestcutLikeRepository {
 
         return resultList.stream().findAny();
     }
+
+    public void delete(BestcutLike bestcutLike) {
+        em.remove(bestcutLike);
+    }
+
 }
