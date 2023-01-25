@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +31,7 @@ public class Service {
     EntityManager em;
 
     @Test
+    @Rollback(value = false)
     public void 회원가입() throws Exception {
         //given 주어지면
         Member member = new Member("test@naver.com", "kim", "", Role.member);
@@ -41,7 +43,7 @@ public class Service {
 
         //then //이렇게 검증됨
         em.flush();
-        assertEquals(member, memberRepository.findOne(saveId));
+        assertEquals(member, memberRepository.getReferenceById(saveId));
     }
 
 //    @Test

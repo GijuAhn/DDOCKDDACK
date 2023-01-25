@@ -11,7 +11,7 @@ server:
 spring:
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: none
     properties:
       hibernate:
         format_sql : true
@@ -19,6 +19,10 @@ spring:
 #        org.hibernate.dialect.MySQL8InnoDBDialect
   profiles:
     include: env # 소셜로그인(카카오, 구글) 키, jwt 관련 설정, database 설정,
+  servlet:
+    multipart:
+      max-file-size: 2MB
+      max-request-size: 20MB
 
 logging:
   level:

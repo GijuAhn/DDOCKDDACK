@@ -2,30 +2,24 @@ package com.ddockddack.domain.member.repository;
 
 import com.ddockddack.domain.member.entity.Member;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 
 @Repository
-@RequiredArgsConstructor
-public class MemberRepository {
+public interface MemberRepository extends JpaRepository<Member, Long> {
 
-    private final EntityManager em;
+//    private final EntityManager em;
 
-    public void save(Member member) {
-        em.persist(member);
-    }
+//    public void save(Member member) {
+//        em.persist(member);
+//    }
 
-    public Member findOne(Long id) {
-        return em.find(Member.class, id);
-    }
-
-    public Member findByEmail(String email) {
-        return em.createQuery("select m from Member m where m.email = :email limit 1", Member.class)
-            .setParameter("email", email)
-                .getSingleResult();
-
-    }
+//    public Member findOne(Long id) {
+//        return em.find(Member.class, id);
+//    }
+    Member findByEmail(String email);
 
 //    public Member getBySocialId(String email) {return }
 }

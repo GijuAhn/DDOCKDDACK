@@ -1,0 +1,33 @@
+package com.ddockddack.domain.game.request;
+
+import com.ddockddack.domain.game.entity.Category;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import java.util.List;
+
+@Data
+@AllArgsConstructor
+public class GameSaveReq {
+
+    @NotNull(message = "gameTitle cannot be empty.")
+    @Size(max = 30, message = "The maximum length of the gameTitle is 30.")
+    private String gameTitle;
+
+    @NotNull(message = "gameCategory cannot be empty.")
+    private Category gameCategory;
+
+    @NotNull(message = "memberId cannot be empty.")
+    private Long memberId;
+
+    @Size(max = 50, message = "The maximum length of the gameDesc is 50.")
+    private String gameDesc;
+
+    @Valid
+    @Size(min = 10, max = 20, message = "Check the gameImage length.")
+    private List<GameImageParam> images;
+
+}

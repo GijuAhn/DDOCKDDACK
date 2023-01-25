@@ -5,7 +5,6 @@ import com.ddockddack.domain.member.repository.MemberRepository;
 import com.ddockddack.domain.member.request.MemberModifyReq;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
@@ -23,9 +22,8 @@ import org.springframework.web.client.RestTemplate;
 //@RequiredArgsConstructor
 public class MemberService { //ServiceImpl을 따로 만들어야 하나?
 
-
-    private Environment env;
-    private MemberRepository memberRepository;
+    private final Environment env;
+    private final MemberRepository memberRepository;
 
     @Autowired
     public MemberService(MemberRepository memberRepository, Environment env) {
@@ -33,18 +31,16 @@ public class MemberService { //ServiceImpl을 따로 만들어야 하나?
         this.env = env;
     }
 
-
-
     @Transactional
-    public Long joinMember(Member member){
+    public Long joinMember(Member member) {
         memberRepository.save(member);
 
         return member.getId();
     }
 
-    public Member findOne(Long memberId) {
-        return memberRepository.findOne(memberId);
-    }
+//    public Member findOne(Long memberId) {
+//        return memberRepository.findOne(Member);
+//    }
 
     public Member getUserBySocialId(String email) {
         Member member = memberRepository.findByEmail(email);
@@ -115,13 +111,13 @@ public class MemberService { //ServiceImpl을 따로 만들어야 하나?
     }
 
     public void modifyMember(Long id, MemberModifyReq modifyMember) {
-        Member member = memberRepository.findOne(id);
+        Member member = memberRepository.getReferenceById(id);
         member.setNickname(modifyMember.getNickname());
         member.setProfile(modifyMember.getProfile());
         memberRepository.save(member);
     }
 
     public Member getMemberById(Long id) {
-        return memberRepository.findOne(id);
+        return memberRepository.getReferenceById(id);
     }
 }

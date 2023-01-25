@@ -9,8 +9,7 @@ import com.ddockddack.domain.member.request.MemberModifyReq;
 import com.ddockddack.domain.member.response.MemberJoinRes;
 import com.ddockddack.domain.member.response.MemberLoginPostRes;
 import com.ddockddack.domain.member.service.MemberService;
-import com.ddockddack.domain.member.util.JwtTokenUtil;
-import com.ddockddack.global.response.BaseResponseBody;
+//import com.ddockddack.domain.member.util.JwtTokenUtil;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import io.swagger.v3.oas.annotations.Operation;
@@ -61,7 +60,7 @@ public class MemberApiController {
     public ResponseEntity<?> modifyMember(@PathVariable Long id, @RequestBody MemberModifyReq modifyMember){
         try{
             memberService.modifyMember(id, modifyMember);
-            return ResponseEntity.status(200).body("");
+            return ResponseEntity.ok("success 수정");
         } catch (Exception e) {
             return ResponseEntity.status(500).body(e);
         }
@@ -75,10 +74,10 @@ public class MemberApiController {
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @GetMapping("/{memberId}")
-    public ResponseEntity<?> getMemberInfo(@PathVariable Long id){
+    public ResponseEntity<?> getMemberInfo(@PathVariable Long memberId){
         try{
-            Member member = memberService.getMemberById(id);
-            return ResponseEntity.ok(MemberLoginPostRes.of(200, "Success", member, JwtTokenUtil.getToken(member.getEmail())));
+            Member member = memberService.getMemberById(memberId);
+            return ResponseEntity.ok("Seccess 조회");
         } catch (Exception e) {
             return ResponseEntity.status(500).body(e);
         }
@@ -233,10 +232,10 @@ public class MemberApiController {
 //                System.out.println("유저 해제" + memberUnlinkRes);
                 memberService.joinMember(member);
 
-                return ResponseEntity.ok(MemberLoginPostRes.of(200, "Join Member", member, JwtTokenUtil.getToken(member.getEmail())));
+                return ResponseEntity.ok("Seccess join");
             }
             //else
-            return ResponseEntity.ok(MemberLoginPostRes.of(200, "Success", member, JwtTokenUtil.getToken(member.getEmail())));
+            return ResponseEntity.ok("Seccess login");
         } catch (Exception e){
             System.out.println(e);
             return ResponseEntity.status(500).body(e);
