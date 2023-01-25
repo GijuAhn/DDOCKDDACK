@@ -6,6 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface BestcutRepository extends JpaRepository<Member, Long> {
+public interface BestcutRepository extends JpaRepository<Bestcut, Long> {
     public List<Bestcut> findByMemberId(Long memberId);
 }

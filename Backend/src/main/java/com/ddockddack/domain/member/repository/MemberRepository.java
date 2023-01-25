@@ -17,8 +17,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 //        em.persist(member);
 //    }
 
-    Member getReferenceById (Long id);
-
     public Member findByEmail(String email);
 
 

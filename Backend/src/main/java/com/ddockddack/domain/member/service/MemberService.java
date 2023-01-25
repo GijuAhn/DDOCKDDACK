@@ -17,6 +17,8 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Optional;
+
 @Service
 @Transactional(readOnly = true)
 //@RequiredArgsConstructor
@@ -111,18 +113,14 @@ public class MemberService { //ServiceImpl을 따로 만들어야 하나?
     }
 
     @Transactional
-    public Member modifyMember(Long id, MemberModifyReq modifyMember) {
-        Member member = memberRepository.getReferenceById(id);
-        System.out.println(member);
-        member.setNickname(modifyMember.getNickname());
-        System.out.println(member);
-        member.setProfile(modifyMember.getProfile());
-        System.out.println(member);
-        return memberRepository.save(member);
+    public Member modifyMember(Long memberId, MemberModifyReq modifyMember) {
+        Optional<Member> member = memberRepository.findById(memberId);
+        member.get().setNickname(modifyMember.getNickname());
+        member.get().setProfile(modifyMember.getProfile());
+        return memberRepository.save(member.get());
     }
 
-    public Member getMemberById(Long id) {
-        System.out.println(memberRepository.getReferenceById(id));
-        return memberRepository.getReferenceById(id);
+    public Member getMemberById(Long memberId) {
+        return memberRepository.findById(memberId).get();
     }
 }
