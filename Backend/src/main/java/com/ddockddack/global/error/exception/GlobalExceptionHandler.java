@@ -1,6 +1,8 @@
-package com.ddockddack.global.error;
+package com.ddockddack.global.error.exception;
 
-import com.ddockddack.global.error.exception.AccessDeniedException;
+import com.ddockddack.global.error.AccessDeniedException;
+import com.ddockddack.global.error.ErrorCode;
+import com.ddockddack.global.error.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
