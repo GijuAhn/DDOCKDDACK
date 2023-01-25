@@ -1,14 +1,11 @@
 package com.ddockddack.domain.member.entity;
 
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 
 @Entity
-@Getter
+@Getter @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "email" })})
 // 이따가 테이블에 유니크 제약조건 추가
@@ -30,7 +27,7 @@ public class Member {
 
     @Enumerated(EnumType.STRING)
     @Column(length = 10, nullable = false)
-    private Role role; // USER, ADMIN
+    private Role role; // member, ADMIN
 
     @Builder
     public Member(String email, String nickname, String profile, Role role) {
