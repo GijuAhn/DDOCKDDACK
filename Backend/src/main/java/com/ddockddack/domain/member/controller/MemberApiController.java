@@ -1,6 +1,8 @@
 package com.ddockddack.domain.member.controller;
 
 
+import com.ddockddack.domain.bestcut.entity.Bestcut;
+import com.ddockddack.domain.bestcut.response.BestcutRes;
 import com.ddockddack.domain.bestcut.service.BestcutService;
 import com.ddockddack.domain.game.service.GameService;
 import com.ddockddack.domain.member.entity.Member;
@@ -25,6 +27,8 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -57,12 +61,12 @@ public class MemberApiController {
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @PutMapping("/{memberId}")
-    public ResponseEntity<?> modifyMember(@PathVariable Long id, @RequestBody MemberModifyReq modifyMember){
+    public ResponseEntity<?> modifyMember(@PathVariable Long memberId, @RequestBody MemberModifyReq modifyMember){
         try{
-            memberService.modifyMember(id, modifyMember);
+            memberService.modifyMember(memberId, modifyMember);
             return ResponseEntity.ok("success 수정");
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(e);
+            return ResponseEntity.status(500).body(e.getMessage());
         }
     }
 
@@ -83,6 +87,23 @@ public class MemberApiController {
         }
     }
 
+    @Operation(summary = "내 베스트 컷 전체 조회", description = "내 베스트 컷 전체 조회 메소드입니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "내 베스트 컷 전체 조회 성공"),
+            @ApiResponse(responseCode = "400", description = "파라미터 타입 오류"),
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 유저"),
+            @ApiResponse(responseCode = "500", description = "서버 오류")
+    })
+    @GetMapping("/{memberId}/bestcuts")
+    public ResponseEntity<?> getBestcuts(@PathVariable Long memberId){
+        try{
+            List<Bestcut> bestcuts = bestcutService.getBestcutsById(memberId);
+
+            return ResponseEntity.ok("success 베스트컷조회");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(e);
+        }
+    }
 /*
     @Operation(summary = "회원 탈퇴", description = "회원 탈퇴 메소드입니다.")
     @ApiResponses(value = {
@@ -92,9 +113,9 @@ public class MemberApiController {
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @DeleteMapping("/{memberId}")
-    public ResponseEntity<?> deleteMember(@PathVariable Long id, @PathVariable String memberId){
+    public ResponseEntity<?> deleteMember(@PathVariable Long memberId, @PathVariable String memberId){
         try{
-            Member member = memberService.deleteMemberById(id);
+            Member member = memberService.deleteMemberById(memberId);
             return ResponseEntity.ok(MemberLoginPostRes.of(200, "Success", member, JwtTokenUtil.getToken(member.getEmail())));
         } catch (Exception e) {
             return ResponseEntity.status(500).body(e);
@@ -109,32 +130,14 @@ public class MemberApiController {
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @GetMapping("/{memberId}/records")
-    public ResponseEntity<?> getRecords(@PathVariable Long id){
+    public ResponseEntity<?> getRecords(@PathVariable Long memberId){
         try{
-            Member member = gameService.getRecordsById(id);
+            Member member = gameService.getRecordsById(memberId);
             return ResponseEntity.ok(MemberLoginPostRes.of(200, "Success", member, JwtTokenUtil.getToken(member.getEmail())));
         } catch (Exception e) {
             return ResponseEntity.status(500).body(e);
         }
     }
-
-    @Operation(summary = "내 베스트 컷 전체 조회", description = "내 베스트 컷 전체 조회 메소드입니다.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "내 베스트 컷 전체 조회 성공"),
-            @ApiResponse(responseCode = "400", description = "파라미터 타입 오류"),
-            @ApiResponse(responseCode = "404", description = "존재하지 않는 유저"),
-            @ApiResponse(responseCode = "500", description = "서버 오류")
-    })
-    @GetMapping("/{memberId}/bestcuts")
-    public ResponseEntity<?> getBestcuts(@PathVariable Long id){
-        try{
-            Member member = bestcutService.getBestcutsById(id); //member Response에 올려야 하나?
-            return ResponseEntity.ok(MemberLoginPostRes.of(200, "Success", member, JwtTokenUtil.getToken(member.getEmail())));
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body(e);
-        }
-    }
-
 
     @Operation(summary = "내가 만든 게임 전체 조회", description = "내가 만든 게임 전체 조회 메소드입니다.")
     @ApiResponses(value = {
@@ -144,9 +147,9 @@ public class MemberApiController {
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @GetMapping("/{memberId}/games")
-    public ResponseEntity<?> getMyGames(@PathVariable Long id){
+    public ResponseEntity<?> getMyGames(@PathVariable Long memberId){
         try{
-            Member member = memberService.getMyGamesById(id); //member Response에 올려야 하나?
+            Member member = memberService.getMyGamesById(memberId); //member Response에 올려야 하나?
             return ResponseEntity.ok(MemberLoginPostRes.of(200, "Success", member, JwtTokenUtil.getToken(member.getEmail())));
         } catch (Exception e) {
             return ResponseEntity.status(500).body(e);
@@ -161,9 +164,9 @@ public class MemberApiController {
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @GetMapping("/{memberId}/starred")
-    public ResponseEntity<?> getGames(@PathVariable Long id){
+    public ResponseEntity<?> getGames(@PathVariable Long memberId){
         try{
-            Member member = memberService.getGamesByStarred(id); //member Response에 올려야 하나?
+            Member member = memberService.getGamesByStarred(memberId); //member Response에 올려야 하나?
             return ResponseEntity.ok(MemberLoginPostRes.of(200, "Success", member, JwtTokenUtil.getToken(member.getEmail())));
         } catch (Exception e) {
             return ResponseEntity.status(500).body(e);

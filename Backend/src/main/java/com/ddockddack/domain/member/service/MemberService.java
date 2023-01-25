@@ -110,14 +110,19 @@ public class MemberService { //ServiceImpl을 따로 만들어야 하나?
         return memberInfoResponse;
     }
 
-    public void modifyMember(Long id, MemberModifyReq modifyMember) {
+    @Transactional
+    public Member modifyMember(Long id, MemberModifyReq modifyMember) {
         Member member = memberRepository.getReferenceById(id);
+        System.out.println(member);
         member.setNickname(modifyMember.getNickname());
+        System.out.println(member);
         member.setProfile(modifyMember.getProfile());
-        memberRepository.save(member);
+        System.out.println(member);
+        return memberRepository.save(member);
     }
 
     public Member getMemberById(Long id) {
+        System.out.println(memberRepository.getReferenceById(id));
         return memberRepository.getReferenceById(id);
     }
 }

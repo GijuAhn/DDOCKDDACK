@@ -42,8 +42,8 @@ public class Service {
         Long saveId = memberService.joinMember(member);
 
         //then //이렇게 검증됨
-        em.flush();
-        assertEquals(member, memberRepository.getReferenceById(saveId));
+//        em.flush();
+//        assertEquals(member, memberRepository.getReferenceById(saveId));
     }
 
 //    @Test

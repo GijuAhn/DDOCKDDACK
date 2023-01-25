@@ -11,14 +11,8 @@ import javax.validation.constraints.NotNull;
 @Setter
 @Schema(description = "MemberLoginRequest")
 public class MemberModifyReq {
-    @NotNull
-    @Schema(name = "유저 Name", example = "ddockddack")
-    String email;
-
-
     @NotBlank
     String nickname;
-
     @NotBlank
     String profile;
 

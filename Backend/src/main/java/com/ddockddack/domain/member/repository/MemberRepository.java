@@ -17,10 +17,11 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 //        em.persist(member);
 //    }
 
-//    public Member findOne(Long id) {
-//        return em.find(Member.class, id);
-//    }
-    Member findByEmail(String email);
+    Member getReferenceById (Long id);
+
+    public Member findByEmail(String email);
+
+
 
 //    public Member getBySocialId(String email) {return }
 }
