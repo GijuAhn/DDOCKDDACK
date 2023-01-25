@@ -7,9 +7,13 @@ import com.ddockddack.domain.bestcut.request.BestcutSaveReq;
 import com.ddockddack.domain.member.entity.Member;
 import com.ddockddack.domain.member.entity.Role;
 import com.ddockddack.domain.member.repository.MemberRepository;
+import com.ddockddack.domain.report.entity.ReportType;
+import com.ddockddack.domain.report.entity.ReportedBestcut;
+import com.ddockddack.domain.report.repository.ReportedBestcutRepository;
 import com.ddockddack.global.error.ErrorCode;
 import com.ddockddack.global.error.ErrorResponse;
 import com.ddockddack.global.error.exception.AccessDeniedException;
+import com.ddockddack.global.error.exception.AlreadyExistResourceException;
 import com.ddockddack.global.error.exception.NotFoundException;
 import java.io.File;
 import java.io.IOException;
@@ -28,6 +32,8 @@ public class BestcutService {
 
     private final BestcutRepository bestcutRepository;
     private final MemberRepository memberRepository;
+    private final ReportedBestcutRepository reportedBestcutRepository;
+
 
     @Transactional
     public void saveBestcut(BestcutSaveReq saveReq) {
@@ -74,6 +80,26 @@ public class BestcutService {
         }
 
         bestcutRepository.delete(bestcut);
+    }
+
+    @Transactional
+    public void reportBestcut(Long memberId, Long bestcutId, ReportType reportType) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new org.webjars.NotFoundException("존재하지 않는 멤버"));
+        Bestcut bestcut = bestcutRepository.findById(bestcutId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.BESTCUT_NOT_FOUND));
+        if (reportedBestcutRepository.findOne(bestcutId, memberId).isPresent()) {
+            throw new AlreadyExistResourceException(ErrorCode.ALREADY_EXIST_REPORT);
+        }
+
+        ReportedBestcut reportedBestcut = ReportedBestcut.builder()
+                .reportMember(member)
+                .reportedMember(bestcut.getMember())
+                .bestcut(bestcut)
+                .reportType(reportType)
+                .build();
+
+        reportedBestcutRepository.save(reportedBestcut);
     }
 
 }
