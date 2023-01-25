@@ -14,24 +14,24 @@ import io.jsonwebtoken.SignatureAlgorithm;
 @Service
 public class JwtTokenProvider {
 	private final String secretKey="ddockddack";
-	private long validityInMilliseconds= 24*60*60*1000L; // 1 day
+	private long validityInMilliseconds= 24*60*60*1000L;
 
-	// 토큰 생성
+	// 토큰생성
 	public String createToken(String subject) {
 		Claims claims = Jwts.claims().setSubject(subject);
-		Date now = new Date();	
+		Date now = new Date();
 		Date validity = new Date(now.getTime() + validityInMilliseconds);
 
 		return Jwts.builder().setClaims(claims).setIssuedAt(now).setExpiration(validity)
 				.signWith(SignatureAlgorithm.HS256, secretKey).compact();
 	}
 
-	// 토큰 파싱
+	// 토큰에서 값 추출
 	public String getSubject(String token) {
 		return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
 	}
 
-	//	토큰 유효성 검증
+	// 유효한 토큰인지 확인
 	public boolean validateToken(String token) {
 		try {
 			Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
