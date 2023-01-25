@@ -1,15 +1,21 @@
 package com.ddockddack.domain.bestcut.entity;
 
-import com.ddockddack.domain.game.entity.GameImage;
 import com.ddockddack.domain.member.entity.Member;
+import java.time.LocalDateTime;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
-
-import javax.persistence.*;
-import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -18,7 +24,8 @@ import java.time.LocalDateTime;
 public class Bestcut {
 
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "bestcut_id")
     private Long id;
 
@@ -26,9 +33,14 @@ public class Bestcut {
     @JoinColumn(name = "member_id", foreignKey = @ForeignKey(name = "fk_bestcut_member_id_idx"))
     private Member member;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "game_image_id", foreignKey = @ForeignKey(name = "fk_bestcut_game_image_idx"))
-    private GameImage gameImage;
+    @Column(length = 300, nullable = false)
+    private String gameImageUrl;
+
+    @Column(length = 30, nullable = false)
+    private String gameTitle;
+
+    @Column(length = 50)
+    private String gameImgDesc;
 
     @Column(length = 30, nullable = false)
     private String title;
@@ -40,10 +52,13 @@ public class Bestcut {
     private LocalDateTime createdAt;
 
     @Builder
-    public Bestcut(Member member, GameImage gameImage, String title, String imageUrl) {
+    public Bestcut(Member member, String gameImageUrl, String gameTitle, String gameImgDesc,
+        String title, String imageUrl) {
         this.member = member;
-        this.gameImage = gameImage;
-        this.title = title;
+        this.gameTitle = gameTitle;
+        this.gameImageUrl = gameImageUrl;
+        this.gameImgDesc = gameImgDesc;
         this.imageUrl = imageUrl;
+        this.title = title;
     }
 }

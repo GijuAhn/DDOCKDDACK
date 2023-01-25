@@ -9,6 +9,7 @@ import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -41,6 +42,9 @@ public class Game {
     @Column(columnDefinition = "DATETIME default now()")
     private LocalDateTime createAt;
 
+    @OneToMany(mappedBy = "game", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<GameImage> images;
+
     @Builder
     public Game(Member member, String title, Category category, String description) {
         this.member = member;
@@ -48,4 +52,10 @@ public class Game {
         this.category = category;
         this.description = description;
     }
+
+    public void updateGame(String title, String gameDesc) {
+        this.title = title;
+        this.description = gameDesc;
+    }
+
 }
