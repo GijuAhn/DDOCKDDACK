@@ -7,10 +7,12 @@ import lombok.Setter;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
-@Getter @Setter
+@Getter
+@Setter
 @Schema(description = "MemberLoginRequest")
-public class MemberModifyReq{
-    @NotNull @Schema(name="유저 Name", example="ddockddack")
+public class MemberModifyReq {
+    @NotNull
+    @Schema(name = "유저 Name", example = "ddockddack")
     String email;
 
     @NotBlank

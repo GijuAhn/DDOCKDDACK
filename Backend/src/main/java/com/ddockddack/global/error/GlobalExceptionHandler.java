@@ -1,13 +1,13 @@
 package com.ddockddack.global.error;
 
 import com.ddockddack.global.error.exception.AccessDeniedException;
+import com.ddockddack.global.error.exception.AlreadyExistResourceException;
 import com.ddockddack.global.error.exception.NotFoundException;
 import com.ddockddack.global.error.exception.NumberOfFileExceedException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 
@@ -42,5 +42,15 @@ public class GlobalExceptionHandler {
     protected ResponseEntity<ErrorResponse> handleNotFoundException(NotFoundException e) {
         log.error("handleNotFoundException", e);
         return new ResponseEntity<>(ErrorResponse.of(e.getErrorCode()), HttpStatus.NOT_FOUND);
+    }
+
+    /**
+     * 유일한 리소스에 대한 중복 예외 처리
+     */
+    @ExceptionHandler(AlreadyExistResourceException.class)
+    protected ResponseEntity<ErrorResponse> handleAlreadyExistResourceException(
+            AlreadyExistResourceException e) {
+        log.error("handleAlreadyExistResourceException", e);
+        return new ResponseEntity<>(ErrorResponse.of(e.getErrorCode()), HttpStatus.BAD_REQUEST);
     }
 }
