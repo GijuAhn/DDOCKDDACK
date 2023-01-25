@@ -8,12 +8,13 @@ import com.ddockddack.domain.game.repository.GameRepositorySupport;
 import com.ddockddack.domain.game.repository.StarredGameRepository;
 import com.ddockddack.domain.game.request.GameImageParam;
 import com.ddockddack.domain.game.request.GameSaveReq;
+import com.ddockddack.domain.game.response.GameDetailRes;
 import com.ddockddack.domain.game.response.GameRes;
 import com.ddockddack.domain.member.entity.Member;
 import com.ddockddack.domain.member.repository.MemberRepository;
 import com.ddockddack.global.error.ErrorCode;
+import com.ddockddack.global.error.NotFoundException;
 import com.ddockddack.global.error.exception.ImageExtensionException;
-import com.ddockddack.global.error.exception.NotFoundException;
 import com.ddockddack.global.util.OrderCondition;
 import com.ddockddack.global.util.PeriodCondition;
 import com.ddockddack.global.util.SearchCondition;
@@ -57,6 +58,21 @@ public class GameService {
     @Transactional(readOnly = true)
     public List<GameRes> findAllGames(OrderCondition orderCondition, PeriodCondition period, SearchCondition searchCondition, String keyword, Long memberId) {
         return gameRepositorySupport.findAllGameBySearch(orderCondition, period, searchCondition, keyword, memberId);
+    }
+
+    /**
+     * 게임 상세 조회
+     *
+     * @param gameId
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public GameDetailRes findGame(Long gameId) {
+        List<GameDetailRes> result = gameRepositorySupport.findGame(gameId);
+        if (result.size() == 0) {
+            throw new NotFoundException(ErrorCode.MEMBER_NOT_FOUND);
+        }
+        return result.get(0);
     }
 
     /**

@@ -1,6 +1,7 @@
 package com.ddockddack.domain.game.controller;
 
 import com.ddockddack.domain.game.request.GameSaveReq;
+import com.ddockddack.domain.game.response.GameDetailRes;
 import com.ddockddack.domain.game.response.GameRes;
 import com.ddockddack.domain.game.service.GameService;
 import com.ddockddack.global.util.OrderCondition;
@@ -41,6 +42,16 @@ public class GameApiController {
                 gameService.findAllGames(orderCondition, periodCondition, searchCondition, keyword, null);
 
         return ResponseEntity.ok(allBySearch);
+    }
+
+    @GetMapping("/{gameId}")
+    @Operation(summary = "게임 상세조회")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "게임 상세 조회 성공"),
+            @ApiResponse(responseCode = "404", description = "존재 하지 않는 게임")
+    })
+    public ResponseEntity<GameDetailRes> gameDetail(@PathVariable Long gameId) {
+        return ResponseEntity.ok(gameService.findGame(gameId));
     }
 
     @PostMapping
