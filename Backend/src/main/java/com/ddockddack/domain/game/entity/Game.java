@@ -40,7 +40,7 @@ public class Game {
     private int playCount;
 
     @Column(columnDefinition = "DATETIME default now()")
-    private LocalDateTime createAt;
+    private LocalDateTime createdAt;
 
     @OneToMany(mappedBy = "game", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<GameImage> images;

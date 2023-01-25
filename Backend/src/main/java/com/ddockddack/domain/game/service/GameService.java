@@ -4,14 +4,19 @@ import com.ddockddack.domain.game.entity.Game;
 import com.ddockddack.domain.game.entity.GameImage;
 import com.ddockddack.domain.game.repository.GameImageRepository;
 import com.ddockddack.domain.game.repository.GameRepository;
+import com.ddockddack.domain.game.repository.GameRepositorySupport;
 import com.ddockddack.domain.game.repository.StarredGameRepository;
 import com.ddockddack.domain.game.request.GameImageParam;
 import com.ddockddack.domain.game.request.GameSaveReq;
+import com.ddockddack.domain.game.response.GameRes;
 import com.ddockddack.domain.member.entity.Member;
 import com.ddockddack.domain.member.repository.MemberRepository;
 import com.ddockddack.global.error.ErrorCode;
 import com.ddockddack.global.error.exception.ImageExtensionException;
 import com.ddockddack.global.error.exception.NotFoundException;
+import com.ddockddack.global.util.OrderCondition;
+import com.ddockddack.global.util.PeriodCondition;
+import com.ddockddack.global.util.SearchCondition;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,6 +43,21 @@ public class GameService {
 
     private final StarredGameRepository starredGameRepository;
 
+    private final GameRepositorySupport gameRepositorySupport;
+
+    /**
+     * 게임 목록 조회
+     *
+     * @param orderCondition
+     * @param period
+     * @param keyword
+     * @param memberId
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public List<GameRes> findAllGames(OrderCondition orderCondition, PeriodCondition period, SearchCondition searchCondition, String keyword, Long memberId) {
+        return gameRepositorySupport.findAllGameBySearch(orderCondition, period, searchCondition, keyword, memberId);
+    }
 
     /**
      * 게임 생성
@@ -49,7 +69,7 @@ public class GameService {
 
         // memberId로 member 조회. 조회 결과가 null 이면 NotFoundException 발생.
         Member getMember = Optional.ofNullable(memberRepository.findById(gameSaveReq.getMemberId()).orElseThrow(() ->
-                new NotFoundException(ErrorCode.MEMBER_NOT_FOUND))).get();
+                new com.ddockddack.global.error.NotFoundException(ErrorCode.MEMBER_NOT_FOUND))).get();
 
         // 게임 생성
         Game game = Game
@@ -149,4 +169,7 @@ public class GameService {
             e.printStackTrace();
         }
     }
+
+
+
 }
