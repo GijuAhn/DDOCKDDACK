@@ -6,12 +6,16 @@ import com.ddockddack.domain.game.repository.GameImageRepository;
 import com.ddockddack.domain.game.repository.GameRepository;
 import com.ddockddack.domain.game.repository.GameRepositorySupport;
 import com.ddockddack.domain.game.repository.StarredGameRepository;
+import com.ddockddack.domain.game.request.GameImageModifyReq;
 import com.ddockddack.domain.game.request.GameImageParam;
+import com.ddockddack.domain.game.request.GameModifyReq;
 import com.ddockddack.domain.game.request.GameSaveReq;
 import com.ddockddack.domain.game.response.GameDetailRes;
 import com.ddockddack.domain.game.response.GameRes;
 import com.ddockddack.domain.member.entity.Member;
+import com.ddockddack.domain.member.entity.Role;
 import com.ddockddack.domain.member.repository.MemberRepository;
+import com.ddockddack.global.error.AccessDeniedException;
 import com.ddockddack.global.error.ErrorCode;
 import com.ddockddack.global.error.NotFoundException;
 import com.ddockddack.global.error.exception.ImageExtensionException;
@@ -153,6 +157,91 @@ public class GameService {
         return gameId;
     }
 
+    /**
+     * 게임 수정
+     *
+     * @param memberId
+     * @param gameModifyReq
+     */
+    public void modifyGame(Long memberId, GameModifyReq gameModifyReq) {
+        // 검증
+        System.out.println("시작 1 ========================");
+        checkAccessValidation(memberId, gameModifyReq.getGameId());
+
+        System.out.println("시작 2 ----------------------------");
+        Game getGame = gameRepository.getReferenceById(gameModifyReq.getGameId());
+
+        System.out.println("끝 ===================================");
+        // 게임 제목, 설명 수정
+        getGame.updateGame(gameModifyReq.getGameTitle(), gameModifyReq.getGameDesc());
+
+        String absolutePath = new File("").getAbsolutePath() + File.separator;
+        String path = "images" + File.separator + getGame.getId();
+
+        File file = new File(path);
+        List<String> tempImage = new ArrayList<>();
+        for (GameImageModifyReq gameImageModifyReq : gameModifyReq.getImages()) {
+            GameImage getGameImage = gameImageRepository.getReferenceById(gameImageModifyReq.getGameImageId());
+
+            String imageExtension; // 이미지 확장자
+            String contentType = gameImageModifyReq.getGameImage().getContentType();
+
+            if (contentType.contains("image/jpeg")) {
+                imageExtension = ".jpg";
+            } else if (contentType.contains("image/png")) {
+                imageExtension = ".png";
+            } else {
+
+                // 여태 업로드 되었던 이미지들 하나 하나 전부 삭제
+                deleteImageFile(path, tempImage);
+
+                throw new ImageExtensionException(ErrorCode.EXTENSION_NOT_ALLOWED);
+            }
+
+            String fileName = UUID.randomUUID().toString() + imageExtension;
+
+            file = new File(absolutePath + path + File.separator + fileName);
+            try {
+                gameImageModifyReq.getGameImage().transferTo(file);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            // 업로드 중 실패 시 여태 업로드 되었던 이미지들을 날리기 위해 임시저장 하는 리스트
+            tempImage.add(fileName);
+
+            // 이미지 원본 삭제
+            new File(absolutePath + path + File.separator + getGameImage.getImageUrl()).delete();
+            getGameImage.updateGameImage(fileName, gameImageModifyReq.getGameImageDesc());
+
+        }
+    }
+
+    /**
+     * 게임 수정, 삭제 권한 검증
+     *
+     * @param memberId
+     * @param gameId
+     */
+    private void checkAccessValidation(Long memberId, Long gameId) {
+
+        // 존재하는 유저인지 검증
+        Member getMember = Optional.ofNullable(memberRepository.findById(memberId).orElseThrow(() ->
+                new NotFoundException(ErrorCode.MEMBER_NOT_FOUND))).get();
+
+        // 존재하는 게임 인지 검증
+        Game getGame = Optional.ofNullable(gameRepository.findById(gameId).orElseThrow(() ->
+                new NotFoundException(ErrorCode.GAME_NOT_FOUND))).get();
+
+        // 관리자면 바로 리턴
+        if (getMember.getRole().equals(Role.ADMIN)) {
+            return;
+        }
+        // 삭제 권한을 가진 유저인지 검증
+        if ((memberId != getGame.getMember().getId())) {
+            throw new AccessDeniedException(ErrorCode.NOT_AUTHORIZED);
+        }
+    }
+
 
     /**
      * 게임 이미지 수정 실패 시 업로드 됬던 이미지 개별 삭제
@@ -185,7 +274,6 @@ public class GameService {
             e.printStackTrace();
         }
     }
-
 
 
 }

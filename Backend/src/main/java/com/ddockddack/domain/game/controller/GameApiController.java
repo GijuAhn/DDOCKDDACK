@@ -1,5 +1,6 @@
 package com.ddockddack.domain.game.controller;
 
+import com.ddockddack.domain.game.request.GameModifyReq;
 import com.ddockddack.domain.game.request.GameSaveReq;
 import com.ddockddack.domain.game.response.GameDetailRes;
 import com.ddockddack.domain.game.response.GameRes;
@@ -67,6 +68,23 @@ public class GameApiController {
     public ResponseEntity gameSave(@ModelAttribute @Valid GameSaveReq gameSaveReq) {
 
         gameService.saveGame(gameSaveReq);
+        return ResponseEntity.ok().build();
+
+    }
+
+    @PutMapping("/{gameId}")
+    @Operation(summary = "게임 수정")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "게임 수정 성공"),
+            @ApiResponse(responseCode = "400", description = "필수 값 누락"),
+            @ApiResponse(responseCode = "401", description = "권한 없음"),
+            @ApiResponse(responseCode = "413", description = "파일 용량 초과"),
+            @ApiResponse(responseCode = "414", description = "지원 하지 않는 확장자")
+    })
+    public ResponseEntity gameModify(@ModelAttribute @Valid GameModifyReq gameModifyReq,
+                                     @RequestHeader(value = "access-token", required = false) String accessToken) {
+
+        gameService.modifyGame(1L, gameModifyReq);
         return ResponseEntity.ok().build();
 
     }
