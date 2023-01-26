@@ -167,13 +167,10 @@ public class GameService {
      */
     public void modifyGame(Long memberId, GameModifyReq gameModifyReq) {
         // 검증
-        System.out.println("시작 1 ========================");
         checkAccessValidation(memberId, gameModifyReq.getGameId());
 
-        System.out.println("시작 2 ----------------------------");
         Game getGame = gameRepository.getReferenceById(gameModifyReq.getGameId());
 
-        System.out.println("끝 ===================================");
         // 게임 제목, 설명 수정
         getGame.updateGame(gameModifyReq.getGameTitle(), gameModifyReq.getGameDesc());
 
@@ -244,6 +241,23 @@ public class GameService {
                 .build();
 
         starredGameRepository.save(starredGame);
+    }
+
+    /**
+     * 게임 즐겨 찾기 취소
+     *
+     * @param memberId
+     * @param gameId
+     */
+    public void unStarredGame(Long memberId, Long gameId) {
+
+        // 검증
+        checkMemberAndGameValidation(memberId, gameId);
+
+        StarredGame getStarredGame = Optional.ofNullable(starredGameRepository.findByMemberIdAndGameId(memberId, gameId).orElseThrow(() ->
+                new com.ddockddack.global.error.exception.NotFoundException(ErrorCode.STARREDGAME_NOT_FOUND))).get();
+
+        starredGameRepository.delete(getStarredGame);
     }
 
 
