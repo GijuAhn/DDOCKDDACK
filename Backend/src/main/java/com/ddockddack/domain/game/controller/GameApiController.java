@@ -5,6 +5,7 @@ import com.ddockddack.domain.game.request.GameSaveReq;
 import com.ddockddack.domain.game.response.GameDetailRes;
 import com.ddockddack.domain.game.response.GameRes;
 import com.ddockddack.domain.game.service.GameService;
+import com.ddockddack.domain.report.entity.ReportType;
 import com.ddockddack.global.util.OrderCondition;
 import com.ddockddack.global.util.PeriodCondition;
 import com.ddockddack.global.util.SearchCondition;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -120,6 +122,24 @@ public class GameApiController {
 
         // 나중에 토큰에서 꺼내올 memberId
         gameService.unStarredGame(1L, gameId);
+        return ResponseEntity.ok().build();
+
+    }
+
+    @PostMapping("/report/{gameId}")
+    @Operation(summary = "게임 신고")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "게임 신고 성공"),
+            @ApiResponse(responseCode = "400", description = "이미 존재하는 신고"),
+            @ApiResponse(responseCode = "404", description = "존재 하지 않는 게임"),
+            @ApiResponse(responseCode = "404", description = "존재 하지 않는 유저")
+    })
+    public ResponseEntity gameReport(@PathVariable Long gameId,
+                                     @RequestHeader(value = "access-token", required = false) String accessToken
+            , @RequestBody Map<String, String> body) {
+
+        // 나중에 토큰에서 꺼내올 memberId
+        gameService.reportGame(1L, gameId, ReportType.valueOf(body.get("reportType")));
         return ResponseEntity.ok().build();
 
     }

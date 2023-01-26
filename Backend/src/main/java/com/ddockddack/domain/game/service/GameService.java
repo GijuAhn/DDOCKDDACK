@@ -13,9 +13,14 @@ import com.ddockddack.domain.game.request.GameModifyReq;
 import com.ddockddack.domain.game.request.GameSaveReq;
 import com.ddockddack.domain.game.response.GameDetailRes;
 import com.ddockddack.domain.game.response.GameRes;
+import com.ddockddack.domain.game.response.ReportedGameRes;
+import com.ddockddack.domain.game.response.StarredGameRes;
 import com.ddockddack.domain.member.entity.Member;
 import com.ddockddack.domain.member.entity.Role;
 import com.ddockddack.domain.member.repository.MemberRepository;
+import com.ddockddack.domain.report.entity.ReportType;
+import com.ddockddack.domain.report.entity.ReportedGame;
+import com.ddockddack.domain.report.repository.ReportedGameRepository;
 import com.ddockddack.global.error.AccessDeniedException;
 import com.ddockddack.global.error.ErrorCode;
 import com.ddockddack.global.error.NotFoundException;
@@ -49,6 +54,8 @@ public class GameService {
     private final MemberRepository memberRepository;
 
     private final StarredGameRepository starredGameRepository;
+
+    private final ReportedGameRepository reportedGameRepository;
 
     private final GameRepositorySupport gameRepositorySupport;
 
@@ -258,6 +265,74 @@ public class GameService {
                 new com.ddockddack.global.error.exception.NotFoundException(ErrorCode.STARREDGAME_NOT_FOUND))).get();
 
         starredGameRepository.delete(getStarredGame);
+    }
+
+    /**
+     * 게임 신고
+     *
+     * @param memberId
+     * @param gameId
+     */
+    public void reportGame(Long memberId, Long gameId, ReportType reportType) {
+
+        // 검증
+        checkMemberAndGameValidation(memberId, gameId);
+
+        // 이미 신고했는지 검증
+        boolean isExist = reportedGameRepository.existsByReportMemberIdAndGameId(memberId, gameId);
+
+        if (isExist) {
+            throw new AlreadyExistResourceException(ErrorCode.ALREADY_EXIST_REPORTEDGAME);
+        }
+
+        Member reportMember = memberRepository.getReferenceById(memberId);
+        Game getGame = gameRepository.getReferenceById(gameId);
+
+        ReportedGame reportedGame = ReportedGame.builder()
+                .game(getGame)
+                .reportMember(reportMember)
+                .reportedMember(getGame.getMember())
+                .reportType(reportType)
+                .build();
+
+        reportedGameRepository.save(reportedGame);
+    }
+
+    /**
+     * 내가 만든 게임 전체 조회
+     *
+     * @param memberId
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public List<GameRes> findAllGameByMemberId(Long memberId) {
+        memberRepository.findById(memberId).orElseThrow(() ->
+                new com.ddockddack.global.error.exception.NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
+        return gameRepositorySupport.findAllByMemberId(memberId);
+    }
+
+    /**
+     * 내가 즐겨 찾기한 게임 목록 조회
+     *
+     * @param memberId
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public List<StarredGameRes> findAllStarredGames(Long memberId) {
+        memberRepository.findById(memberId).orElseThrow(() ->
+                new com.ddockddack.global.error.exception.NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
+        return gameRepositorySupport.findAllStarredGame(memberId);
+    }
+
+    /**
+     * 신고 된 게임 목록 전체 조회하기
+     *
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public List<ReportedGameRes> findAllReportedGames() {
+
+        return gameRepositorySupport.findAllReportedGame();
     }
 
 
