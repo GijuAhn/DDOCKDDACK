@@ -23,11 +23,6 @@ const routes = [
         name: "setMain",
         component: () => import("@/components/GameMake/SetMain.vue"),
       },
-      {
-        path: "setAdditional",
-        name: "setAdditional",
-        component: () => import("@/components/GameMake/SetAdditional.vue"),
-      },
     ],
   },
   {
