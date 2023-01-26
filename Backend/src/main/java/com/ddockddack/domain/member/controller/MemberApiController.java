@@ -113,6 +113,23 @@ public class MemberApiController {
             return ResponseEntity.status(500).body(e);
         }
     }
+
+    @Operation(summary = "내가 만든 게임 전체 조회", description = "내가 만든 게임 전체 조회 메소드입니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "내가 만든 게임 전체 조회 성공"),
+            @ApiResponse(responseCode = "400", description = "파라미터 타입 오류"),
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 유저"),
+            @ApiResponse(responseCode = "500", description = "서버 오류")
+    })
+    @GetMapping("/{memberId}/games")
+    public ResponseEntity<?> getMyGames(@PathVariable Long memberId){
+        try{
+//            Member member = gameService.getMyGamesByMemberId(memberId); //member Response에 올려야 하나?
+            return ResponseEntity.ok("MemberRes");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(e);
+        }
+    }
 /*
 
 
@@ -133,22 +150,6 @@ public class MemberApiController {
         }
     }
 
-    @Operation(summary = "내가 만든 게임 전체 조회", description = "내가 만든 게임 전체 조회 메소드입니다.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "내가 만든 게임 전체 조회 성공"),
-            @ApiResponse(responseCode = "400", description = "파라미터 타입 오류"),
-            @ApiResponse(responseCode = "404", description = "존재하지 않는 유저"),
-            @ApiResponse(responseCode = "500", description = "서버 오류")
-    })
-    @GetMapping("/{memberId}/games")
-    public ResponseEntity<?> getMyGames(@PathVariable Long memberId){
-        try{
-            Member member = memberService.getMyGamesById(memberId); //member Response에 올려야 하나?
-            return ResponseEntity.ok(MemberLoginPostRes.of(200, "Success", member, JwtTokenUtil.getToken(member.getEmail())));
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body(e);
-        }
-    }
 
     @Operation(summary = "즐겨찾기 게임 전체 조회", description = "내가 만든 게임 전체 조회 메소드입니다.")
     @ApiResponses(value = {
