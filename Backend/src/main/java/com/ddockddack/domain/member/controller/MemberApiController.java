@@ -147,8 +147,6 @@ public class MemberApiController {
             return ResponseEntity.status(500).body(e);
         }
     }
-/*
-
 
     @Operation(summary = "게임 이력 조회", description = "게임 이력 조회 메소드입니다.")
     @ApiResponses(value = {
@@ -160,14 +158,12 @@ public class MemberApiController {
     @GetMapping("/{memberId}/records")
     public ResponseEntity<?> getRecords(@PathVariable Long memberId){
         try{
-            Member member = gameService.getRecordsById(memberId);
-            return ResponseEntity.ok(MemberLoginPostRes.of(200, "Success", member, JwtTokenUtil.getToken(member.getEmail())));
+//            Member member = gameService.getRecordsById(memberId);
+            return ResponseEntity.ok("게임 이력 조회 성공");
         } catch (Exception e) {
             return ResponseEntity.status(500).body(e);
         }
     }
-
-    */
 
     @Operation(summary = "카카오 로그인", description = "카카오 로그인 메소드입니다.")
     @ApiResponses(value = {
