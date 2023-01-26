@@ -18,8 +18,6 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.Optional;
-
 @Service
 @Transactional(readOnly = true)
 //@RequiredArgsConstructor
@@ -75,6 +73,7 @@ public class MemberService { //ServiceImpl을 따로 만들어야 하나?
     public void deleteMemberById(Long memberId) {
         memberRepository.deleteById(memberId);
     }
+
     /**
      * @param email
      * @return db에 입력된 email이 있는지
