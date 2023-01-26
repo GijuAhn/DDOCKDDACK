@@ -256,6 +256,7 @@ public class GameService {
             for (int i = 0; i < list.size(); i++) {
                 new File(absolutePath + path + File.separator + list.get(i)).delete();
 
+                
             }
         }
 
