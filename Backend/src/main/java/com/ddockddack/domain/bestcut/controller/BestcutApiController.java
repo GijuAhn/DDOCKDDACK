@@ -137,8 +137,7 @@ public class BestcutApiController {
     @ApiResponses({
             @ApiResponse(description = "베스트컷 조회 성공", responseCode = "200")
     })
-    public ResponseEntity<PageImpl<BestcutRes>> bestcutList(@RequestHeader(value = "access-token", required = false) String accessToken,
-            @ModelAttribute PageConditionReq pageConditionReq) {
+    public ResponseEntity<PageImpl<BestcutRes>> bestcutList(@RequestHeader(value = "access-token", required = false) String accessToken, @ModelAttribute PageConditionReq pageConditionReq) {
         Long loginMemberId = getMemberId(accessToken);
 
 
@@ -147,6 +146,18 @@ public class BestcutApiController {
         return ResponseEntity.ok(result);
     }
 
+    @GetMapping("{bestcutId}")
+    @Operation(summary = "베스트 컷 단건 조회")
+    @ApiResponses({
+            @ApiResponse(description = "베스트컷 조회 성공", responseCode = "200"),
+            @ApiResponse(description = "존재하지 않는 베스트컷", responseCode = "404")
+    })
+    public ResponseEntity<BestcutRes> bestcutFind(@RequestHeader(value = "access-token", required = false) String accessToken, @PathVariable Long bestcutId){
+        Long loginMemberId = getMemberId(accessToken);
+        BestcutRes findBestcut = bestcutService.findOne(loginMemberId, bestcutId);
+
+        return ResponseEntity.ok(findBestcut);
+    }
 
 
     //accessToken에서 memberId 추출 코드 필요

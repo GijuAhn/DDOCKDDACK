@@ -48,8 +48,7 @@ public class BestcutRepository {
         em.remove(bestcut);
     }
 
-    public PageImpl<BestcutRes> findAllBySearch(Boolean my, Long loginMemberId, Long bestcutId,
-            PageCondition pageCondition) {
+    public PageImpl<BestcutRes> findAllBySearch(Boolean my, Long loginMemberId, PageCondition pageCondition) {
         List<BestcutRes> resultList = jpaQueryFactory.select(
                         new QBestcutRes(bestcut.id.as("bestcutId"), bestcut.title.as("bestcutImgTitle"),
                                 bestcut.imageUrl.as("bestcutImgUrl"), bestcut.gameTitle,
@@ -58,14 +57,27 @@ public class BestcutRepository {
                                 getIsLiked(loginMemberId), member.profile.as("profileImgUrl"),
                                 member.nickname)).from(bestcut).join(bestcut.member, member)
                 .where(myBestcut(my, loginMemberId), periodCond(pageCondition.getPeriodCondition()),
-                        searchCond(pageCondition.getSearchCondition(), pageCondition.getKeyword()),
-                        bestcutEq(bestcutId))
+                        searchCond(pageCondition.getSearchCondition(), pageCondition.getKeyword()))
                 .orderBy(orderCond(pageCondition.getPageable()))
                 .offset(pageCondition.getPageable().getOffset())
                 .limit(pageCondition.getPageable().getPageSize())
                 .fetch();
 
         return new PageImpl<>(resultList, pageCondition.getPageable(), getTotalPageCount());
+    }
+
+    public Optional<BestcutRes> findOne(Long loginMemberId, Long bestcutId){
+        List<BestcutRes> resultList = jpaQueryFactory.select(
+                        new QBestcutRes(bestcut.id.as("bestcutId"), bestcut.title.as("bestcutImgTitle"),
+                                bestcut.imageUrl.as("bestcutImgUrl"), bestcut.gameTitle,
+                                bestcut.gameImageUrl, bestcut.gameImgDesc,
+                                bestcut.createdAt.as("createdDate"), getLikeCnt(),
+                                getIsLiked(loginMemberId), member.profile.as("profileImgUrl"),
+                                member.nickname)).from(bestcut).join(bestcut.member, member)
+                .where(bestcut.id.eq(bestcutId))
+                .fetch();
+
+        return resultList.stream().findAny();
     }
 
     private static Expression<Integer> getLikeCnt() {

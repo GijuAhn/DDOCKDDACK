@@ -106,9 +106,18 @@ public class BestcutService {
         reportedBestcutRepository.save(reportedBestcut);
     }
 
+    /**
+     * @param my 내 베스트컷 조회시 true
+     * @param loginMemberId
+     * @param pageConditionReq
+     * @return
+     */
     public PageImpl<BestcutRes> findAll(Boolean my, Long loginMemberId, PageConditionReq pageConditionReq) {
         PageCondition pageCondition = pageConditionReq.toEntity();
-        return bestcutRepository.findAllBySearch(my, loginMemberId, null, pageCondition);
+        return bestcutRepository.findAllBySearch(my, loginMemberId, pageCondition);
     }
 
+    public BestcutRes findOne(Long loginMemberId, Long bestcutId) {
+        return bestcutRepository.findOne(loginMemberId, bestcutId).orElseThrow(() -> new NotFoundException(ErrorCode.BESTCUT_NOT_FOUND));
+    }
 }
