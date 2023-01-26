@@ -10,7 +10,6 @@ import javax.persistence.*;
 @Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "email" })})
 // 이따가 테이블에 유니크 제약조건 추가
 public class Member {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_id")

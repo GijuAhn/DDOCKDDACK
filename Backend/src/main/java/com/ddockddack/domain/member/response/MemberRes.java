@@ -12,15 +12,11 @@ public class MemberRes {
     private Long memberId;
     private String email;
     private String nickname;
-    private String profileImgUrl;
+    private String profile;
     private Role role;
 
-
-    public MemberRes(Long memberId, String email, String nickname, String profileImgUrl, Role role) {
-        this.memberId = memberId;
-        this.email = email;
+    public MemberRes(String nickname, String profile) {
         this.nickname = nickname;
-        this.profileImgUrl = profileImgUrl;
-        this.role = role;
+        this.profile = profile;
     }
 }

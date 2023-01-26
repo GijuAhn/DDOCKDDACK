@@ -2,7 +2,6 @@ package com.ddockddack.domain.bestcut.service;
 
 import com.ddockddack.domain.bestcut.entity.Bestcut;
 import com.ddockddack.domain.bestcut.repository.BestcutRepository;
-import com.ddockddack.domain.member.entity.Member;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +15,7 @@ public class BestcutService {
     public BestcutService(BestcutRepository bestcutRepository) {
         this.bestcutRepository = bestcutRepository;
     }
+
     public List<Bestcut> getBestcutsById(Long memberId) {
         return bestcutRepository.findByMemberId(memberId);
     }

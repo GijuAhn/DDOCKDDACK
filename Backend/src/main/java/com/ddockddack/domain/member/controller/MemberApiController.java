@@ -2,16 +2,13 @@ package com.ddockddack.domain.member.controller;
 
 
 import com.ddockddack.domain.bestcut.entity.Bestcut;
-import com.ddockddack.domain.bestcut.response.BestcutRes;
 import com.ddockddack.domain.bestcut.service.BestcutService;
 import com.ddockddack.domain.game.service.GameService;
 import com.ddockddack.domain.member.entity.Member;
 import com.ddockddack.domain.member.entity.Role;
 import com.ddockddack.domain.member.request.MemberModifyReq;
-import com.ddockddack.domain.member.response.MemberJoinRes;
-import com.ddockddack.domain.member.response.MemberLoginPostRes;
+import com.ddockddack.domain.member.response.MemberRes;
 import com.ddockddack.domain.member.service.MemberService;
-//import com.ddockddack.domain.member.util.JwtTokenUtil;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import io.swagger.v3.oas.annotations.Operation;
@@ -20,31 +17,26 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
-import org.springframework.http.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
-@Tag(name="member", description = "member API 입니다.")
+@Tag(name = "member", description = "member API 입니다.")
 @RequestMapping("/members")
 public class MemberApiController {
 
-    private Environment env;
     private MemberService memberService;
 
     private BestcutService bestcutService;
     private GameService gameService;
 
     @Autowired
-    public MemberApiController(Environment env, MemberService memberService, BestcutService bestcutService, GameService gameService) {
-        this.env = env;
+    public MemberApiController(MemberService memberService, BestcutService bestcutService, GameService gameService) {
         this.memberService = memberService;
         this.bestcutService = bestcutService;
         this.gameService = gameService;
@@ -61,10 +53,10 @@ public class MemberApiController {
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @PutMapping("/{memberId}")
-    public ResponseEntity<?> modifyMember(@PathVariable Long memberId, @RequestBody MemberModifyReq modifyMember){
-        try{
-            memberService.modifyMember(memberId, modifyMember);
-            return ResponseEntity.ok("success 수정");
+    public ResponseEntity<?> modifyMember(@PathVariable Long memberId, @RequestBody MemberModifyReq modifyMemberReq) {
+        try {
+//            memberService.modifyMember(memberId, modifyMember);
+            return ResponseEntity.ok(memberService.modifyMember(memberId, modifyMemberReq));
         } catch (Exception e) {
             return ResponseEntity.status(500).body(e.getMessage());
         }
@@ -78,10 +70,10 @@ public class MemberApiController {
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @GetMapping("/{memberId}")
-    public ResponseEntity<?> getMemberInfo(@PathVariable Long memberId){
-        try{
+    public ResponseEntity<?> getMemberInfo(@PathVariable Long memberId) {
+        try {
             Member member = memberService.getMemberById(memberId);
-            return ResponseEntity.ok("Seccess 조회");
+            return ResponseEntity.ok(member);
         } catch (Exception e) {
             return ResponseEntity.status(500).body(e);
         }
@@ -95,8 +87,8 @@ public class MemberApiController {
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @GetMapping("/{memberId}/bestcuts")
-    public ResponseEntity<?> getBestcuts(@PathVariable Long memberId){
-        try{
+    public ResponseEntity<?> getBestcuts(@PathVariable Long memberId) {
+        try {
             List<Bestcut> bestcuts = bestcutService.getBestcutsById(memberId);
 
             return ResponseEntity.ok("success 베스트컷조회");
@@ -104,7 +96,7 @@ public class MemberApiController {
             return ResponseEntity.status(500).body(e);
         }
     }
-/*
+
     @Operation(summary = "회원 탈퇴", description = "회원 탈퇴 메소드입니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "이력 조회 성공"),
@@ -113,14 +105,16 @@ public class MemberApiController {
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @DeleteMapping("/{memberId}")
-    public ResponseEntity<?> deleteMember(@PathVariable Long memberId, @PathVariable String memberId){
+    public ResponseEntity<?> deleteMember(@PathVariable Long memberId){
         try{
-            Member member = memberService.deleteMemberById(memberId);
-            return ResponseEntity.ok(MemberLoginPostRes.of(200, "Success", member, JwtTokenUtil.getToken(member.getEmail())));
+            memberService.deleteMemberById(memberId);
+            return ResponseEntity.ok("success 삭제");
         } catch (Exception e) {
             return ResponseEntity.status(500).body(e);
         }
     }
+/*
+
 
     @Operation(summary = "게임 이력 조회", description = "게임 이력 조회 메소드입니다.")
     @ApiResponses(value = {
@@ -180,12 +174,12 @@ public class MemberApiController {
             @ApiResponse(responseCode = "404", description = "사용자 없음"),
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
-    @GetMapping("/kakaoLogin")
+    @GetMapping("/kakaologin")
     public ResponseEntity<?> kakaoRequestAccessToken(@RequestParam String code) {
         //카카오 서버에 POST 방식으로 엑세스 토큰을 요청
         //RestTemplate를 이용
-        try{
-//            System.out.println(code);
+        try {
+            System.out.println(code);
             String accessToken = memberService.getKaKaoAccessToken(code);
 
             ResponseEntity<String> memberInfoResponse = memberService.getKakaoMember(accessToken);
@@ -205,16 +199,16 @@ public class MemberApiController {
             System.out.println("=========================================");
             System.out.println("토큰에서 꺼내온 값 확인하기");
             System.out.println("닉네임 : " + nickname);
-            System.out.println("닉네임 : " + nickname);
             System.out.println("email : " + email);
 
             System.out.println("================================================");
 //            System.out.println(jp.parse(memberAccountObject.get("profile").toString()));
 
-            Member member = memberService.getUserBySocialId(email);
+            boolean isMember = memberService.findUserBySocialId(email);
 
-            if(member == null){
-                member = new Member(email, nickname, null, Role.member);
+            if (!isMember) {
+                Member member = new Member(email, nickname, "", Role.member);
+                MemberRes memberRes = new MemberRes(member.getNickname(), member.getProfile());
 //                member.setNickname(nickname);
 //                HttpHeaders tokenHeaders = new HttpHeaders();
 //                tokenHeaders.add("Authorization", "Bearer " + accessToken);
@@ -234,12 +228,12 @@ public class MemberApiController {
 //                System.out.println("=============================");
 //                System.out.println("유저 해제" + memberUnlinkRes);
                 memberService.joinMember(member);
-
-                return ResponseEntity.ok("Seccess join");
+                System.out.println("member Join!");
+                return ResponseEntity.ok(memberRes);
             }
             //else
-            return ResponseEntity.ok("Seccess login");
-        } catch (Exception e){
+            return ResponseEntity.ok(memberService.getMemberByEmail(email));
+        } catch (Exception e) {
             System.out.println(e);
             return ResponseEntity.status(500).body(e);
         }
@@ -256,46 +250,27 @@ public class MemberApiController {
             @ApiResponse(responseCode = "404", description = "사용자 없음"),
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
-    @GetMapping("/googleLogin")
+    @GetMapping("/googlelogin")
     public ResponseEntity<?> GoogleRequestAccessToken(@RequestParam String code) {
+        String accessToken = memberService.getGoogleAccessToken(code);
 
-        RestTemplate rt = new RestTemplate();
+        ResponseEntity<String> memberInfoResponse = memberService.getGoogleMember(accessToken);
 
-
-        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl("https://www.googleapis.com/oauth2/v4/token")
-                .queryParam("code", code)
-                .queryParam("client_id", "")
-                .queryParam("client_secret", "")
-                .queryParam("redirect_uri", "")
-                .queryParam("grant_type", "authorization_code");
-
-        HttpEntity request = new HttpEntity<>(new HttpHeaders());
-
-        ResponseEntity<String> response = rt.exchange(
-                uriBuilder.toUriString(),
-                HttpMethod.POST,
-                request,
-                String.class
-        );
         JsonParser jp = new JsonParser();
-        JsonObject jo = jp.parse(response.getBody()).getAsJsonObject();
-        String accessToken = jo.get("access_token").getAsString();
 
-        HttpHeaders headers = new HttpHeaders();
+        JsonObject memberJsonObject = jp.parse(memberInfoResponse.getBody()).getAsJsonObject();
 
-        headers.add("authorization", "Bearer " + accessToken);
+        String email = memberJsonObject.get("email").getAsString();
 
-        HttpEntity memberInfoRequest = new HttpEntity<>(headers);
+//            String id = memberAccountObject.get("id").getAsString();
 
+        System.out.println("=========================================");
+        System.out.println("토큰에서 꺼내온 값 확인하기");
+        System.out.println("email : " + email);
 
-        ResponseEntity<String> responsememberInfo = rt.exchange(UriComponentsBuilder
-                        .fromHttpUrl("https://www.googleapis.com/oauth2/v2/memberinfo")
-                        .toUriString(),
-                HttpMethod.GET,
-                memberInfoRequest,
-                String.class);
+        System.out.println("================================================");
 
 
-        return new ResponseEntity<>(responsememberInfo.getBody(), HttpStatus.OK);
+        return new ResponseEntity<>(memberInfoResponse.getBody(), HttpStatus.OK);
     }
 }

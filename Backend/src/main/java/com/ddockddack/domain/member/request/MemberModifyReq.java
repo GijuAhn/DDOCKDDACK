@@ -5,15 +5,13 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
 @Schema(description = "MemberLoginRequest")
 public class MemberModifyReq {
-    @NotBlank
+    @NotBlank(message = "닉네임을 입력해주세요.")
     String nickname;
-    @NotBlank
+    @NotBlank(message = "프로필 사진을 설정해주세요.")
     String profile;
-
 }
