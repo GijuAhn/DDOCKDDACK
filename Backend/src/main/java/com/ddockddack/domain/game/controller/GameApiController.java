@@ -89,4 +89,21 @@ public class GameApiController {
 
     }
 
+    @PostMapping("/starred/{gameId}")
+    @Operation(summary = "게임 즐겨 찾기")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "게임 즐겨찾기 성공"),
+            @ApiResponse(responseCode = "401", description = "권한 없음"),
+            @ApiResponse(responseCode = "404", description = "존재 하지 않는 게임"),
+            @ApiResponse(responseCode = "404", description = "존재 하지 않는 유저")
+    })
+    public ResponseEntity starredGame(@PathVariable Long gameId,
+                                      @RequestHeader(value = "access-token", required = false) String accessToken) {
+
+
+        // 나중에 토큰에서 꺼내올 memberId
+        gameService.starredGame(2L, gameId);
+        return ResponseEntity.ok().build();
+    }
+
 }

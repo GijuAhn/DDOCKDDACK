@@ -2,6 +2,7 @@ package com.ddockddack.domain.game.service;
 
 import com.ddockddack.domain.game.entity.Game;
 import com.ddockddack.domain.game.entity.GameImage;
+import com.ddockddack.domain.game.entity.StarredGame;
 import com.ddockddack.domain.game.repository.GameImageRepository;
 import com.ddockddack.domain.game.repository.GameRepository;
 import com.ddockddack.domain.game.repository.GameRepositorySupport;
@@ -18,6 +19,7 @@ import com.ddockddack.domain.member.repository.MemberRepository;
 import com.ddockddack.global.error.AccessDeniedException;
 import com.ddockddack.global.error.ErrorCode;
 import com.ddockddack.global.error.NotFoundException;
+import com.ddockddack.global.error.exception.AlreadyExistResourceException;
 import com.ddockddack.global.error.exception.ImageExtensionException;
 import com.ddockddack.global.util.OrderCondition;
 import com.ddockddack.global.util.PeriodCondition;
@@ -217,6 +219,35 @@ public class GameService {
     }
 
     /**
+     * 게임 즐겨 찾기
+     *
+     * @param memberId
+     * @param gameId
+     */
+    public void starredGame(Long memberId, Long gameId) {
+
+        // 검증
+        checkMemberAndGameValidation(memberId, gameId);
+
+        boolean isExist = starredGameRepository.existsByMemberIdAndGameId(memberId, gameId);
+
+        if (isExist) {
+            throw new AlreadyExistResourceException(ErrorCode.ALREADY_EXIST_STTAREDGAME);
+        }
+
+        Member getMember = memberRepository.getReferenceById(memberId);
+        Game getGame = gameRepository.getReferenceById(gameId);
+
+        StarredGame starredGame = StarredGame.builder()
+                .game(getGame)
+                .member(getMember)
+                .build();
+
+        starredGameRepository.save(starredGame);
+    }
+
+
+    /**
      * 게임 수정, 삭제 권한 검증
      *
      * @param memberId
@@ -242,6 +273,22 @@ public class GameService {
         }
     }
 
+    /**
+     * 즐겨 찾기,신고 검증
+     *
+     * @param memberId
+     * @param gameId
+     */
+    private void checkMemberAndGameValidation(Long memberId, Long gameId) {
+        // 존재하는 유저인지 검증
+        memberRepository.findById(memberId).orElseThrow(() ->
+                new com.ddockddack.global.error.exception.NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
+
+        // 존재하는 게임 인지 검증
+        gameRepository.findById(gameId).orElseThrow(() ->
+                new com.ddockddack.global.error.exception.NotFoundException(ErrorCode.GAME_NOT_FOUND));
+    }
+
 
     /**
      * 게임 이미지 수정 실패 시 업로드 됬던 이미지 개별 삭제
@@ -255,8 +302,6 @@ public class GameService {
         if (list.size() != 0) {
             for (int i = 0; i < list.size(); i++) {
                 new File(absolutePath + path + File.separator + list.get(i)).delete();
-
-                
             }
         }
 
