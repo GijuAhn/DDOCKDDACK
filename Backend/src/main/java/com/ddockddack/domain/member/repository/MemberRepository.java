@@ -6,5 +6,15 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface MemberRepository extends JpaRepository<Member, Long> {
+//    private final EntityManager em;
+//    public void save(Member member) {
+//        em.persist(member);
+//    }
 
+    boolean existsByEmail(String email);
+
+    Member getByEmail(String email);
+
+
+//    public Member getBySocialId(String email) {return }
 }
