@@ -1,20 +1,24 @@
 package com.ddockddack.domain.bestcut.controller;
 
 import com.ddockddack.domain.bestcut.request.BestcutSaveReq;
+import com.ddockddack.domain.bestcut.response.BestcutRes;
 import com.ddockddack.domain.bestcut.service.BestcutLikeService;
 import com.ddockddack.domain.bestcut.service.BestcutService;
 import com.ddockddack.domain.report.entity.ReportType;
 import com.ddockddack.global.error.ErrorCode;
 import com.ddockddack.global.error.exception.AccessDeniedException;
 import com.ddockddack.global.error.exception.NumberOfFileExceedException;
+import com.ddockddack.global.util.PageConditionReq;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import java.util.Map;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -127,6 +131,23 @@ public class BestcutApiController {
 
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping
+    @Operation(summary = "베스트 컷 목록 조회")
+    @ApiResponses({
+            @ApiResponse(description = "베스트컷 조회 성공", responseCode = "200")
+    })
+    public ResponseEntity<PageImpl<BestcutRes>> bestcutList(@RequestHeader(value = "access-token", required = false) String accessToken,
+            @ModelAttribute PageConditionReq pageConditionReq) {
+        Long loginMemberId = getMemberId(accessToken);
+
+
+        PageImpl<BestcutRes> result = bestcutService.findAll(false, loginMemberId, pageConditionReq);
+
+        return ResponseEntity.ok(result);
+    }
+
+
 
     //accessToken에서 memberId 추출 코드 필요
     private Long getMemberId(String accessToken) {

@@ -4,6 +4,7 @@ import com.ddockddack.domain.bestcut.entity.Bestcut;
 import com.ddockddack.domain.bestcut.repository.BestcutRepository;
 import com.ddockddack.domain.bestcut.request.BestcutImageReq;
 import com.ddockddack.domain.bestcut.request.BestcutSaveReq;
+import com.ddockddack.domain.bestcut.response.BestcutRes;
 import com.ddockddack.domain.member.entity.Member;
 import com.ddockddack.domain.member.entity.Role;
 import com.ddockddack.domain.member.repository.MemberRepository;
@@ -15,9 +16,12 @@ import com.ddockddack.global.error.ErrorResponse;
 import com.ddockddack.global.error.exception.AccessDeniedException;
 import com.ddockddack.global.error.exception.AlreadyExistResourceException;
 import com.ddockddack.global.error.exception.NotFoundException;
+import com.ddockddack.global.util.PageCondition;
+import com.ddockddack.global.util.PageConditionReq;
 import java.io.File;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -100,6 +104,11 @@ public class BestcutService {
                 .build();
 
         reportedBestcutRepository.save(reportedBestcut);
+    }
+
+    public PageImpl<BestcutRes> findAll(Boolean my, Long loginMemberId, PageConditionReq pageConditionReq) {
+        PageCondition pageCondition = pageConditionReq.toEntity();
+        return bestcutRepository.findAllBySearch(my, loginMemberId, null, pageCondition);
     }
 
 }
