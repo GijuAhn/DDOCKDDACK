@@ -8,7 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-@Schema(description = "베스트컷 목록 요청 DTO")
+@Schema(description = "베스트컷, 게임 목록 요청 DTO")
 public class PageConditionReq {
 
     @Schema(description = "최신순(RECENT), 인기순(POPULARITY")

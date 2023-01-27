@@ -1,16 +1,20 @@
 package com.ddockddack.domain.game.request;
 
 import com.ddockddack.domain.game.entity.Category;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.List;
 
-@Data
-@AllArgsConstructor
+@Setter
+@Getter
+@ToString
+@NoArgsConstructor
 public class GameSaveReq {
 
     @NotNull(message = "gameTitle cannot be empty.")

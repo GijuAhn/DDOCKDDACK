@@ -1,12 +1,16 @@
 package com.ddockddack.domain.game.request;
 
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
-@Data
+@Setter
+@Getter
+@ToString
 @NoArgsConstructor
 public class GameModifyReq {
 

@@ -1,10 +1,11 @@
 package com.ddockddack.domain.game.response;
 
 import com.querydsl.core.annotations.QueryProjection;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Data
+@Setter
+@Getter
+@ToString
 @NoArgsConstructor
 public class GameImageRes {
 
