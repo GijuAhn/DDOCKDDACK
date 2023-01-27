@@ -89,7 +89,7 @@ public class MemberApiController {
     @GetMapping("/{memberId}/bestcuts")
     public ResponseEntity<?> getBestcuts(@PathVariable Long memberId) {
         try {
-            List<Bestcut> bestcuts = bestcutService.getBestcutsById(memberId);
+//            List<Bestcut> bestcuts = bestcutService.getBestcutsById(memberId);
 
             return ResponseEntity.ok("success 베스트컷조회");
         } catch (Exception e) {
