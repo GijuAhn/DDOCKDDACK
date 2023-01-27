@@ -10,7 +10,6 @@ import javax.persistence.*;
 @Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "email" })})
 // 이따가 테이블에 유니크 제약조건 추가
 public class Member {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_id")
@@ -27,7 +26,7 @@ public class Member {
 
     @Enumerated(EnumType.STRING)
     @Column(length = 10, nullable = false)
-    private Role role; // USER, ADMIN
+    private Role role; // member, ADMIN
 
     @Builder
     public Member(String email, String nickname, String profile, Role role) {

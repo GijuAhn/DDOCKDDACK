@@ -1,5 +1,6 @@
 package com.ddockddack.global.error;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,6 +15,9 @@ import java.util.stream.Collectors;
 public class ErrorResponse {
 
     private String message;
+
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+
     private List<FieldError> errors;
     private int code;
 
@@ -70,5 +74,6 @@ public class ErrorResponse {
                     .collect(Collectors.toList());
         }
     }
+
 
 }
