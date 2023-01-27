@@ -12,6 +12,7 @@ import org.springframework.data.domain.Sort.Direction;
 @NoArgsConstructor
 public class PageCondition {
 
+    private int PAGE_SIZE = 9;
     private PeriodCondition periodCondition;
     private SearchCondition searchCondition;
     private String keyword;
@@ -23,7 +24,7 @@ public class PageCondition {
         this.periodCondition = (period == null || period.isBlank()) ? null : PeriodCondition.valueOf(period);
         this.searchCondition = (search == null || search.isBlank()) ? null : SearchCondition.valueOf(search);
         this.keyword = keyword;
-        this.pageable = PageRequest.of(page, 9, Direction.DESC, orderCondition.getSort());
+        this.pageable = PageRequest.of(page, PAGE_SIZE, Direction.DESC, orderCondition.getSort());
     }
 
 }
