@@ -16,14 +16,14 @@ import lombok.Setter;
 @NoArgsConstructor
 public class BestcutSaveReq {
 
-    @NotNull
+    @NotNull(message = "memberId can't be null")
     private Long memberId;
 
-    @NotBlank
+    @NotBlank(message = "gameTitle can't be blank")
     private String gameTitle;
 
     @Valid
-    @Size(min = 1, max=10)
-    @NotNull
+    @Size(min = 1, max=10, message = "images must have at least 1 and less than 10 photos. ")
+    @NotNull(message = "images can't be null")
     private List<BestcutImageReq> images;
 }

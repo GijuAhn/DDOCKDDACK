@@ -1,10 +1,14 @@
 package com.ddockddack.domain.game.request;
 
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import org.springframework.web.multipart.MultipartFile;
 
-@Data
+@Setter
+@Getter
+@ToString
 @NoArgsConstructor
 public class GameImageModifyReq {
 

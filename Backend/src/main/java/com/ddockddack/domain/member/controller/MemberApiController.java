@@ -89,7 +89,7 @@ public class MemberApiController {
     @GetMapping("/{memberId}/bestcuts")
     public ResponseEntity<?> getBestcuts(@PathVariable Long memberId) {
         try {
-            List<Bestcut> bestcuts = bestcutService.getBestcutsById(memberId);
+//            List<Bestcut> bestcuts = bestcutService.getBestcutsById(memberId);
 
             return ResponseEntity.ok("success 베스트컷조회");
         } catch (Exception e) {
@@ -105,8 +105,8 @@ public class MemberApiController {
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @DeleteMapping("/{memberId}")
-    public ResponseEntity<?> deleteMember(@PathVariable Long memberId){
-        try{
+    public ResponseEntity<?> deleteMember(@PathVariable Long memberId) {
+        try {
             memberService.deleteMemberById(memberId);
             return ResponseEntity.ok("success 삭제");
         } catch (Exception e) {
@@ -260,14 +260,10 @@ public class MemberApiController {
 
         String email = memberJsonObject.get("email").getAsString();
 
-//            String id = memberAccountObject.get("id").getAsString();
-
         System.out.println("=========================================");
         System.out.println("토큰에서 꺼내온 값 확인하기");
         System.out.println("email : " + email);
-
         System.out.println("================================================");
-
 
         return new ResponseEntity<>(memberInfoResponse.getBody(), HttpStatus.OK);
     }
