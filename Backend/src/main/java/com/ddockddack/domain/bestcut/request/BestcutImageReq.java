@@ -12,15 +12,15 @@ import org.springframework.web.multipart.MultipartFile;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BestcutImageReq {
-    @NotNull
+    @NotNull(message = "bestcutImg can't be null")
     private MultipartFile bestcutImg;
 
-    @NotBlank
+    @NotBlank(message = "bestcutImgTitle can't be blank")
     private String bestcutImgTitle;
 
-    @NotBlank
+    @NotBlank(message = "gameImgUrl can't be blank")
     private String gameImgUrl;
 
-    @NotBlank
+    @NotBlank(message = "gameImgDesc can't be blank")
     private String gameImgDesc;
 }
