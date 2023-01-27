@@ -4,11 +4,11 @@
     <form>
       <div>
         <label for="title">제목</label>
-        <input id="title" type="text" />
+        <input id="title" type="text" v-model="game.title" />
       </div>
       <div>
         <label for="description">설명</label>
-        <input id="description" type="text" />
+        <input id="description" type="text" v-model="game.description" />
       </div>
       <div>
         <input type="file" @change="storeImage" accept="image/*" multiple />
@@ -17,8 +17,13 @@
     <div>
       <h2>사진 업로드</h2>
       <ul>
-        <li v-for="item in state.uploadImages" :key="item">
-          <img :src="item" alt="이미지 미리보기..." width="200" height="200" />
+        <li v-for="item in savedProblems" :key="item">
+          <img
+            :src="convertFile(item.image)"
+            alt="이미지 미리보기..."
+            width="200"
+            height="200"
+          />
         </li>
       </ul>
     </div>
@@ -30,13 +35,13 @@
       <ul>
         <li v-for="item in savedProblems" :key="item">
           <img
-            :src="item.image"
+            :src="convertFile(item.image)"
             alt="이미지 미리보기..."
             width="200"
             height="200"
           />
-          <input id="title" type="text" :value="item.message" />
-          <button>삭제</button>
+          <input id="title" type="text" v-model="item.message" />
+          <button @click="removeLine(item)">삭제</button>
         </li>
       </ul>
     </div>
@@ -49,10 +54,11 @@
 import { ref } from "vue";
 import { computed } from "vue";
 import { useStore } from "vuex";
-import { toRaw } from "vue";
+import { apiInstance } from "@/api/index";
 
 export default {
   setup() {
+    const api = apiInstance();
     const store = useStore();
     const state = ref({
       //사실 이건 객체임 ...
@@ -65,42 +71,8 @@ export default {
       problemList: [], //이미지와 설명
     });
 
-    const onFileSelected = () => {
-      // console.log(savedProblems);
-      // console.log(typeof savedProblems.value);
-      // console.log(savedProblems.value.length);
-      // console.log(state.value.step + 100);
-
-      let problemList = toRaw(savedProblems.value);
-      console.log(problemList);
-
-      if (problemList) {
-        const files = problemList;
-        Promise.all(
-          files.map((file) => {
-            console.log(file.image);
-            return new Promise((resolve, reject) => {
-              let reader = new FileReader();
-
-              reader.onload = (ev) => {
-                resolve(ev.target.result);
-              };
-
-              reader.onerror = () => {
-                reject();
-              };
-              reader.readAsDataURL(file.image);
-            });
-          })
-        ).then(
-          (images) => {
-            state.value.uploadImages = images; //state 값에 저장
-          },
-          (error) => {
-            console.error(error);
-          }
-        );
-      }
+    const convertFile = (file) => {
+      return URL.createObjectURL(file);
     };
 
     const changeStep = () => {
@@ -121,7 +93,6 @@ export default {
         //console.log(problems);
         // files 를 problems에 저장
         saveImageAsync(problems);
-        onFileSelected();
       }
     };
 
@@ -131,19 +102,54 @@ export default {
       () => store.state.gameMakeStore.savedProblems
     );
 
+    const removeLine = (item) => {
+      store.dispatch("gameMakeStore/removeLineAsync", item);
+    };
+
     const submit = () => {
+      //유효성 검사 필요
+
       game.value.problemList = savedProblems;
+
+      let param = {
+        gameTitle: game.value.title,
+        gameCategory: "PICTURE",
+        memberId: "TEST_USER",
+        gameDesc: game.value.description,
+        images: {
+          gameImage: game.value.problemList.image,
+          gameImageDesc: game.value.problemList.message,
+        },
+      };
+
+      api
+        .post(`/games`, JSON.stringify(param))
+        .then(({ data }) => {
+          // let msg = "등록 처리시 문제가 발생했습니다.";
+          // if (data === "success") {
+          //   msg = "등록이 완료되었습니다.";
+          // }
+          //alert(msg);
+          console.log("결과--------------");
+          console.log(data);
+          // this.moveList();
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     };
 
     return {
       state,
-      onFileSelected,
       changeStep,
       game,
       storeImage,
       saveImageAsync,
       savedProblems,
       submit,
+      convertFile,
+      removeLine,
+      api,
     };
   },
 };
