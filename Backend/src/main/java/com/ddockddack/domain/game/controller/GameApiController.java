@@ -50,6 +50,7 @@ public class GameApiController {
             @ApiResponse(responseCode = "404", description = "존재 하지 않는 게임")
     })
     public ResponseEntity<GameDetailRes> gameDetail(@PathVariable Long gameId) {
+
         return ResponseEntity.ok(gameService.findGame(gameId));
     }
 

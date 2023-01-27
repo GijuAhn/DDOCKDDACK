@@ -23,10 +23,11 @@ import com.ddockddack.domain.report.entity.ReportedGame;
 import com.ddockddack.domain.report.repository.ReportedGameRepository;
 import com.ddockddack.global.error.AccessDeniedException;
 import com.ddockddack.global.error.ErrorCode;
-import com.ddockddack.global.error.NotFoundException;
 import com.ddockddack.global.error.exception.AlreadyExistResourceException;
 import com.ddockddack.global.error.exception.ImageExtensionException;
-import com.ddockddack.global.util.*;
+import com.ddockddack.global.error.exception.NotFoundException;
+import com.ddockddack.global.util.PageCondition;
+import com.ddockddack.global.util.PageConditionReq;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
@@ -61,6 +62,7 @@ public class GameService {
 
     /**
      * 게임 목록 조회
+     *
      * @param memberId
      * @param pageConditionReq
      * @return
@@ -81,7 +83,7 @@ public class GameService {
     public GameDetailRes findGame(Long gameId) {
         List<GameDetailRes> result = gameRepositorySupport.findGame(gameId);
         if (result.size() == 0) {
-            throw new NotFoundException(ErrorCode.MEMBER_NOT_FOUND);
+            throw new NotFoundException(ErrorCode.GAME_NOT_FOUND);
         }
         return result.get(0);
     }
@@ -96,7 +98,7 @@ public class GameService {
 
         // memberId로 member 조회. 조회 결과가 null 이면 NotFoundException 발생.
         Member getMember = Optional.ofNullable(memberRepository.findById(gameSaveReq.getMemberId()).orElseThrow(() ->
-                new com.ddockddack.global.error.NotFoundException(ErrorCode.MEMBER_NOT_FOUND))).get();
+                new NotFoundException(ErrorCode.MEMBER_NOT_FOUND))).get();
 
         // 게임 생성
         Game game = Game
@@ -260,7 +262,7 @@ public class GameService {
         checkMemberAndGameValidation(memberId, gameId);
 
         StarredGame getStarredGame = Optional.ofNullable(starredGameRepository.findByMemberIdAndGameId(memberId, gameId).orElseThrow(() ->
-                new com.ddockddack.global.error.exception.NotFoundException(ErrorCode.STARREDGAME_NOT_FOUND))).get();
+                new NotFoundException(ErrorCode.STARREDGAME_NOT_FOUND))).get();
 
         starredGameRepository.delete(getStarredGame);
     }
@@ -305,7 +307,7 @@ public class GameService {
     @Transactional(readOnly = true)
     public List<GameRes> findAllGameByMemberId(Long memberId) {
         memberRepository.findById(memberId).orElseThrow(() ->
-                new com.ddockddack.global.error.exception.NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
+                new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
         return gameRepositorySupport.findAllByMemberId(memberId);
     }
 
@@ -318,7 +320,7 @@ public class GameService {
     @Transactional(readOnly = true)
     public List<StarredGameRes> findAllStarredGames(Long memberId) {
         memberRepository.findById(memberId).orElseThrow(() ->
-                new com.ddockddack.global.error.exception.NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
+                new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
         return gameRepositorySupport.findAllStarredGame(memberId);
     }
 
@@ -354,6 +356,7 @@ public class GameService {
         if (getMember.getRole().equals(Role.ADMIN)) {
             return;
         }
+        
         // 삭제 권한을 가진 유저인지 검증
         if ((memberId != getGame.getMember().getId())) {
             throw new AccessDeniedException(ErrorCode.NOT_AUTHORIZED);
@@ -369,11 +372,11 @@ public class GameService {
     private void checkMemberAndGameValidation(Long memberId, Long gameId) {
         // 존재하는 유저인지 검증
         memberRepository.findById(memberId).orElseThrow(() ->
-                new com.ddockddack.global.error.exception.NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
+                new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
 
         // 존재하는 게임 인지 검증
         gameRepository.findById(gameId).orElseThrow(() ->
-                new com.ddockddack.global.error.exception.NotFoundException(ErrorCode.GAME_NOT_FOUND));
+                new NotFoundException(ErrorCode.GAME_NOT_FOUND));
     }
 
 

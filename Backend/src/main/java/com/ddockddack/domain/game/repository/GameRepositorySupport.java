@@ -60,6 +60,7 @@ public class GameRepositorySupport {
                 .orderBy(orderCond(pageCondition.getPageable()))
                 .fetch();
 
+
         return new PageImpl<>(list, pageCondition.getPageable(), getTotalPageCount());
     }
 
