@@ -44,10 +44,6 @@ public class BestcutApiController {
     })
     public ResponseEntity bestcutSave(@ModelAttribute @Valid BestcutSaveReq saveReq,
             @RequestHeader(value = "access-token", required = false) String accessToken) {
-        if (saveReq.getImages().size() > 10) {
-            throw new NumberOfFileExceedException(ErrorCode.EXCEED_FILE_NUMBER);
-        }
-
         checkLogin(accessToken);
 
         if(getMemberId(accessToken) != saveReq.getMemberId()){

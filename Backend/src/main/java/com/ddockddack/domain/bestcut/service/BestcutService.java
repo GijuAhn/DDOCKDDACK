@@ -12,7 +12,6 @@ import com.ddockddack.domain.report.entity.ReportType;
 import com.ddockddack.domain.report.entity.ReportedBestcut;
 import com.ddockddack.domain.report.repository.ReportedBestcutRepository;
 import com.ddockddack.global.error.ErrorCode;
-import com.ddockddack.global.error.ErrorResponse;
 import com.ddockddack.global.error.exception.AccessDeniedException;
 import com.ddockddack.global.error.exception.AlreadyExistResourceException;
 import com.ddockddack.global.error.exception.NotFoundException;
@@ -22,11 +21,8 @@ import java.io.File;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
@@ -69,6 +65,7 @@ public class BestcutService {
 
     /**
      * 삭제하려는 member의 id와 베스트컷이 참조하는 member의 id가 다르면 예외 발생
+     *
      * @param bestcutId
      * @param memberId
      */
@@ -107,17 +104,19 @@ public class BestcutService {
     }
 
     /**
-     * @param my 내 베스트컷 조회시 true
+     * @param my               내 베스트컷 조회시 true
      * @param loginMemberId
      * @param pageConditionReq
      * @return
      */
-    public PageImpl<BestcutRes> findAll(Boolean my, Long loginMemberId, PageConditionReq pageConditionReq) {
+    public PageImpl<BestcutRes> findAll(Boolean my, Long loginMemberId,
+            PageConditionReq pageConditionReq) {
         PageCondition pageCondition = pageConditionReq.toEntity();
         return bestcutRepository.findAllBySearch(my, loginMemberId, pageCondition);
     }
 
     public BestcutRes findOne(Long loginMemberId, Long bestcutId) {
-        return bestcutRepository.findOne(loginMemberId, bestcutId).orElseThrow(() -> new NotFoundException(ErrorCode.BESTCUT_NOT_FOUND));
+        return bestcutRepository.findOne(loginMemberId, bestcutId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.BESTCUT_NOT_FOUND));
     }
 }
