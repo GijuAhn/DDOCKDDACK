@@ -26,10 +26,9 @@ import com.ddockddack.global.error.ErrorCode;
 import com.ddockddack.global.error.NotFoundException;
 import com.ddockddack.global.error.exception.AlreadyExistResourceException;
 import com.ddockddack.global.error.exception.ImageExtensionException;
-import com.ddockddack.global.util.OrderCondition;
-import com.ddockddack.global.util.PeriodCondition;
-import com.ddockddack.global.util.SearchCondition;
+import com.ddockddack.global.util.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.FileSystemUtils;
@@ -59,18 +58,17 @@ public class GameService {
 
     private final GameRepositorySupport gameRepositorySupport;
 
+
     /**
      * 게임 목록 조회
-     *
-     * @param orderCondition
-     * @param period
-     * @param keyword
      * @param memberId
+     * @param pageConditionReq
      * @return
      */
     @Transactional(readOnly = true)
-    public List<GameRes> findAllGames(OrderCondition orderCondition, PeriodCondition period, SearchCondition searchCondition, String keyword, Long memberId) {
-        return gameRepositorySupport.findAllGameBySearch(orderCondition, period, searchCondition, keyword, memberId);
+    public PageImpl<GameRes> findAllGames(Long memberId, PageConditionReq pageConditionReq) {
+        PageCondition pageCondition = pageConditionReq.toEntity();
+        return gameRepositorySupport.findAllGameBySearch(memberId, pageCondition);
     }
 
     /**

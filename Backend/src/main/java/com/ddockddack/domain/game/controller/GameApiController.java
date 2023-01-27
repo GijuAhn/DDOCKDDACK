@@ -7,12 +7,14 @@ import com.ddockddack.domain.game.response.GameRes;
 import com.ddockddack.domain.game.service.GameService;
 import com.ddockddack.domain.report.entity.ReportType;
 import com.ddockddack.global.util.OrderCondition;
+import com.ddockddack.global.util.PageConditionReq;
 import com.ddockddack.global.util.PeriodCondition;
 import com.ddockddack.global.util.SearchCondition;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,19 +34,13 @@ public class GameApiController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "게임 목록 조회 성공")
     })
-    public ResponseEntity<List<GameRes>> gameList(@RequestParam(required = false) OrderCondition orderCondition,
-                                                  @RequestParam(required = false) String period,
-                                                  @RequestParam(required = false) SearchCondition searchCondition,
-                                                  @RequestParam(required = false) String keyword,
-                                                  @RequestHeader(value = "access-token", required = false) String accessToken) {
+    public ResponseEntity<PageImpl<GameRes>> gameList(@ModelAttribute PageConditionReq pageConditionReq,
+                                             @RequestHeader(value = "access-token", required = false) String accessToken) {
 
-        PeriodCondition periodCondition =
-                (period == null || period.isBlank()) ? null : PeriodCondition.valueOf(period);
 
-        List<GameRes> allBySearch =
-                gameService.findAllGames(orderCondition, periodCondition, searchCondition, keyword, null);
+        PageImpl<GameRes> allGames = gameService.findAllGames(null, pageConditionReq);
 
-        return ResponseEntity.ok(allBySearch);
+        return ResponseEntity.ok(allGames);
     }
 
     @GetMapping("/{gameId}")

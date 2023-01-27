@@ -1,12 +1,16 @@
 package com.ddockddack.domain.game.response;
 
 import com.querydsl.core.annotations.QueryProjection;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.util.List;
 
-@Data
+@Setter
+@Getter
+@ToString
 @NoArgsConstructor
 public class GameDetailRes {
 

@@ -2,14 +2,19 @@ package com.ddockddack.domain.game.repository;
 
 import com.ddockddack.domain.game.response.*;
 import com.ddockddack.global.util.OrderCondition;
+import com.ddockddack.global.util.PageCondition;
 import com.ddockddack.global.util.PeriodCondition;
 import com.ddockddack.global.util.SearchCondition;
 import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.core.types.dsl.Wildcard;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -32,10 +37,9 @@ public class GameRepositorySupport {
     private final JPAQueryFactory jpaQueryFactory;
 
     // 검색 목록 조회
-    public List<GameRes> findAllGameBySearch(OrderCondition orderCondition, PeriodCondition period, SearchCondition searchCondition, String keyword, Long memberId) {
+    public PageImpl<GameRes> findAllGameBySearch(Long memberId, PageCondition pageCondition) {
 
-
-        return jpaQueryFactory.select(
+        List<GameRes> list = jpaQueryFactory.select(
                         new QGameRes(game.id.as("gameId"),
                                 game.category.as("gameCategory").stringValue(),
                                 game.title.as("gameTitle"),
@@ -43,16 +47,24 @@ public class GameRepositorySupport {
                                 game.member.nickname.as("creator"),
                                 isStarred(memberId),
                                 getStarredCnt(),
-                                game.playCount.as("playCnt"),
+                                game.playCount.as("popularity"),
                                 gameImage.imageUrl.as("gameImageUrl")
                         ))
                 .from(game)
                 .innerJoin(game.member, member)
                 .innerJoin(game.images, gameImage)
-                .where(searchCond(searchCondition, keyword), periodCond(period))
+                .where(searchCond(pageCondition.getSearchCondition(), pageCondition), periodCond(pageCondition.getPeriodCondition()))
+                .offset(pageCondition.getPageable().getOffset())
+                .limit(pageCondition.getPageable().getPageSize())
                 .groupBy(game.id)
-                .orderBy(gamesSort(orderCondition))
+                .orderBy(orderCond(pageCondition.getPageable()))
                 .fetch();
+
+        return new PageImpl<>(list, pageCondition.getPageable(), getTotalPageCount());
+    }
+
+    private long getTotalPageCount() {
+        return jpaQueryFactory.select(Wildcard.count).from(game).fetch().get(0);
     }
 
     // 게임 상세 조회
@@ -82,7 +94,7 @@ public class GameRepositorySupport {
                                 game.member.nickname.as("creator"),
                                 isStarred(memberId),
                                 getStarredCnt(),
-                                game.playCount.as("playCnt"),
+                                game.playCount.as("popularity"),
                                 gameImage.imageUrl.as("gameImageUrl")
                         ))
                 .from(game)
@@ -104,7 +116,7 @@ public class GameRepositorySupport {
                         game.member.nickname.as("creator"),
                         game.createdAt.as("regDate").stringValue(),
                         isStarred(memberId),
-                        game.playCount.as("playCnt"),
+                        game.playCount.as("popularity"),
                         gameImage.imageUrl.as("gameImageUrl")
                 ))
                 .from(game)
@@ -137,13 +149,14 @@ public class GameRepositorySupport {
 
 
     // 나만 쓸 거야
-
-    // 게임 정렬
-    private OrderSpecifier gamesSort(OrderCondition orderCondition) {
-        if (OrderCondition.POPULARITY.equals(orderCondition)) {
+    // 정렬
+    private OrderSpecifier orderCond(Pageable pageable) {
+        Sort.Order order = pageable.getSort().iterator().next();
+        if(order.getProperty().equals("createdDate")) {
+            return game.id.desc();
+        } else {
             return game.playCount.desc();
         }
-        return game.createdAt.desc();
     }
 
     // memberId 가 null 이면 isStarred 0 반환
@@ -172,16 +185,16 @@ public class GameRepositorySupport {
     }
 
     // 검색 조건
-    private BooleanExpression searchCond(SearchCondition searchCondition, String keyword) {
+    private BooleanExpression searchCond(SearchCondition searchCondition, PageCondition pageCondition) {
         if (searchCondition == null) {
             return null;
         }
 
         if (SearchCondition.GAME.equals(searchCondition)) {
-            return game.title.contains(keyword.trim());
+            return game.title.contains(pageCondition.getKeyword());
         }
 
-        return game.member.nickname.contains(keyword.trim());
+        return game.member.nickname.contains(pageCondition.getKeyword());
     }
 
     // 기간 구하기
@@ -193,7 +206,5 @@ public class GameRepositorySupport {
         return game.createdAt.goe(
                 LocalDateTime.now().minusDays((long) periodCondition.getPeriod()));
     }
-
-
 
 }

@@ -1,10 +1,11 @@
 package com.ddockddack.domain.game.response;
 
 import com.querydsl.core.annotations.QueryProjection;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Data
+@Setter
+@Getter
+@ToString
 @NoArgsConstructor
 public class GameRes {
     private Long gameId;
@@ -14,11 +15,11 @@ public class GameRes {
     private String creator;
     private int isStarred;
     private int starredCnt;
-    private int playCnt;
+    private int popularity;
     private String thumbnail;
 
     @QueryProjection
-    public GameRes(Long gameId, String gameCategory, String gameTitle, String gameDesc, String creator, int isStarred, int starredCnt, int playCnt, String thumbnail) {
+    public GameRes(Long gameId, String gameCategory, String gameTitle, String gameDesc, String creator, int isStarred, int starredCnt, int popularity, String thumbnail) {
         this.gameId = gameId;
         this.gameCategory = gameCategory;
         this.gameTitle = gameTitle;
@@ -26,7 +27,7 @@ public class GameRes {
         this.creator = creator;
         this.isStarred = isStarred;
         this.starredCnt = starredCnt;
-        this.playCnt = playCnt;
+        this.popularity = popularity;
         this.thumbnail = thumbnail;
     }
 }
