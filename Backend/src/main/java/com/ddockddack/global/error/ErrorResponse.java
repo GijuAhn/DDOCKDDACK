@@ -15,7 +15,9 @@ import java.util.stream.Collectors;
 public class ErrorResponse {
 
     private String message;
+
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
+
     private List<FieldError> errors;
     private int code;
 
@@ -72,5 +74,6 @@ public class ErrorResponse {
                     .collect(Collectors.toList());
         }
     }
+
 
 }
