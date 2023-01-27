@@ -33,4 +33,10 @@ public class GameImage {
         this.imageUrl = imageUrl;
         this.description = description;
     }
+
+    public void updateGameImage(String gameImageUrl, String gameImageDesc) {
+        this.imageUrl = gameImageUrl;
+        this.description = gameImageDesc;
+    }
+
 }
