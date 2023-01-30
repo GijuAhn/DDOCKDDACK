@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 //nested exception is java.lang.IllegalStateException: @Order on WebSecurityConfigurers must be unique.
@@ -21,13 +22,13 @@ public class AuthConfig {
     private final TokenService tokenService;
 
 //    @Override
-    protected void configure(HttpSecurity http) throws Exception {
+    protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.httpBasic().disable()
                 .csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/token/**").permitAll()
+                .antMatchers("/token/**","/","/css/**","/images/**","/js/**","/h2-console/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .oauth2Login().loginPage("/token/expired")
@@ -35,5 +36,6 @@ public class AuthConfig {
                 .userInfoEndpoint().userService(oAuth2UserService);
 
         http.addFilterBefore(new JwtAuthFilter(tokenService), UsernamePasswordAuthenticationFilter.class);
+        return http.build();
     }
 }
