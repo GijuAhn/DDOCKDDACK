@@ -141,7 +141,6 @@ const submit = () => {
     return;
   }
   if (
-    !gameSaveReq.value.images ||
     gameSaveReq.value.images.length < 10 ||
     gameSaveReq.value.images.length > 20
   ) {

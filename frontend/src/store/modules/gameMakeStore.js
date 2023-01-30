@@ -1,15 +1,17 @@
 export const gameMakeStore = {
   namespaced: true,
   state: {
-    images: null,
+    images: [],
   },
   getters: {},
   mutations: {
     clearProblems(state) {
-      state.images = null;
+      state.images = [];
     },
     setProblems(state, value) {
-      state.images = value;
+      value.forEach((e) => {
+        state.images.push(e);
+      });
     },
     removeLine(state, value) {
       const index = state.images.indexOf(value);
