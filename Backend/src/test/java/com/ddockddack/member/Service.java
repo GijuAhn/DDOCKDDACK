@@ -34,7 +34,7 @@ public class Service {
     @Rollback(value = false)
     public void 회원가입() throws Exception {
         //given 주어지면
-        Member member = new Member("test@naver.com", "kim", "", Role.member);
+        Member member = new Member("test@naver.com", "kim", "", Role.MEMBER);
 //        member.setEmail("test@naver.com");
 //        member.setNickname("kim");
 
