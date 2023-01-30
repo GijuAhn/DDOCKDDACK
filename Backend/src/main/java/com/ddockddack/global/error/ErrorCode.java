@@ -12,6 +12,7 @@ public enum ErrorCode {
     NOT_AUTHORIZED(401, "not authorized"),
     MEMBER_NOT_FOUND(404, "member not found"),
     GAME_NOT_FOUND(404, "game not found"),
+    GAME_ROOM_NOT_FOUND(404, "game room not found"),
     STARREDGAME_NOT_FOUND(404, "starredGame not found"),
     BESTCUT_NOT_FOUND(404, "bestcut not found"),
     BESTCUT_LIKE_NOT_FOUND(404, "bestcut_like not found"),
