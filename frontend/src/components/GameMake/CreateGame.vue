@@ -1,9 +1,8 @@
 <template>
   <div v-show="step === 0">
-    <h1>제목, 설명, 사진 업로드</h1>
     <form>
       <div>
-        <label for="gameTitle">제목</label>
+        <label for="gameTitle" class="input-name">제목</label>
         <input
           id="gameTitle"
           type="text"
@@ -12,7 +11,7 @@
         />
       </div>
       <div>
-        <label for="gameDesc">설명</label>
+        <label for="gameDesc" class="input-name">설명</label>
         <input
           id="gameDesc"
           type="text"
@@ -21,11 +20,11 @@
         />
       </div>
       <div>
+        <label class="input-name">이미지 업로드</label>
         <input type="file" @change="storeImage" accept="image/*" multiple />
       </div>
     </form>
     <div>
-      <h2>사진 업로드</h2>
       <ul>
         <li v-for="item in gameSaveReq.images" :key="item">
           <img
@@ -178,4 +177,9 @@ const createGame = () => {
 };
 </script>
 
-<style></style>
+<style scoped>
+.input-name {
+  font-size: 24px;
+  font-weight: bolder;
+}
+</style>
