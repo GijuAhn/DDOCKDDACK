@@ -83,4 +83,6 @@ public class PerceptualHash {
         return F;
     }
 
+//    여기에 함수 구현
+    
 }
