@@ -1,5 +1,5 @@
 server:
-  port: 9999
+  port: 8080
   address: localhost
   servlet:
     context-path: /
@@ -18,18 +18,14 @@ spring:
         format_sql: true
       dialect:
         org.hibernate.dialect.MySQL8InnoDBDialect
+
   profiles:
     include: env # 소셜로그인(카카오, 구글) 키, jwt 관련 설정, database 설정,
-
-    active: ${profile}
 
   servlet:
     multipart:
       max-file-size: 2MB
       max-request-size: 20MB
-
-
-
 
 logging:
   level:
@@ -56,3 +52,13 @@ springdoc:
     disabled: true
   default-consumes-media-type: application/json;charset=UTF-8
   default-produces-media-type: application/json;charset=UTF-8
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: "develop"
+
+server:
+  port: 9999
