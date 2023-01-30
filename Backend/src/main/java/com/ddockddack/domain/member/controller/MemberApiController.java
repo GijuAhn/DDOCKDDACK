@@ -207,7 +207,7 @@ public class MemberApiController {
             boolean isMember = memberService.findUserBySocialId(email);
 
             if (!isMember) {
-                Member member = new Member(email, nickname, "", Role.member);
+                Member member = new Member(email, nickname, "", Role.MEMBER);
                 MemberRes memberRes = new MemberRes(member.getNickname(), member.getProfile());
 //                member.setNickname(nickname);
 //                HttpHeaders tokenHeaders = new HttpHeaders();

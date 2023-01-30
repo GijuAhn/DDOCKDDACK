@@ -29,9 +29,16 @@ public class GameRoomApiController {
             @ApiResponse(responseCode = "404", description = "존재 하지 않는 게임")
     })
     public ResponseEntity<GameRoomRes> createRoom(@RequestBody Map<String, String> params) {
+        GameRoomRes createdRoom;
+        try {
+            createdRoom = gameRoomService.createRoom(Long.parseLong(params.get("gameId")));
+        } catch (OpenViduJavaClientException e) {
+            throw new RuntimeException(e);
+        } catch (OpenViduHttpException e) {
+            throw new RuntimeException(e);
+        }
 
-
-        return new ResponseEntity<>(null, HttpStatus.OK);
+        return new ResponseEntity<>(createdRoom, HttpStatus.OK);
     }
 
     @PostMapping("/{pinNumber}")
@@ -41,8 +48,15 @@ public class GameRoomApiController {
             @ApiResponse(responseCode = "404", description = "존재 하지 않는 게임방")
     })
     public ResponseEntity<String> joinRoom(@PathVariable String pinNumber, @RequestHeader(value = "access-token", required = false) String accessToken, @RequestBody(required = false) String nickname) throws OpenViduJavaClientException, OpenViduHttpException {
+        Long memberId = null;
 
+        if (accessToken != null) {
+            //로그인 한 경우 token에서 memberId 추출
+            memberId = 1L;
+        }
 
-        return new ResponseEntity<>(null, HttpStatus.OK);
+        String token = gameRoomService.joinRoom(pinNumber, memberId, nickname);
+
+        return new ResponseEntity<>(token, HttpStatus.OK);
     }
 }

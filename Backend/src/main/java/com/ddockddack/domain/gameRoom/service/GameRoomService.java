@@ -22,21 +22,26 @@ public class GameRoomService {
     private final GameService gameService;
     private final MemberRepository memberRepository;
 
-    public GameRoomRes createRoom(Long gameId)
-            throws OpenViduJavaClientException, OpenViduHttpException {
+    public GameRoomRes createRoom(Long gameId) throws OpenViduJavaClientException, OpenViduHttpException {
         //repository로 요청 전달
+        GameRoom gameRoom = gameRoomRepository.create(gameId);
 
         //gameId로 game 정보 가져오기
+        GameDetailRes gameDetailRes = gameService.findGame(gameId);
 
-        return null;
+        return GameRoomRes.builder()
+                .pinNumber(gameRoom.getPinNumber())
+                .gameDetailRes(gameDetailRes)
+                .build();
     }
 
 
-    public String joinRoom(String pinNumber, Long memberId, String nickname)
-            throws OpenViduJavaClientException, OpenViduHttpException {
+    public String joinRoom(String pinNumber, Long memberId, String nickname) throws OpenViduJavaClientException, OpenViduHttpException {
         Member member = null;
         //로그인 한 유저면 memberId로 검색해서 넘겨줌
-
-        return null;
+        if (memberId != null) {
+            member = memberRepository.findById(memberId).orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
+        }
+        return gameRoomRepository.join(pinNumber, member, nickname);
     }
 }
