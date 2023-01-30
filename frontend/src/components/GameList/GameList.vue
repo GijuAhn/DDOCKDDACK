@@ -43,7 +43,7 @@ const callApi = () => {
     .get(`/games`, {
       params: {
         order: selectedOption.value,
-        // period: "ALL", //작동안됨
+        period: "ALL", //작동안됨
         // search: "GAME",
         // keyword: "",
         // page: 1,

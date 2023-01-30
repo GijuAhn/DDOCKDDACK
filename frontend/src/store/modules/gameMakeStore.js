@@ -1,20 +1,25 @@
 export const gameMakeStore = {
   namespaced: true,
   state: {
-    savedProblems: null,
-    uploadImages: null,
+    images: null,
   },
   getters: {},
   mutations: {
+    clearProblems(state) {
+      state.images = null;
+    },
     setProblems(state, value) {
-      state.savedProblems = value;
+      state.images = value;
     },
     removeLine(state, value) {
-      const index = state.savedProblems.indexOf(value);
-      state.savedProblems.splice(index, 1);
+      const index = state.images.indexOf(value);
+      state.images.splice(index, 1);
     },
   },
   actions: {
+    clearProblemsAsync({ commit }) {
+      commit("clearProblems");
+    },
     setProblemsAsync({ commit }, array) {
       commit("setProblems", array);
     },
