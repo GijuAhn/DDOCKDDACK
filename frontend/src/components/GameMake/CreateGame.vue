@@ -83,7 +83,7 @@ const changeStep = () => {
   step.value = (step.value + 1) % 2;
 };
 
-store.dispatch("gameMakeStore/clearProblemsAsync"); // vuex에 저장된 images 초기화
+store.dispatch("gameMakeStore/clearImagesAsync"); // vuex에 저장된 images 초기화
 
 const gameSaveReq = ref({
   gameTitle: "",
@@ -104,13 +104,13 @@ const storeImage = (e) => {
         gameImageDesc: "",
       });
     });
-    setProblemsAsync(images);
+    setImagesAsync(images);
   }
 };
 
-const setProblemsAsync = (
+const setImagesAsync = (
   images //images List vuex에 저장
-) => store.dispatch("gameMakeStore/setProblemsAsync", images);
+) => store.dispatch("gameMakeStore/setImagesAsync", images);
 
 const images = computed(() => store.state.gameMakeStore.images); //vuex에 저장된 images
 

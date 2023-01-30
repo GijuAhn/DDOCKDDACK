@@ -5,10 +5,10 @@ export const gameMakeStore = {
   },
   getters: {},
   mutations: {
-    clearProblems(state) {
+    clearImages(state) {
       state.images = [];
     },
-    setProblems(state, value) {
+    setImages(state, value) {
       value.forEach((e) => {
         state.images.push(e);
       });
@@ -19,11 +19,11 @@ export const gameMakeStore = {
     },
   },
   actions: {
-    clearProblemsAsync({ commit }) {
-      commit("clearProblems");
+    clearImagesAsync({ commit }) {
+      commit("clearImages");
     },
-    setProblemsAsync({ commit }, array) {
-      commit("setProblems", array);
+    setImagesAsync({ commit }, array) {
+      commit("setImages", array);
     },
     removeLineAsync({ commit }, item) {
       commit("removeLine", item);
