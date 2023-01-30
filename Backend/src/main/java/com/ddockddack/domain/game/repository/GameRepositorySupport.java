@@ -200,7 +200,7 @@ public class GameRepositorySupport {
 
     // 기간 구하기
     private BooleanExpression periodCond(PeriodCondition periodCondition) {
-        if (periodCondition == null && periodCondition.equals(PeriodCondition.ALL)) {
+        if (periodCondition == null || periodCondition.equals(PeriodCondition.ALL)) {
             return null;
         }
 
