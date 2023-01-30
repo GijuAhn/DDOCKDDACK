@@ -39,7 +39,8 @@ import javax.imageio.ImageIO;
 
 public class PerceptualHash {
 
-    private int size = 32;
+//    private int size = 32;
+    private int size = 64;
     private int smallerSize = 8;
 
     public PerceptualHash() {
