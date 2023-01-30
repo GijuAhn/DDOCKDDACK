@@ -6,7 +6,7 @@
     <router-link to="/bestcut">베스트컷</router-link> |
     <router-link to="/gameroom">게임 룸</router-link> |
     <router-link to="/member">마이 페이지</router-link> |
-    <router-link to="/report">관리자 페이지</router-link>
+    <router-link to="/admin">관리자 페이지</router-link>
   </nav>
   <router-view />
 </template>

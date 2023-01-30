@@ -1,9 +1,9 @@
 <template>
-  <div></div>
+  <game-list></game-list>
 </template>
 
-<script>
-export default {};
+<script setup>
+import GameList from "@/components/GameList/GameList.vue";
 </script>
 
 <style></style>

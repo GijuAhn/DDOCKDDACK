@@ -16,12 +16,12 @@ const routes = [
     path: "/gameMake",
     name: "gameMake",
     component: () => import("@/views/GameMakeView.vue"),
-    redirect: "/gameMake/setMain",
+    redirect: "/gameMake/createGame",
     children: [
       {
-        path: "setMain",
-        name: "setMain",
-        component: () => import("@/components/GameMake/SetMain.vue"),
+        path: "createGame",
+        name: "createGame",
+        component: () => import("@/components/GameMake/CreateGame.vue"),
       },
     ],
   },
@@ -64,20 +64,20 @@ const routes = [
     ],
   },
   {
-    path: "/report",
-    name: "report",
-    component: () => import("@/views/ReportView.vue"),
-    redirect: "/report/game",
+    path: "/admin",
+    name: "admin",
+    component: () => import("@/views/AdminView.vue"),
+    redirect: "/admin/game",
     children: [
       {
         path: "game",
         name: "game",
-        component: () => import("@/components/Report/GameList.vue"),
+        component: () => import("@/components/Admin/GameList.vue"),
       },
       {
         path: "bestcut",
         name: "bestcut",
-        component: () => import("@/components/Report/BestcutList.vue"),
+        component: () => import("@/components/Admin/BestcutList.vue"),
       },
     ],
   },
