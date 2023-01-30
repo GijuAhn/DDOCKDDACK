@@ -27,7 +27,7 @@
     <div>
       <h2>사진 업로드</h2>
       <ul>
-        <li v-for="item in images" :key="item">
+        <li v-for="item in gameSaveReq.images" :key="item">
           <img
             :src="convertFile(item.gameImage)"
             alt="이미지 미리보기..."
@@ -43,7 +43,7 @@
     <div>
       <h2>사진 설명</h2>
       <ul>
-        <li v-for="item in images" :key="item">
+        <li v-for="item in gameSaveReq.images" :key="item">
           <img
             :src="convertFile(item.gameImage)"
             alt="이미지 미리보기..."
@@ -56,7 +56,7 @@
             v-model="item.gameImageDesc"
             placeholder="설명을 입력하세요."
           />
-          <button @click="removeLineAsync(item)">삭제</button>
+          <button @click="removeLine(item)">삭제</button>
         </li>
       </ul>
     </div>
@@ -67,14 +67,11 @@
 
 <script setup>
 import { ref } from "vue";
-import { computed } from "vue";
-import { useStore } from "vuex";
 import { apiInstance } from "@/api/index";
 import { useRouter } from "vue-router";
 
 const router = useRouter();
 const api = apiInstance();
-const store = useStore();
 
 const step = ref(0); // 0 : 이전, 1: 다음
 
@@ -82,8 +79,6 @@ const changeStep = () => {
   //이전<->다음
   step.value = (step.value + 1) % 2;
 };
-
-store.dispatch("gameMakeStore/clearImagesAsync"); // vuex에 저장된 images 초기화
 
 const gameSaveReq = ref({
   gameTitle: "",
@@ -97,36 +92,28 @@ const storeImage = (e) => {
   //파일 이벤트 발생
   if (e.target.files) {
     const files = Array.from(e.target.files);
-    const images = [];
     files.forEach((file) => {
-      images.push({
+      gameSaveReq.value.images.push({
         gameImage: file,
         gameImageDesc: "",
       });
     });
-    setImagesAsync(images);
   }
 };
-
-const setImagesAsync = (
-  images //images List vuex에 저장
-) => store.dispatch("gameMakeStore/setImagesAsync", images);
-
-const images = computed(() => store.state.gameMakeStore.images); //vuex에 저장된 images
 
 const convertFile = (file) => {
   //파일 미리보기
   return URL.createObjectURL(file);
 };
 
-const removeLineAsync = (item) => {
+const removeLine = (item) => {
   //images의 한 줄 삭제
-  store.dispatch("gameMakeStore/removeLineAsync", item);
+  const index = gameSaveReq.value.images.indexOf(item);
+  gameSaveReq.value.images.splice(index, 1);
 };
 
 const submit = () => {
   //완료버튼 클릭
-  gameSaveReq.value.images = images;
 
   //유효성 검사
   let error = false;
