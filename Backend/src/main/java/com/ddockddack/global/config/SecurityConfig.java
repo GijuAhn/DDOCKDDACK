@@ -32,12 +32,12 @@ public class SecurityConfig {
                 SessionCreationPolicy.STATELESS)  // jwt token으로 인증하므로 stateless 하도록 처리.
             .and()
             .authorizeRequests()
-            .antMatchers("/", "/bestcut/**", "/game/**", "/gameroom/**", "/members/**").permitAll()
+            .antMatchers("/", "/bestcut/**", "/game/**"
+                , "/gameroom/**", "/token/**").permitAll() //검증이 반드시 필요하지 않은 곳
             .anyRequest().authenticated()
 //            .antMatchers("/members/logout").permitAll()
             .and()
             .logout().logoutUrl("/members/logout")
-            .logoutSuccessUrl("/")
             .and()// 인증권한이 필요한 페이지.// 나머지 모든 요청 허용  ( 생략 가능 )
             .oauth2Login()
             .defaultSuccessUrl("/members/login")

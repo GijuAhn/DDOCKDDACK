@@ -21,14 +21,13 @@ import org.springframework.web.filter.GenericFilterBean;
 
 @RequiredArgsConstructor
 public class JwtAuthFilter extends GenericFilterBean {
-
     private final TokenService tokenService;
     private final MemberRepository memberRepository;
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
         throws IOException, ServletException {
-        String token = ((HttpServletRequest) request).getHeader("Auth");
+        String token = ((HttpServletRequest) request).getHeader("access-token");
 
         if (token != null && tokenService.verifyToken(token)) {
             String id = tokenService.getUid(token);

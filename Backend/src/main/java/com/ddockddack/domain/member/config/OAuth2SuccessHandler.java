@@ -25,7 +25,6 @@ import org.springframework.stereotype.Component;
 public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
     private final TokenService tokenService;
-    private final ObjectMapper objectMapper;
     private final MemberRepository memberRepository;
 
     @Override
