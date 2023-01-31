@@ -115,7 +115,7 @@ public class GameRoomApiController {
     @PostMapping("/{pinNumber}/{sessionId}/images")
     @Operation(summary = "게임 멤버 이미지 저장")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "게임 시작여부 조회성공"),
+            @ApiResponse(responseCode = "200", description = "게임 멤버 이미지 저장성공"),
             @ApiResponse(responseCode = "404", description = "존재 하지 않는 게임방")
     })
     public ResponseEntity saveMemberGameImage(@PathVariable("pinNumber") String pinNumber,
