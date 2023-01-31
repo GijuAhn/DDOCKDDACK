@@ -6,20 +6,14 @@ import lombok.Getter;
 @Getter
 @Schema(description = "memberLoginPostResponse")
 public class MemberLoginPostRes {
-    @Schema(name = "JWT 인증 토큰", example = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN...")
-    private String accessToken;
 
+    private String accessToken;
+    private String refreshToken;
     private Long id;
 
-    private String email;
-
-    private String profile;
-
-
-    public MemberLoginPostRes(String accessToken, Long id, String email, String profile) {
+    public MemberLoginPostRes(String accessToken, String refreshToken, Long id) {
+        this.refreshToken = refreshToken;
         this.accessToken = accessToken;
         this.id = id;
-        this.email = email;
-        this.profile = profile;
     }
 }
