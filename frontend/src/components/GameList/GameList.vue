@@ -37,21 +37,27 @@ import { ref } from "vue";
 
 const api = apiInstance();
 let games = ref();
-let selectedOption = ref("POPULARITY");
+let pageConditionReq = ref({
+  order: "POPULARITY",
+  period: "ALL",
+  search: "GAME",
+  keyword: "",
+  page: 1,
+});
 const callApi = () => {
   api
     .get(`/games`, {
       params: {
-        order: selectedOption.value,
-        // period: "ALL", //작동안됨
-        // search: "GAME",
-        // keyword: "",
-        // page: 1,
+        order: pageConditionReq.value.order,
+        period: pageConditionReq.value.period,
+        search: pageConditionReq.value.search,
+        keyword: pageConditionReq.value.keyword,
+        page: pageConditionReq.value.page,
       },
     })
-    .then(({ data }) => {
-      //console.log(data.content);
-      games.value = data.content;
+    .then((response) => {
+      console.log(response);
+      games.value = response.data.content;
     })
     .catch((error) => {
       console.log(error);
@@ -61,10 +67,11 @@ const callApi = () => {
 callApi();
 
 const sortGames = (option) => {
+  //변경 이벤트 발생시
   if (option === "P") {
-    selectedOption.value = "POPULARITY";
+    pageConditionReq.value.order = "POPULARITY";
   } else {
-    selectedOption.value = "RECENT";
+    pageConditionReq.value.order = "RECENT";
   }
   callApi();
 };
