@@ -63,7 +63,7 @@ class BestcutApiControllerTest {
 
 
     private Bestcut getStubBestcut() {
-        Member member = new Member("test@test.com", "test", "https://test/test.png", Role.USER);
+        Member member = new Member("test@test.com", "test", "https://test/test.png", Role.MEMBER);
         testEntityManager.persist(member);
 
         Bestcut bestcut = new Bestcut(member, "s3:test", "testGameTitle", "testGameDesc",

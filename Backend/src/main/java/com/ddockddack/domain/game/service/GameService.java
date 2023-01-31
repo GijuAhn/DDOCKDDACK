@@ -223,6 +223,22 @@ public class GameService {
     }
 
     /**
+
+     * 게임 삭제
+     *
+     * @param memberId
+     * @param gameId
+     */
+    public void removeGame(Long memberId, Long gameId) {
+
+        // 검증
+        checkAccessValidation(memberId, gameId);
+
+        gameRepository.deleteById(gameId);
+
+    }
+
+    /**
      * 게임 즐겨 찾기
      *
      * @param memberId
