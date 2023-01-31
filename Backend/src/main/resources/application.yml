@@ -53,6 +53,12 @@ springdoc:
   default-consumes-media-type: application/json;charset=UTF-8
   default-produces-media-type: application/json;charset=UTF-8
 
+OPENVIDU_URL : http://localhost:4443/
+OPENVIDU_SECRET: MY_SECRET
+
+memberImageUploadPath : src/main/resources/static/memberImages/
+gameImageUploadPath : src/main/resources/static/images/
+
 ---
 
 spring:
