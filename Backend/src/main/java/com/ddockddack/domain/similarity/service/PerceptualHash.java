@@ -40,7 +40,7 @@ import javax.imageio.ImageIO;
 public class PerceptualHash {
 
 //    private int size = 32;
-    private int size = 64;
+    private int size = 32;
     private int smallerSize = 8;
 
     public PerceptualHash() {
@@ -181,17 +181,17 @@ public class PerceptualHash {
          * remains the same; this can survive gamma and color histogram
          * adjustments without a problem.
          */
-        String hash = "";
+        StringBuilder hash = new StringBuilder();
 
         for (int x = 0; x < smallerSize; x++) {
             for (int y = 0; y < smallerSize; y++) {
                 if (x != 0 && y != 0) {
-                    hash += (dctVals[x][y] > avg ? "1" : "0");
+                    hash.append(dctVals[x][y] > avg ? "1" : "0");
                 }
             }
         }
 
-        return hash;
+        return hash.toString();
     }
 
 }

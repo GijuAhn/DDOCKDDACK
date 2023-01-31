@@ -76,11 +76,19 @@ public class ImageHistogram {
         HighGui.imshow("image", image);
         HighGui.imshow("imageHist", imageHist);
 
-        return bgrPlanes;
+//        return histogram data for calculate histogram similarity
+        List<Mat> histogram = new ArrayList<>();
+        histogram.add(bHist);
+        histogram.add(gHist);
+        histogram.add(rHist);
+        return histogram;
     }
 
-    public double compareHistograms(Mat hist1, Mat hist2){
-        double result = Imgproc.compareHist(hist1, hist2, Imgproc.CV_COMP_CHISQR);
+//    compare histogram similarity
+    public double compareHistograms(List<Mat> hist1, List<Mat> hist2){
+        double result = Imgproc.compareHist(hist1.get(0), hist2.get(0), Imgproc.CV_COMP_CHISQR);
+        result += Imgproc.compareHist(hist1.get(1), hist2.get(1), Imgproc.CV_COMP_CHISQR);
+        result += Imgproc.compareHist(hist1.get(2), hist2.get(2), Imgproc.CV_COMP_CHISQR);
 
         System.out.println("Result of histogram comparison: "+ result);
         return result;

@@ -18,6 +18,7 @@ import static org.opencv.core.CvType.CV_8UC;
 
 public class ImageUtil {
 
+//    image format must be a jpg
     //    BufferedImage to Mat
     public static Mat BufferedImage2Mat(BufferedImage image) throws IOException {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
