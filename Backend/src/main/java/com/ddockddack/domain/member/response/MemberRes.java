@@ -15,6 +15,20 @@ public class MemberRes {
     private String profile;
     private Role role;
 
+    private String accessToken;
+    private String refreshToken;
+
+    public MemberRes(Long memberId, String email, String nickname, String profile,
+        String accessToken,
+        String refreshToken) {
+        this.memberId = memberId;
+        this.email = email;
+        this.nickname = nickname;
+        this.profile = profile;
+        this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
+    }
+
     public MemberRes(String nickname, String profile) {
         this.nickname = nickname;
         this.profile = profile;
