@@ -6,9 +6,12 @@ import com.ddockddack.domain.bestcut.service.BestcutService;
 import com.ddockddack.domain.game.service.GameService;
 import com.ddockddack.domain.member.entity.Member;
 import com.ddockddack.domain.member.entity.Role;
+import com.ddockddack.domain.member.request.MemberLogoutReq;
 import com.ddockddack.domain.member.request.MemberModifyReq;
 import com.ddockddack.domain.member.response.MemberRes;
 import com.ddockddack.domain.member.service.MemberService;
+import com.ddockddack.global.error.AccessDeniedException;
+import com.ddockddack.global.error.ErrorCode;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import io.swagger.v3.oas.annotations.Operation;
@@ -16,12 +19,14 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.apache.tomcat.websocket.AuthenticationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @Controller
@@ -166,6 +171,25 @@ public class MemberApiController {
             return ResponseEntity.status(500).body(e);
         }
     }*/
+
+
+    @Operation(summary = "로그아웃", description = "로그아웃 메소드입니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "성공"),
+            @ApiResponse(responseCode = "401", description = "인증 실패"),
+            @ApiResponse(responseCode = "404", description = "사용자 없음"),
+            @ApiResponse(responseCode = "500", description = "서버 오류")
+    })
+    @PostMapping("/logout")
+    public ResponseEntity logoutUser(@RequestHeader(value = "access-token", required = false) String accessToken) {
+        if(accessToken == null){
+            throw new AccessDeniedException(ErrorCode.NOT_AUTHORIZED);
+        }
+        memberService.logout(accessToken);
+        return ResponseEntity.ok("logout 성공!");
+    }
+
+
 
     @Operation(summary = "카카오 로그인", description = "카카오 로그인 메소드입니다.")
     @ApiResponses(value = {

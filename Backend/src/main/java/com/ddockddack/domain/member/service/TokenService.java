@@ -1,5 +1,6 @@
 package com.ddockddack.domain.member.service;
 
+import com.ddockddack.domain.member.oauth.Token;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
@@ -24,11 +25,11 @@ public class TokenService {
             .encodeToString(env.getProperty("jwt.token.secret-key").getBytes());
     }
 
-    public Token generateToken(String uid, String role) {
+    public Token generateToken(Long uid, String role) {
         long tokenPeriod = 1000L * 60L * 15L; // 15 min
         long refreshPeriod = 1000L * 60L * 60L * 24L * 30L; // 1 month
 
-        Claims claims = Jwts.claims().setSubject(uid);
+        Claims claims = Jwts.claims().setSubject(uid.toString());
         claims.put("role", role);
 
         Date now = new Date();
@@ -60,7 +61,14 @@ public class TokenService {
         }
     }
 
-    public String getUid(String token) {
-        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
+    public Long getExpiration(String token){
+        Date expiration = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getExpiration();
+        Long now = new Date().getTime();
+
+        return expiration.getTime() - now;
+    }
+
+    public Long getUid(String token) {
+        return Long.valueOf(Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject());
     }
 }

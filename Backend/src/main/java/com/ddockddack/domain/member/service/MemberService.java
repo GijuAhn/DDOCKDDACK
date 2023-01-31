@@ -11,6 +11,7 @@ import com.google.gson.JsonParser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -22,6 +23,8 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.concurrent.TimeUnit;
+
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -29,13 +32,12 @@ public class MemberService {
 
     private final Environment env;
     private final MemberRepository memberRepository;
+    private final TokenService tokenService;
+    private final RedisTemplate redisTemplate;
     private RestTemplate rt;
 
-    @Autowired
-    public MemberService(MemberRepository memberRepository, Environment env) {
-        this.memberRepository = memberRepository;
-        this.env = env;
-    }
+
+
 
     @Transactional
     public Long joinMember(Member member) {
@@ -88,6 +90,25 @@ public class MemberService {
 //    public Member findOne(Long memberId) {
 //        return memberRepository.findOne(Member);
 //    }
+
+
+
+    public boolean isAdmin(Long reportId) {
+        Member member = memberRepository.findById(reportId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
+        return member.getRole() == Role.ADMIN;
+    }
+
+    @Transactional
+    public void logout(String refreshToken){
+//        Long findUserId = tokenService.getUid(refreshToken);
+
+        //엑세스 토큰 남은 유효시간
+        Long expiration = tokenService.getExpiration(refreshToken);
+
+        //Redis Cache에 저장
+        redisTemplate.opsForValue().set(refreshToken, "logout", expiration, TimeUnit.MILLISECONDS);
+    }
 
     /**
      * @param code
@@ -203,11 +224,5 @@ public class MemberService {
             String.class);
 
         return responsememberInfo;
-    }
-
-    public boolean isAdmin(Long reportId) {
-        Member member = memberRepository.findById(reportId)
-            .orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
-        return member.getRole() == Role.ADMIN;
     }
 }

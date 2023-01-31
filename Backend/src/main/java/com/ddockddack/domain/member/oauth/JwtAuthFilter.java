@@ -1,4 +1,4 @@
-package com.ddockddack.domain.member.config;
+package com.ddockddack.domain.member.oauth;
 
 import com.ddockddack.domain.member.entity.Member;
 import com.ddockddack.domain.member.repository.MemberRepository;
@@ -31,7 +31,7 @@ public class JwtAuthFilter extends GenericFilterBean {
         String token = ((HttpServletRequest) request).getHeader("Auth");
 
         if (token != null && tokenService.verifyToken(token)) {
-            String id = tokenService.getUid(token);
+            Long id = tokenService.getUid(token);
 
             Member member = memberRepository.getReferenceById(Long.parseLong(id));
 
