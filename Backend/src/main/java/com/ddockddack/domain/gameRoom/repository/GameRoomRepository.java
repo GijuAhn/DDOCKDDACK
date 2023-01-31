@@ -84,4 +84,30 @@ public class GameRoomRepository {
     public String intToPin(int num) {
         return String.format("%06d", num);
     }
+
+    public void deleteGameMember(String pinNumber, String sessionId) {
+        gameRooms.get(pinNumber).getMembers().remove(sessionId);
+    }
+
+    public void deleteById(String pinNumber) {
+        gameRooms.remove(pinNumber);
+    }
+
+    public Optional<GameRoom> findById(String pinNumber) {
+        return Optional.ofNullable(gameRooms.get(pinNumber));
+    }
+
+    public void updateGameRoom(String pinNumber) {
+        GameRoom gameRoom = this.gameRooms.get(pinNumber);
+        gameRoom.start();
+        this.gameRooms.put(pinNumber,gameRoom);
+    }
+
+    public void saveMemberImageUrl(String pinNumber, String sessionId, String imageUrl) {
+        GameRoom gameRoom = this.gameRooms.get(pinNumber);
+        GameMember gameMember = gameRoom.getMembers().get(sessionId);
+        gameMember.getImages().add(imageUrl);
+        this.gameRooms.put(pinNumber, gameRoom);
+    }
+
 }

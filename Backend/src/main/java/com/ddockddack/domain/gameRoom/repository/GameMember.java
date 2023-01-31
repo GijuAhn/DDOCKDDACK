@@ -7,6 +7,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter @Setter
 @ToString
 @NoArgsConstructor
@@ -16,6 +19,7 @@ public class GameMember {
     private Member member;
     private String nickname;
     private Integer score = 0;
+    private List<String> images = new ArrayList<>();
 
     public GameMember(String socketId, Member member, String nickname) {
         this.socketId = socketId;

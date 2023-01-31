@@ -12,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 @CrossOrigin(origins = "*")
@@ -59,4 +61,70 @@ public class GameRoomApiController {
 
         return new ResponseEntity<>(token, HttpStatus.OK);
     }
+
+    @DeleteMapping("/{pinNumber}/sessions/{sessionId}")
+    @Operation(summary = "게임방 멤버 삭제")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "방 나가기 성공"),
+            @ApiResponse(responseCode = "404", description = "존재 하지 않는 게임방")
+    })
+    public ResponseEntity removeGameMember(@PathVariable String pinNumber,
+                                       @PathVariable String sessionId) {
+
+
+        gameRoomService.removeGameMember(pinNumber, sessionId);
+
+        return ResponseEntity.ok().build();
+
+    }
+
+    @DeleteMapping("/{pinNumber}")
+    @Operation(summary = "게임방 삭제")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "방 삭제 성공"),
+            @ApiResponse(responseCode = "404", description = "존재 하지 않는 게임방")
+    })
+    public ResponseEntity removeGameRoom(@PathVariable String pinNumber) {
+
+        gameRoomService.removeGameRoom(pinNumber);
+        return ResponseEntity.ok().build();
+    }
+    
+    @PutMapping("/{pinNumber}")
+    @Operation(summary = "게임시작")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "게임 시작"),
+            @ApiResponse(responseCode = "404", description = "존재 하지 않는 게임방")
+    })
+    public ResponseEntity startGame(@PathVariable String pinNumber) {
+        gameRoomService.startGame(pinNumber);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{pinNumber}/isstarted")
+    @Operation(summary = "게임 시작여부 조회")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "게임 시작여부 조회성공"),
+            @ApiResponse(responseCode = "404", description = "존재 하지 않는 게임방")
+    })
+    public ResponseEntity<Boolean> getIsStartedGame(@PathVariable String pinNumber) {
+
+        return ResponseEntity.ok(gameRoomService.isStartedGame(pinNumber));
+    }
+
+    @PostMapping("/{pinNumber}/{sessionId}/images")
+    @Operation(summary = "게임 멤버 이미지 저장")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "게임 시작여부 조회성공"),
+            @ApiResponse(responseCode = "404", description = "존재 하지 않는 게임방")
+    })
+    public ResponseEntity saveMemberGameImage(@PathVariable("pinNumber") String pinNumber,
+                                              @PathVariable("sessionId") String sessionId,
+                                              @RequestBody HashMap<String, String> param) throws IOException {
+
+        gameRoomService.saveGameMemberImage(pinNumber, sessionId, param.get("memberGameImage"));
+
+        return ResponseEntity.ok().build();
+    }
+
 }

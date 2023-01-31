@@ -14,13 +14,19 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.codec.binary.Base64;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -105,7 +111,7 @@ public class GameApiController {
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/unStarred/{gameId}")
+    @DeleteMapping("/unstarred/{gameId}")
     @Operation(summary = "게임 즐겨 찾기 삭제")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "게임 즐겨찾기 삭제 성공"),
@@ -140,5 +146,7 @@ public class GameApiController {
         return ResponseEntity.ok().build();
 
     }
+
+
 
 }

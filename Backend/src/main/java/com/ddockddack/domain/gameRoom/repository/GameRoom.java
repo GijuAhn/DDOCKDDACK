@@ -17,11 +17,17 @@ public class GameRoom {
 
     private Long gameId;
 
+    private boolean isStarted;
+
     private Map<String, GameMember> members = new ConcurrentHashMap<>();
 
     @Builder
     public GameRoom(String pinNumber, Long gameId) {
         this.pinNumber = pinNumber;
         this.gameId = gameId;
+    }
+
+    public void start() {
+        this.isStarted = true;
     }
 }
