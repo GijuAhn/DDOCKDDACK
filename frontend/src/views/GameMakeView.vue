@@ -4,8 +4,12 @@
   </div>
 </template>
 
-<script>
-export default { name: "GameMakeView" };
+<script setup>
+import { useStore } from "vuex";
+
+const store = useStore();
+
+store.dispatch("commonStore/setColorAsync", "variant2");
 </script>
 
 <style></style>

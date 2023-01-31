@@ -1,5 +1,5 @@
 <template>
-  <div class="navigation-bar">
+  <div id="navbar" :class="view">
     <span class="left">
       <router-link to="/">똑딱</router-link>
     </span>
@@ -15,17 +15,42 @@
   </div>
 </template>
 
-<script setup></script>
+<script setup>
+import { computed } from "vue";
+import { useStore } from "vuex";
+
+const store = useStore();
+
+const view = computed(() => store.state.commonStore.view);
+</script>
 
 <style scoped>
-.navigation-bar {
-  background-color: #fdf8ec;
+#navbar {
   height: 95px;
   position: relative;
 }
+.default {
+  background-color: #fdf8ec;
+}
+.variant1 {
+  background-color: #f87c7b;
+}
+.variant2 {
+  background-color: #ffb800;
+}
+.variant3 {
+  background-color: #77a4cc;
+}
+.default a {
+  color: black;
+}
+.variant1 a,
+.variant2 a,
+.variant3 a {
+  color: white;
+}
 a {
   text-decoration: none;
-  color: black;
   line-height: 95px;
   margin: 40px;
 }

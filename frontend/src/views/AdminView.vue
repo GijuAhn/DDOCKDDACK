@@ -6,10 +6,12 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: "AdminView",
-};
+<script setup>
+import { useStore } from "vuex";
+
+const store = useStore();
+
+store.dispatch("commonStore/setColorAsync", "default");
 </script>
 
 <style></style>

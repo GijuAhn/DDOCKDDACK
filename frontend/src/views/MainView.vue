@@ -1,5 +1,5 @@
 <template>
-  <div id="view" :style="colorStyle">
+  <div id="view">
     <div class="box">
       <div class="logo"><span>똑딱</span></div>
       <div class="form">
@@ -16,14 +16,16 @@
 </template>
 
 <script setup>
-const colorStyle = {
-  "--background-color": "#fdf8ec",
-};
+import { useStore } from "vuex";
+
+const store = useStore();
+
+store.dispatch("commonStore/setColorAsync", "default");
 </script>
 
 <style scoped>
 #view {
-  background-color: var(--background-color);
+  background-color: #fdf8ec;
   height: calc(100vh - 95px);
   position: relative;
   overflow: hidden;
