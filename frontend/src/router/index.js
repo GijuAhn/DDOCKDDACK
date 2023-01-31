@@ -27,7 +27,7 @@ const routes = [
   },
   {
     path: "/bestcut",
-    name: "bestcut",
+    name: "bestcutList",
     component: () => import("@/views/BestcutView.vue"),
   },
   {

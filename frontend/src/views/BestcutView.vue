@@ -1,9 +1,9 @@
 <template>
-  <div></div>
+  <bestcut-list></bestcut-list>
 </template>
 
-<script>
-export default {};
+<script setup>
+import BestcutList from "@/components/BestcutList/BestcutList.vue";
 </script>
 
 <style></style>
