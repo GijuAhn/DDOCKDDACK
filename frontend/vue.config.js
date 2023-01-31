@@ -1,7 +1,7 @@
 const { defineConfig } = require("@vue/cli-service");
 module.exports = defineConfig({
   // npm run build 타겟 디렉토리
-  outputDir: "../backend/src/main/resources/static",
+  outputDir: "../Backend/src/main/resources/static",
 
   transpileDependencies: true,
 
