@@ -9,33 +9,32 @@ import NavigationBar from "@/components/common/NavigationBar";
 
 <style>
 @font-face {
-  font-family: "NanumSquareRoundR";
-  src: url("@/assets/fonts/NanumSquareRoundR.ttf") format("truetype");
-}
-
-@font-face {
-  font-family: "NanumSquareRoundB";
-  src: url("@/assets/fonts/NanumSquareRoundB.ttf") format("truetype");
+  font-family: "Gugi-Regular";
+  src: url("@/assets/fonts/Gugi-Regular.ttf") format("truetype");
 }
 
 @font-face {
   font-family: "NanumSquareRoundEB";
   src: url("@/assets/fonts/NanumSquareRoundEB.ttf") format("truetype");
 }
-
 @font-face {
-  font-family: "Gugi-Regular";
-  src: url("@/assets/fonts/Gugi-Regular.ttf") format("truetype");
+  font-family: "NanumSquareRoundB";
+  src: url("@/assets/fonts/NanumSquareRoundB.ttf") format("truetype");
 }
-
-#app {
+@font-face {
   font-family: "NanumSquareRoundR";
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  src: url("@/assets/fonts/NanumSquareRoundR.ttf") format("truetype");
+}
+#app {
+  font-family: "NanumSquareRoundB";
 }
 
 * {
   margin: 0;
+}
+
+body {
+  min-width: 1920px;
 }
 
 /* nav {

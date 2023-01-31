@@ -21,6 +21,7 @@
 .navigation-bar {
   background-color: #fdf8ec;
   height: 95px;
+  position: relative;
 }
 a {
   text-decoration: none;
@@ -46,9 +47,10 @@ a {
 }
 
 .mid {
+  text-align: center;
   position: absolute;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translate(-50%, 0);
 }
 
 .right {

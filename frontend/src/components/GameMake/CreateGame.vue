@@ -180,6 +180,6 @@ const createGame = () => {
 <style scoped>
 .input-name {
   font-size: 24px;
-  font-weight: bolder;
+  /* font-weight: bolder; */
 }
 </style>
