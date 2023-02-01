@@ -92,9 +92,9 @@ public class MemberApiController {
     public ResponseEntity<?> getMemberInfo(@PathVariable Long memberId) {
 
         log.info("sec info {}",
-                SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+            SecurityContextHolder.getContext().getAuthentication().getPrincipal());
         MemberAccessRes memberAccessRes = (MemberAccessRes) SecurityContextHolder.getContext()
-                .getAuthentication().getPrincipal();
+            .getAuthentication().getPrincipal();
         if (memberAccessRes.getId() != memberId) {
             throw new NotFoundException(ErrorCode.MEMBER_NOT_FOUND);
         }
@@ -110,10 +110,10 @@ public class MemberApiController {
 
     @Operation(summary = "회원 탈퇴", description = "회원 탈퇴 메소드입니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "이력 조회 성공"),
-            @ApiResponse(responseCode = "400", description = "파라미터 타입 오류"),
-            @ApiResponse(responseCode = "404", description = "존재하지 않는 유저"),
-            @ApiResponse(responseCode = "500", description = "서버 오류")
+        @ApiResponse(responseCode = "200", description = "이력 조회 성공"),
+        @ApiResponse(responseCode = "400", description = "파라미터 타입 오류"),
+        @ApiResponse(responseCode = "404", description = "존재하지 않는 유저"),
+        @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @DeleteMapping("/{memberId}")
     public ResponseEntity<?> deleteMember(@PathVariable Long memberId) {
@@ -127,14 +127,14 @@ public class MemberApiController {
 
     @Operation(summary = "내 베스트 컷 전체 조회", description = "내 베스트 컷 전체 조회 메소드입니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "내 베스트 컷 전체 조회 성공"),
-            @ApiResponse(responseCode = "400", description = "파라미터 타입 오류"),
-            @ApiResponse(responseCode = "404", description = "존재하지 않는 유저"),
-            @ApiResponse(responseCode = "500", description = "서버 오류")
+        @ApiResponse(responseCode = "200", description = "내 베스트 컷 전체 조회 성공"),
+        @ApiResponse(responseCode = "400", description = "파라미터 타입 오류"),
+        @ApiResponse(responseCode = "404", description = "존재하지 않는 유저"),
+        @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @GetMapping("/{memberId}/bestcuts")
     public ResponseEntity<?> getBestcuts(@PathVariable Long memberId,
-                                         @RequestBody PageConditionReq pageCondition) {
+        @RequestBody PageConditionReq pageCondition) {
         try {
             PageImpl<BestcutRes> bestcutRes = bestcutService.findAll(true, memberId, pageCondition);
             return ResponseEntity.ok(bestcutRes);
@@ -172,7 +172,7 @@ public class MemberApiController {
                                       @RequestHeader(value = "access-token", required = false) String accessToken) {
         try {
             List<StarredGameRes> starredGameResList = gameService.findAllStarredGames(
-                    memberId); //member Response에 올려야 하나?
+                memberId); //member Response에 올려야 하나?
             return ResponseEntity.ok(starredGameResList);
         } catch (Exception e) {
             return ResponseEntity.status(500).body(e);
@@ -250,7 +250,7 @@ public class MemberApiController {
             if (!isMember) {
                 Member member = new Member(email, nickname, "", Role.MEMBER);
                 MemberInfoRes memberInfoRes = new MemberInfoRes(member.getNickname(),
-                        member.getProfile());
+                    member.getProfile());
 
                 memberService.joinMember(member);
 
@@ -289,7 +289,7 @@ public class MemberApiController {
             if (!isMember) {
                 Member member = new Member(email, "", "", Role.MEMBER);
                 MemberInfoRes memberInfoRes = new MemberInfoRes(member.getNickname(),
-                        member.getProfile());
+                    member.getProfile());
 
                 memberService.joinMember(member);
 
