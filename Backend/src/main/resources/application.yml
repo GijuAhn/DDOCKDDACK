@@ -88,4 +88,4 @@ kakao:
     redirect_uri: { $KAKAO_LOGIN_REDIRECT_URL }
 
 server:
-  port: 9999
+  port: 8080
