@@ -8,10 +8,15 @@ import com.ddockddack.global.error.ErrorCode;
 import com.ddockddack.global.error.exception.NotFoundException;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.http.*;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
@@ -26,13 +31,10 @@ public class MemberService {
 
     private final Environment env;
     private final MemberRepository memberRepository;
+    private final TokenService tokenService;
+    private final RedisTemplate redisTemplate;
     private RestTemplate rt;
 
-    @Autowired
-    public MemberService(MemberRepository memberRepository, Environment env) {
-        this.memberRepository = memberRepository;
-        this.env = env;
-    }
 
     @Transactional
     public Long joinMember(Member member) {
@@ -61,8 +63,8 @@ public class MemberService {
      * @param memberId
      * @return member 정보
      */
-    public Member getMemberById(Long memberId) {
-        return memberRepository.findById(memberId).get();
+    public Optional<Member> getMemberById(Long memberId) {
+        return memberRepository.findById(memberId);
     }
 
     public Member getMemberByEmail(String email) {
@@ -85,6 +87,32 @@ public class MemberService {
 //    public Member findOne(Long memberId) {
 //        return memberRepository.findOne(Member);
 //    }
+
+
+    public boolean isAdmin(Long reportId) {
+        Member member = memberRepository.findById(reportId)
+            .orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
+        return member.getRole() == Role.ADMIN;
+    }
+
+    @Transactional
+    public void logout(String accessToken, String refreshToken) {
+//        Long findUserId = tokenService.getUid(refreshToken);
+
+        //Redis Cache에 저장
+        Long accessTokenTime = tokenService.getExpiration(accessToken);
+        Long refreshTokenTime = tokenService.getExpiration(refreshToken);
+        if (accessTokenTime > 0) {
+            redisTemplate.opsForValue()
+                .set(accessToken, "logout", accessTokenTime,
+                    TimeUnit.MILLISECONDS);
+        }
+        if(refreshTokenTime > 0) {
+            redisTemplate.opsForValue()
+                .set(refreshToken, "logout", refreshTokenTime,
+                    TimeUnit.MILLISECONDS);
+        }
+    }
 
     /**
      * @param code
@@ -196,6 +224,7 @@ public class MemberService {
             .orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
         return member.getRole() == Role.ADMIN;
     }
+
     public HttpStatus logoutKakao(Long memberId) {
         HttpHeaders headers = new HttpHeaders();
 
