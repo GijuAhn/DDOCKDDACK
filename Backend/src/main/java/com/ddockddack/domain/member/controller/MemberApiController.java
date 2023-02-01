@@ -199,13 +199,15 @@ public class MemberApiController {
         @ApiResponse(responseCode = "404", description = "사용자 없음"),
         @ApiResponse(responseCode = "500", description = "서버 오류")
     })
-    @PostMapping("/logout")
+    @GetMapping("/logout")
     public ResponseEntity logoutUser(
-        @RequestHeader(value = "access-token", required = false) String accessToken) {
+        @RequestHeader(value = "access-token", required = false) String accessToken,
+        @RequestHeader(value = "refresh-token", required = false) String refreshToken) {
         if (accessToken == null) {
             throw new AccessDeniedException(ErrorCode.NOT_AUTHORIZED);
         }
-        memberService.logout(accessToken);
+        log.info("logout 진입 {}, {}", accessToken, refreshToken);
+        memberService.logout(accessToken, refreshToken);
         return ResponseEntity.ok("logout 성공!");
     }
 

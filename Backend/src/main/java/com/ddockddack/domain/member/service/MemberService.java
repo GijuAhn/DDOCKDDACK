@@ -9,8 +9,8 @@ import com.ddockddack.global.error.exception.NotFoundException;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpEntity;
@@ -24,8 +24,6 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.concurrent.TimeUnit;
-
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -36,8 +34,6 @@ public class MemberService {
     private final TokenService tokenService;
     private final RedisTemplate redisTemplate;
     private RestTemplate rt;
-
-
 
 
     @Transactional
@@ -93,22 +89,29 @@ public class MemberService {
 //    }
 
 
-
     public boolean isAdmin(Long reportId) {
         Member member = memberRepository.findById(reportId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
+            .orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
         return member.getRole() == Role.ADMIN;
     }
 
     @Transactional
-    public void logout(String refreshToken){
+    public void logout(String accessToken, String refreshToken) {
 //        Long findUserId = tokenService.getUid(refreshToken);
 
-        //엑세스 토큰 남은 유효시간
-        Long expiration = tokenService.getExpiration(refreshToken);
-
         //Redis Cache에 저장
-        redisTemplate.opsForValue().set(refreshToken, "logout", expiration, TimeUnit.MILLISECONDS);
+        Long accessTokenTime = tokenService.getExpiration(accessToken);
+        Long refreshTokenTime = tokenService.getExpiration(refreshToken);
+        if (accessTokenTime > 0) {
+            redisTemplate.opsForValue()
+                .set(accessToken, "logout", accessTokenTime,
+                    TimeUnit.MILLISECONDS);
+        }
+        if(refreshTokenTime > 0) {
+            redisTemplate.opsForValue()
+                .set(refreshToken, "logout", refreshTokenTime,
+                    TimeUnit.MILLISECONDS);
+        }
     }
 
     /**
