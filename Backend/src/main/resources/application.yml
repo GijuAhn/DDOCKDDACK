@@ -98,4 +98,4 @@ kakao:
 
 server:
   port: 8080
-  address: 3.38.150.77
+  address: 172.17.0.1
