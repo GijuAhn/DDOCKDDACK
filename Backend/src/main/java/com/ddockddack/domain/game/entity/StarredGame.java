@@ -18,11 +18,11 @@ public class StarredGame {
     @Column(name = "sttared_game_id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "game_id", foreignKey = @ForeignKey(name = "fk_starred_game_game_id_idx", value = ConstraintMode.NO_CONSTRAINT))
     private Game game;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", foreignKey = @ForeignKey(name = "fk_starred_game_member_id_idx"))
     private Member member;
 

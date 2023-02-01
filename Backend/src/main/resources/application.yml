@@ -8,7 +8,19 @@ server:
       enabled: true
       force: true
 
+
 spring:
+
+  profiles:
+    active:
+      - develop
+    group:
+      green:
+        - server
+      develop:
+        - dev
+        - env
+
   jpa:
     hibernate:
       ddl-auto: update
@@ -18,9 +30,6 @@ spring:
         format_sql: true
       dialect:
         org.hibernate.dialect.MySQL8InnoDBDialect
-
-  profiles:
-    include: env # 소셜로그인(카카오, 구글) 키, jwt 관련 설정, database 설정,
 
   servlet:
     multipart:
@@ -53,12 +62,39 @@ springdoc:
   default-consumes-media-type: application/json;charset=UTF-8
   default-produces-media-type: application/json;charset=UTF-8
 
+OPENVIDU_URL : http://localhost:4443/
+OPENVIDU_SECRET: MY_SECRET
+
+memberImageUploadPath : src/main/resources/static/memberImages/
+gameImageUploadPath : src/main/resources/static/images/
+
 ---
 
 spring:
   config:
     activate:
-      on-profile: "develop"
+      on-profile: "dev"
 
 server:
   port: 9999
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: "server"
+
+  datasource:
+    url: { $SPRING_DATASOURCE_URL }
+    username: { $SPRING_DATASOURCE_USERNAME }
+    password: { $SPRING_DATASOURCE_PASSWORD }
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+kakao:
+  login:
+    api_key: { $KAKAO_LOGIN_API_KEY }
+    redirect_uri: { $KAKAO_LOGIN_REDIRECT_URL }
+
+server:
+  port: 8080

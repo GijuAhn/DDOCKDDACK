@@ -48,7 +48,8 @@ public class BestcutRepository {
         em.remove(bestcut);
     }
 
-    public PageImpl<BestcutRes> findAllBySearch(Boolean my, Long loginMemberId, PageCondition pageCondition) {
+    public PageImpl<BestcutRes> findAllBySearch(Boolean my, Long loginMemberId,
+            PageCondition pageCondition) {
         List<BestcutRes> resultList = jpaQueryFactory.select(
                         new QBestcutRes(bestcut.id.as("bestcutId"), bestcut.title.as("bestcutImgTitle"),
                                 bestcut.imageUrl.as("bestcutImgUrl"), bestcut.gameTitle,
@@ -63,7 +64,7 @@ public class BestcutRepository {
                 .limit(pageCondition.getPageable().getPageSize())
                 .fetch();
 
-        return new PageImpl<>(resultList, pageCondition.getPageable(), getTotalPageCount());
+        return new PageImpl<>(resultList, pageCondition.getPageable(), getTotalPageCount(my, loginMemberId, pageCondition));
     }
 
     public Optional<BestcutRes> findOne(Long loginMemberId, Long bestcutId){
@@ -93,8 +94,14 @@ public class BestcutRepository {
                                 .and(bestcutLike.member.id.eq(loginMemberId))), "isLiked");
     }
 
-    private long getTotalPageCount() {
-        return jpaQueryFactory.select(Wildcard.count).from(bestcut).fetch().get(0);
+    private long getTotalPageCount(Boolean my, Long loginMemberId, PageCondition pageCondition) {
+        return jpaQueryFactory.select(Wildcard.count)
+                .from(bestcut)
+                .join(bestcut.member, member)
+                .where(myBestcut(my, loginMemberId), periodCond(pageCondition.getPeriodCondition()),
+                        searchCond(pageCondition.getSearchCondition(), pageCondition.getKeyword()))
+                .fetch()
+                .get(0);
     }
 
     private BooleanExpression myBestcut(Boolean my, Long loginMemberId) {
