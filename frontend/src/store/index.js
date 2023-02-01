@@ -1,6 +1,6 @@
 import { createStore } from "vuex";
-import { gameMakeStore } from "@/store/modules/gameMakeStore";
+import { commonStore } from "@/store/modules/commonStore";
 
 export default createStore({
-  modules: { gameMakeStore },
+  modules: { commonStore },
 });
