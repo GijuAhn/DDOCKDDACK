@@ -8,6 +8,9 @@ server:
       enabled: true
       force: true
 
+  profiles:
+    include: env # 소셜로그인(카카오, 구글) 키, jwt 관련 설정, database 설정,
+
 spring:
   jpa:
     hibernate:
@@ -62,9 +65,6 @@ spring:
   config:
     activate:
       on-profile: "develop"
-
-  profiles:
-    include: env # 소셜로그인(카카오, 구글) 키, jwt 관련 설정, database 설정,
 
 server:
   port: 9999
