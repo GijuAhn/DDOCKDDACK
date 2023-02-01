@@ -1,15 +1,15 @@
 <template>
-  <div>
-    <router-link to="/admin/game">게임 신고</router-link> |
-    <router-link to="/admin/bestcut">베스트컷 신고</router-link>
-    <router-view></router-view>
-  </div>
+  <navigation-bar-in-admin-page />
+  <router-view></router-view>
 </template>
 
-<script>
-export default {
-  name: "AdminView",
-};
+<script setup>
+import NavigationBarInAdminPage from "@/components/common/NavigationBarInAdminPage";
+import { useStore } from "vuex";
+
+const store = useStore();
+
+store.dispatch("commonStore/setColorAsync", "default");
 </script>
 
 <style></style>
