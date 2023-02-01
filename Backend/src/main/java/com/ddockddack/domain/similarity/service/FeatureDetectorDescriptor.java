@@ -1,5 +1,6 @@
 package com.ddockddack.domain.similarity.service;
 
+import nu.pattern.OpenCV;
 import org.opencv.core.*;
 import org.opencv.features2d.DescriptorMatcher;
 import org.opencv.features2d.KAZE;
@@ -16,7 +17,9 @@ public class FeatureDetectorDescriptor {
 
     static {
         // Load the OpenCV library
-        System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+//        System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+        OpenCV.loadLocally();
+
     }
 
 
@@ -43,8 +46,12 @@ public class FeatureDetectorDescriptor {
         DescriptorMatcher matcher = DescriptorMatcher.create(DescriptorMatcher.BRUTEFORCE_L1);
         matcher.knnMatch(descriptors1, descriptors2, matches, 2);
 
-        // Filter matches using the Lowe's ratio test
-        float ratioThreshold = 0.75f;
+        // Filter matches using the Lowe's ratio test = 0.75f
+//        float ratioThreshold = 0.75f;
+//        float ratioThreshold = 0.70f;
+        float ratioThreshold = 0.80f;
+//        float ratioThreshold = 0.90f;
+//        float ratioThreshold = 0.999f;
         List<DMatch> goodMatches = new LinkedList<>();
         for (MatOfDMatch matOfDMatch : matches) {
             DMatch[] dmatcharray = matOfDMatch.toArray();

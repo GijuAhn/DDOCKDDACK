@@ -2,7 +2,6 @@ package com.ddockddack.domain.similarity.service;
 
 import nu.pattern.OpenCV;
 import org.opencv.core.*;
-import org.opencv.highgui.HighGui;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
@@ -71,10 +70,6 @@ public class ImageHistogram {
                     new Scalar(0, 0, 255), 1);
         }
         // Histogram End
-
-        // Show
-        HighGui.imshow("image", image);
-        HighGui.imshow("imageHist", imageHist);
 
 //        return histogram data for calculate histogram similarity
         List<Mat> histogram = new ArrayList<>();
