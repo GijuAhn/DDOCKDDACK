@@ -1,5 +1,7 @@
 package com.ddockddack.domain.gameRoom.service;
 
+import com.ddockddack.domain.game.entity.Game;
+import com.ddockddack.domain.game.repository.GameRepository;
 import com.ddockddack.domain.game.response.GameDetailRes;
 import com.ddockddack.domain.game.service.GameService;
 import com.ddockddack.domain.gameRoom.repository.GameRoom;
@@ -29,7 +31,7 @@ import java.util.UUID;
 public class GameRoomService {
 
     private final GameRoomRepository gameRoomRepository;
-    private final GameService gameService;
+    private final GameRepository gameRepository;
     private final MemberRepository memberRepository;
     @Value("${memberImageUploadPath}")
     private String memberImageUploadPath;
@@ -42,9 +44,12 @@ public class GameRoomService {
      * @throws OpenViduJavaClientException
      * @throws OpenViduHttpException
      */
-    public String createRoom(Long gameId) throws OpenViduJavaClientException, OpenViduHttpException {
-        //repository로 요청 전달
-        return gameRoomRepository.create(gameId);
+    public String createRoom(Long gameId)
+        throws OpenViduJavaClientException, OpenViduHttpException {
+        Game game = gameRepository.findById(gameId)
+            .orElseThrow(() -> new NotFoundException(ErrorCode.GAME_NOT_FOUND));
+
+        return gameRoomRepository.create(game);
     }
 
     /**
@@ -57,28 +62,25 @@ public class GameRoomService {
      * @throws OpenViduJavaClientException
      * @throws OpenViduHttpException
      */
-    public GameRoomRes joinRoom(String pinNumber, Long memberId, String nickname) throws OpenViduJavaClientException, OpenViduHttpException {
+    public GameRoomRes joinRoom(String pinNumber, Long memberId, String nickname)
+        throws OpenViduJavaClientException, OpenViduHttpException {
         Member member = null;
         //로그인 한 유저면 memberId로 검색해서 넘겨줌
         if (memberId != null) {
-            member = memberRepository.findById(memberId).orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
+            member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
         }
-
 
         String token = gameRoomRepository.join(pinNumber, member, nickname);
         GameRoom gameRoom = this.findGameRoom(pinNumber);
 
-        if(gameRoom.isStarted()) {
+        if (gameRoom.isStarted()) {
             throw new AccessDeniedException(ErrorCode.ALREADY_EXIST_REPORTEDGAME);
         }
 
-        GameDetailRes game = gameService.findGame(gameRoom.getGameId());
-
-        return GameRoomRes.builder()
-                .token(token)
-                .gameDetailRes(game)
-                .pinNumber(pinNumber)
-                .build();
+        GameRoomRes gameRoomRes = GameRoomRes.of(gameRoom);
+        gameRoomRes.setToken(token);
+        return gameRoomRes;
     }
 
     /**

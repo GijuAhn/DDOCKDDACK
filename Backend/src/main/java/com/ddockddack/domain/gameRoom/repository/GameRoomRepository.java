@@ -1,9 +1,13 @@
 package com.ddockddack.domain.gameRoom.repository;
 
+import com.ddockddack.domain.game.entity.Game;
+import com.ddockddack.domain.game.entity.GameImage;
 import com.ddockddack.domain.member.entity.Member;
 import com.ddockddack.global.error.ErrorCode;
 import com.ddockddack.global.error.exception.NotFoundException;
 import io.openvidu.java.client.*;
+import java.util.Collections;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
@@ -33,29 +37,38 @@ public class GameRoomRepository {
         this.openvidu = new OpenVidu(OPENVIDU_URL, OPENVIDU_SECRET);
     }
 
-    public String create(Long gameId) throws OpenViduJavaClientException, OpenViduHttpException {
+    public String create(Game game) throws OpenViduJavaClientException, OpenViduHttpException {
         //핀 넘버 생성
         String pinNumber = createPinNumber();
         Map<String, String> paramMap = new HashMap<>();
         paramMap.put("customSessionId", pinNumber);
 
+        List<GameImage> gameImages = game.getImages();
+        Collections.shuffle(gameImages);
+
         //생성한 pin으로 openvidu에 session 생성 요청
         SessionProperties properties = SessionProperties.fromJson(paramMap).build();
         openvidu.createSession(properties);
 
+
         //방 객체 생성 후 map에 저장
         GameRoom gameRoom = GameRoom.builder()
-                .gameId(gameId)
-                .pinNumber(pinNumber)
-                .build();
+            .gameId(game.getId())
+            .gameTitle(game.getTitle())
+            .gameDescription(game.getDescription())
+            .gameImages(gameImages)
+            .pinNumber(pinNumber)
+            .build();
         gameRooms.put(pinNumber, gameRoom);
 
         return pinNumber;
     }
 
-    public String join(String pinNumber, Member member, String nickname) throws OpenViduJavaClientException, OpenViduHttpException {
+    public String join(String pinNumber, Member member, String nickname)
+        throws OpenViduJavaClientException, OpenViduHttpException {
         //존재하는 pin인지 확인
-        Session session = findSessionByPinNumber(pinNumber).orElseThrow(() -> new NotFoundException(ErrorCode.GAME_ROOM_NOT_FOUND));
+        Session session = findSessionByPinNumber(pinNumber).orElseThrow(
+            () -> new NotFoundException(ErrorCode.GAME_ROOM_NOT_FOUND));
 
         //openvidu에 connection 요청
         ConnectionProperties properties = ConnectionProperties.fromJson(new HashMap<>()).build();
