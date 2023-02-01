@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @CrossOrigin(origins = "*")
@@ -30,17 +31,17 @@ public class GameRoomApiController {
             @ApiResponse(responseCode = "200", description = "방 생성 성공"),
             @ApiResponse(responseCode = "404", description = "존재 하지 않는 게임")
     })
-    public ResponseEntity<GameRoomRes> createRoom(@RequestBody Map<String, String> params) {
-        GameRoomRes createdRoom;
+    public ResponseEntity<String> createRoom(@RequestBody Map<String, String> params) {
+        String pinNumber;
         try {
-            createdRoom = gameRoomService.createRoom(Long.parseLong(params.get("gameId")));
+            pinNumber = gameRoomService.createRoom(Long.parseLong(params.get("gameId")));
         } catch (OpenViduJavaClientException e) {
             throw new RuntimeException(e);
         } catch (OpenViduHttpException e) {
             throw new RuntimeException(e);
         }
 
-        return new ResponseEntity<>(createdRoom, HttpStatus.OK);
+        return new ResponseEntity<>(pinNumber, HttpStatus.OK);
     }
 
     @PostMapping("/{pinNumber}")
@@ -49,7 +50,7 @@ public class GameRoomApiController {
             @ApiResponse(responseCode = "200", description = "방 참가 성공"),
             @ApiResponse(responseCode = "404", description = "존재 하지 않는 게임방")
     })
-    public ResponseEntity<String> joinRoom(@PathVariable String pinNumber, @RequestHeader(value = "access-token", required = false) String accessToken, @RequestBody(required = false) String nickname) throws OpenViduJavaClientException, OpenViduHttpException {
+    public ResponseEntity<GameRoomRes> joinRoom(@PathVariable String pinNumber, @RequestHeader(value = "access-token", required = false) String accessToken, @RequestBody(required = false) String nickname) throws OpenViduJavaClientException, OpenViduHttpException {
         Long memberId = null;
 
         if (accessToken != null) {
@@ -57,9 +58,7 @@ public class GameRoomApiController {
             memberId = 1L;
         }
 
-        String token = gameRoomService.joinRoom(pinNumber, memberId, nickname);
-
-        return new ResponseEntity<>(token, HttpStatus.OK);
+        return new ResponseEntity<>(gameRoomService.joinRoom(pinNumber, memberId, nickname), HttpStatus.OK);
     }
 
     @DeleteMapping("/{pinNumber}/sessions/{sessionId}")
@@ -69,7 +68,7 @@ public class GameRoomApiController {
             @ApiResponse(responseCode = "404", description = "존재 하지 않는 게임방")
     })
     public ResponseEntity removeGameMember(@PathVariable String pinNumber,
-                                       @PathVariable String sessionId) {
+                                           @PathVariable String sessionId) {
 
 
         gameRoomService.removeGameMember(pinNumber, sessionId);
@@ -89,7 +88,7 @@ public class GameRoomApiController {
         gameRoomService.removeGameRoom(pinNumber);
         return ResponseEntity.ok().build();
     }
-    
+
     @PutMapping("/{pinNumber}")
     @Operation(summary = "게임시작")
     @ApiResponses({
@@ -124,6 +123,12 @@ public class GameRoomApiController {
 
         gameRoomService.saveGameMemberImage(pinNumber, sessionId, param.get("memberGameImage"));
 
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/test")
+    public ResponseEntity upload(@RequestBody List<String> images) {
+        System.out.println(images);
         return ResponseEntity.ok().build();
     }
 

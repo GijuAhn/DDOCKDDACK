@@ -33,7 +33,7 @@ public class GameRoomRepository {
         this.openvidu = new OpenVidu(OPENVIDU_URL, OPENVIDU_SECRET);
     }
 
-    public GameRoom create(Long gameId) throws OpenViduJavaClientException, OpenViduHttpException {
+    public String create(Long gameId) throws OpenViduJavaClientException, OpenViduHttpException {
         //핀 넘버 생성
         String pinNumber = createPinNumber();
         Map<String, String> paramMap = new HashMap<>();
@@ -50,7 +50,7 @@ public class GameRoomRepository {
                 .build();
         gameRooms.put(pinNumber, gameRoom);
 
-        return gameRoom;
+        return pinNumber;
     }
 
     public String join(String pinNumber, Member member, String nickname) throws OpenViduJavaClientException, OpenViduHttpException {

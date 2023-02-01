@@ -19,6 +19,8 @@ public class GameRoom {
 
     private boolean isStarted;
 
+
+
     private Map<String, GameMember> members = new ConcurrentHashMap<>();
 
     @Builder

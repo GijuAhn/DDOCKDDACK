@@ -8,6 +8,7 @@ import com.ddockddack.domain.gameRoom.response.GameRoomRes;
 import com.ddockddack.domain.member.entity.Member;
 import com.ddockddack.domain.member.repository.MemberRepository;
 import com.ddockddack.global.error.ErrorCode;
+import com.ddockddack.global.error.exception.AccessDeniedException;
 import com.ddockddack.global.error.exception.NotFoundException;
 import io.openvidu.java.client.OpenViduHttpException;
 import io.openvidu.java.client.OpenViduJavaClientException;
@@ -16,6 +17,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -40,17 +42,9 @@ public class GameRoomService {
      * @throws OpenViduJavaClientException
      * @throws OpenViduHttpException
      */
-    public GameRoomRes createRoom(Long gameId) throws OpenViduJavaClientException, OpenViduHttpException {
+    public String createRoom(Long gameId) throws OpenViduJavaClientException, OpenViduHttpException {
         //repository로 요청 전달
-        GameRoom gameRoom = gameRoomRepository.create(gameId);
-
-        //gameId로 game 정보 가져오기
-        GameDetailRes gameDetailRes = gameService.findGame(gameId);
-
-        return GameRoomRes.builder()
-                .pinNumber(gameRoom.getPinNumber())
-                .gameDetailRes(gameDetailRes)
-                .build();
+        return gameRoomRepository.create(gameId);
     }
 
     /**
@@ -63,13 +57,28 @@ public class GameRoomService {
      * @throws OpenViduJavaClientException
      * @throws OpenViduHttpException
      */
-    public String joinRoom(String pinNumber, Long memberId, String nickname) throws OpenViduJavaClientException, OpenViduHttpException {
+    public GameRoomRes joinRoom(String pinNumber, Long memberId, String nickname) throws OpenViduJavaClientException, OpenViduHttpException {
         Member member = null;
         //로그인 한 유저면 memberId로 검색해서 넘겨줌
         if (memberId != null) {
             member = memberRepository.findById(memberId).orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
         }
-        return gameRoomRepository.join(pinNumber, member, nickname);
+
+
+        String token = gameRoomRepository.join(pinNumber, member, nickname);
+        GameRoom gameRoom = this.findGameRoom(pinNumber);
+
+        if(gameRoom.isStarted()) {
+            throw new AccessDeniedException(ErrorCode.ALREADY_EXIST_REPORTEDGAME);
+        }
+
+        GameDetailRes game = gameService.findGame(gameRoom.getGameId());
+
+        return GameRoomRes.builder()
+                .token(token)
+                .gameDetailRes(game)
+                .pinNumber(pinNumber)
+                .build();
     }
 
     /**
@@ -106,6 +115,7 @@ public class GameRoomService {
      * @return GameRoom
      */
     public GameRoom findGameRoom(String pinNumber) {
+
         return Optional.ofNullable(gameRoomRepository.findById(pinNumber)).orElseThrow(() ->
                 new NotFoundException(ErrorCode.GAME_ROOM_NOT_FOUND)).get();
     }
@@ -150,7 +160,6 @@ public class GameRoomService {
         String path = memberImageUploadPath + pinNumber;
 
         File file = new File(path);
-        System.out.println(path);
         // 디렉토리가 존재 하지 않는 경우
         if (!file.exists()) {
             file.mkdirs();
