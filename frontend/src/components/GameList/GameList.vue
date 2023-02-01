@@ -1,31 +1,33 @@
 <template>
-  <div id="searchBar">
-    <div>
-      <button @click="sortGames('P')">인기순</button>
-      <button @click="sortGames('R')">최신순</button>
+  <div id="view">
+    <div id="searchBar">
+      <div>
+        <button @click="sortGames('P')">인기순</button>
+        <button @click="sortGames('R')">최신순</button>
+      </div>
+      <div>
+        <select name="choice">
+          <option value="1" selected>전체기간</option>
+          <option value="2">1일</option>
+          <option value="3">1주</option>
+          <option value="4">1개월</option>
+          <option value="5">6개월</option>
+        </select>
+      </div>
+      <div>
+        <select name="choice">
+          <option value="1" selected>게임 제목</option>
+          <option value="2">제작자</option>
+        </select>
+      </div>
+      <div>
+        <input type="text" />
+        <button>검색</button>
+      </div>
     </div>
-    <div>
-      <select name="choice">
-        <option value="1" selected>전체기간</option>
-        <option value="2">1일</option>
-        <option value="3">1주</option>
-        <option value="4">1개월</option>
-        <option value="5">6개월</option>
-      </select>
+    <div id="list">
+      <normal-game v-for="game in games" :key="game" :game="game"></normal-game>
     </div>
-    <div>
-      <select name="choice">
-        <option value="1" selected>게임 제목</option>
-        <option value="2">제작자</option>
-      </select>
-    </div>
-    <div>
-      <input type="text" />
-      <button>검색</button>
-    </div>
-  </div>
-  <div id="list">
-    <normal-game v-for="game in games" :key="game" :game="game"></normal-game>
   </div>
 </template>
 
@@ -77,4 +79,14 @@ const sortGames = (option) => {
 };
 </script>
 
-<style></style>
+<style scoped>
+#view {
+  border: 2px solid black;
+  width: 1200px;
+  position: relative;
+  top: -320px;
+  left: 50%;
+  transform: translate(-50%, 0);
+  background-color: white;
+}
+</style>

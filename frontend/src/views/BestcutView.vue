@@ -1,8 +1,12 @@
 <template>
-  <div>안녕~</div>
+  <content-header />
+  <bestcut-list />
 </template>
 
 <script setup>
+import ContentHeader from "@/components/common/ContentHeader";
+import BestcutList from "@/components/BestcutList/BestcutList";
+
 import { useStore } from "vuex";
 
 const store = useStore();

@@ -26,7 +26,7 @@ store.dispatch("commonStore/setColorAsync", "default");
 <style scoped>
 #view {
   background-color: #fdf8ec;
-  height: calc(100vh - 95px);
+  height: calc(100vh - 95px + 1000px);
   position: relative;
   overflow: hidden;
 }
