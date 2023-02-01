@@ -4,6 +4,7 @@ import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
 import org.opencv.imgcodecs.Imgcodecs;
+import static org.opencv.imgcodecs.Imgcodecs.imdecode;
 import org.opencv.imgcodecs.*;
 
 import javax.imageio.ImageIO;
@@ -24,7 +25,7 @@ public class ImageUtil {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         ImageIO.write(image, "jpg", byteArrayOutputStream);
         byteArrayOutputStream.flush();
-        return Imgcodecs.imdecode(new MatOfByte(byteArrayOutputStream.toByteArray()), Imgcodecs.IMREAD_UNCHANGED);
+        return imdecode(new MatOfByte(byteArrayOutputStream.toByteArray()), Imgcodecs.IMREAD_UNCHANGED);
     }
 
     //Mat to BufferedImage
