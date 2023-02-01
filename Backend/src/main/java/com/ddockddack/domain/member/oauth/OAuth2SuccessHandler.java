@@ -1,10 +1,9 @@
-package com.ddockddack.domain.member.config;
+package com.ddockddack.domain.member.oauth;
 
 import com.ddockddack.domain.member.entity.Member;
 import com.ddockddack.domain.member.entity.Role;
 import com.ddockddack.domain.member.repository.MemberRepository;
 import com.ddockddack.domain.member.response.MemberLoginPostRes;
-import com.ddockddack.domain.member.service.Token;
 import com.ddockddack.domain.member.service.TokenService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
@@ -49,7 +48,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
             memberRepository.save(member);
         }
 
-        Token token = tokenService.generateToken(member.getId().toString(), "USER");
+        Token token = tokenService.generateToken(member.getId(), "USER");
         log.info("JwT : {}", token);
         writeTokenResponse(response, token, member.getId());
     }
