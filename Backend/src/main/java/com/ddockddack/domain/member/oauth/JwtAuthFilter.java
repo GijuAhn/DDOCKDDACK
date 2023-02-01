@@ -2,54 +2,73 @@ package com.ddockddack.domain.member.oauth;
 
 import com.ddockddack.domain.member.entity.Member;
 import com.ddockddack.domain.member.repository.MemberRepository;
+import com.ddockddack.domain.member.response.MemberAccessRes;
 import com.ddockddack.domain.member.service.TokenService;
 import com.ddockddack.global.error.ErrorCode;
+import com.ddockddack.global.error.exception.AccessDeniedException;
 import com.ddockddack.global.error.exception.NotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.filter.GenericFilterBean;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 @RequiredArgsConstructor
-public class JwtAuthFilter extends GenericFilterBean {
+@Slf4j
+public class JwtAuthFilter extends OncePerRequestFilter {
+
     private final TokenService tokenService;
     private final MemberRepository memberRepository;
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+    public void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
+        FilterChain filterChain)
         throws IOException, ServletException {
-        String token = ((HttpServletRequest) request).getHeader("access-token");
 
-        if (token != null && tokenService.verifyToken(token)) {
-            Long id = tokenService.getUid(token);
+        log.info("Filter 진입");
+        String accessToken = (request).getHeader("access-token");
+        String refreshToken = (request).getHeader("refresh-token");
 
-            Member member = memberRepository.getReferenceById(Long.parseLong(id));
+        if (accessToken != null && tokenService.verifyToken(accessToken)) {
+            Long id = tokenService.getUid(accessToken);
+            Member member = memberRepository.getReferenceById(id);
+            log.info("member {}", member);
+            if (member == null) {
+                throw new NotFoundException(ErrorCode.MEMBER_NOT_FOUND);
+            }
+            MemberAccessRes memberAccessRes = new MemberAccessRes(accessToken, member.getId());
+
+            Authentication auth = getAuthentication(memberAccessRes);
+            SecurityContextHolder.getContext().setAuthentication(auth);
+        } else if (refreshToken != null && tokenService.verifyToken(refreshToken)) { //access-token으로 먼저 접근한 경우 클라이언트에 refresh 토큰 보내달라고 알림
+            //refresh-token을 받음 access-token 재발급
+            Long id = tokenService.getUid(refreshToken);
+            Token token = tokenService.generateToken(id, "USER");
+            Member member = memberRepository.getReferenceById(id);
 
             if (member == null) {
                 throw new NotFoundException(ErrorCode.MEMBER_NOT_FOUND);
             }
-            member = Member.builder()
-                .email(member.getEmail())
-                .nickname(member.getNickname())
-                .profile(member.getProfile()).build();
 
-            Authentication auth = getAuthentication(member);
+            MemberAccessRes memberAccessRes = new MemberAccessRes(token.getToken(), member.getId());
+
+            Authentication auth = getAuthentication(memberAccessRes);
             SecurityContextHolder.getContext().setAuthentication(auth);
+        } else {
+            throw new AccessDeniedException(ErrorCode.NOT_AUTHORIZED);
         }
-
-        chain.doFilter(request, response);
+        filterChain.doFilter(request, response);
     }
 
-    public Authentication getAuthentication(Member member) {
+    public Authentication getAuthentication(MemberAccessRes member) {
         return new UsernamePasswordAuthenticationToken(member, "",
             Arrays.asList(new SimpleGrantedAuthority("ROLE_USER")));
     }

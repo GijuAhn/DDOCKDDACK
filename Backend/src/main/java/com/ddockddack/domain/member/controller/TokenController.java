@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.http.HttpStatus;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
+@Slf4j
 @RestController
 public class TokenController {
 
@@ -44,6 +46,7 @@ public class TokenController {
     })
     @GetMapping("/token/refresh")
     public ResponseEntity refreshAuth(@RequestHeader(value = "refresh-token", required = false) String refreshToken) {
+        log.info("refresh 진입");
 
         if (refreshToken != null && tokenService.verifyToken(refreshToken)) {
             if(redisTemplate.opsForValue().get(refreshToken) == null) {

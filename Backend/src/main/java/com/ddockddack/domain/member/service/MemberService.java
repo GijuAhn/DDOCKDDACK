@@ -8,6 +8,7 @@ import com.ddockddack.global.error.ErrorCode;
 import com.ddockddack.global.error.exception.NotFoundException;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -66,8 +67,8 @@ public class MemberService {
      * @param memberId
      * @return member 정보
      */
-    public Member getMemberById(Long memberId) {
-        return memberRepository.findById(memberId).get();
+    public Optional<Member> getMemberById(Long memberId) {
+        return memberRepository.findById(memberId);
     }
 
     public Member getMemberByEmail(String email) {
