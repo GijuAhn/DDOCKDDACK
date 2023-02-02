@@ -4,12 +4,16 @@ import org.junit.jupiter.api.Test;
 
 import java.io.*;
 
-class FeatureDetectorDescriptorTest {
+import com.ddockddack.domain.similarity.service.StructuralSimilarity;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+class StructuralSimilarityTest {
 
     @Test
-    void featureCompare() throws IOException {
-        final FeatureDetectorDescriptor featureDetectorDescriptor
-                = new FeatureDetectorDescriptor();
+    void compareImages() throws IOException {
+        final StructuralSimilarity structuralSimilarity =
+                new StructuralSimilarity();
 
         File hurray1 = new File("C:/Users/SSAFY/Downloads/image_similarity_test/hurray1.jpg");
         InputStream hurrayStream1 = new FileInputStream(hurray1);
@@ -44,20 +48,20 @@ class FeatureDetectorDescriptorTest {
         InputStream faceStream4 = new FileInputStream(face4);
 
 
+
 //        InputStream cannot be reusable (if stream reaches to the end, destroyed and cannot revert)
         System.out.println("같은 동작 비교");
-        System.out.println("hurray 1,2: " + featureDetectorDescriptor.compareFeatures(hurrayStream1, hurrayStream2));
-        System.out.println("arms 1,2: " + featureDetectorDescriptor.compareFeatures(armsStream1, armsStream2));
+        System.out.println("hurray 1,2: " + structuralSimilarity.compareImages(hurrayStream1, hurrayStream2));
+        System.out.println("arms 1,2: " + structuralSimilarity.compareImages(armsStream1, armsStream2));
 
         System.out.println("-------------------------");
         System.out.println("다른 동작 비교");
-        System.out.println("hurray vs arms: " + featureDetectorDescriptor.compareFeatures(hurrayStream3, armsStream3));
+        System.out.println("hurray vs arms: " +  structuralSimilarity.compareImages(hurrayStream3, armsStream3));
 
         System.out.println("-------------------------");
         System.out.println("비슷한 오브젝트, 다른 도메인 비교");
-        System.out.println("face(사람얼굴,사람얼굴그림) 1,2: " + featureDetectorDescriptor.compareFeatures(faceStream1, faceStream2));
-        System.out.println("face(호랑이얼굴,화난얼굴) 3,4: " + featureDetectorDescriptor.compareFeatures(faceStream3, faceStream4));
-
+        System.out.println("face(사람얼굴,사람얼굴그림) 1,2: " + structuralSimilarity.compareImages(faceStream1, faceStream2));
+        System.out.println("face(호랑이얼굴,화난얼굴) 3,4: " + structuralSimilarity.compareImages(faceStream3, faceStream4));
 
 
     }

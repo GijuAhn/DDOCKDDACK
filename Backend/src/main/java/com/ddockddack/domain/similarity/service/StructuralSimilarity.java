@@ -1,20 +1,28 @@
 package com.ddockddack.domain.similarity.service;
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.Buffer;
 import javax.imageio.ImageIO;
+
+import com.ddockddack.domain.similarity.service.ImageUtil;
 
 // grayscale (single channel) SSIM
 public class StructuralSimilarity {
 
     public static double compareImages(InputStream image1, InputStream image2) throws IOException {
-        BufferedImage img1 = toGrayscale(ImageIO.read(image1));
-        BufferedImage img2 = toGrayscale(ImageIO.read(image2));
+        BufferedImage rawImg1 = toGrayscale(ImageIO.read(image1));
+        BufferedImage rawImg2 = toGrayscale(ImageIO.read(image2));
 
-        int width = img1.getWidth();
-        int height = img1.getHeight();
+        int width = Math.min(rawImg1.getWidth(), rawImg2.getWidth());
+        int height = Math.min(rawImg1.getHeight(), rawImg2.getHeight());
+
+        BufferedImage img1 = ImageUtil.Resizer.PROGRESSIVE_BILINEAR.resize(rawImg1, width, height);
+        BufferedImage img2 = ImageUtil.Resizer.PROGRESSIVE_BILINEAR.resize(rawImg2, width, height);
+
         double meanX = 0;
         double meanY = 0;
         double standardDeviationX = 0;

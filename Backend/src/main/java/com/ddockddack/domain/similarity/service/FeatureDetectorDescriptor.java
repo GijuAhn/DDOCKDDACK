@@ -23,7 +23,7 @@ public class FeatureDetectorDescriptor {
     }
 
 
-    public float featureCompare(InputStream input1, InputStream input2) throws IOException {
+    public float compareFeatures(InputStream input1, InputStream input2) throws IOException {
 
         BufferedImage img1 = ImageIO.read(input1);
         Mat image1 = ImageUtil.BufferedImage2Mat(img1);

@@ -70,6 +70,7 @@ public class ImageHistogram {
                     new Scalar(0, 0, 255), 1);
         }
         // Histogram End
+        // Showing Histogram code [removed]
 
 //        return histogram data for calculate histogram similarity
         List<Mat> histogram = new ArrayList<>();
