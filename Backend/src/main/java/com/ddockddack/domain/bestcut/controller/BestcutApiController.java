@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/bestcuts")
+@RequestMapping("/api/bestcuts")
 public class BestcutApiController {
     private final BestcutService bestcutService;
     private final BestcutLikeService bestcutLikeService;
