@@ -16,8 +16,7 @@ const callApi = () => {
   api
     .get(`/members/1/games`, {
       headers: {
-        "access-token":
-          "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE2NzUzMjY3OTQsImV4cCI6MTY3NTMyNzM5NH0.qc1XXQLZaUpcj0HMQdBqVcjJtfl1mVJwKgeonr-QAbU", // 변수로 가지고있는 AccessToken
+        "access-token": "access-token!", // 변수로 가지고있는 AccessToken
       },
     })
     .then((response) => {
