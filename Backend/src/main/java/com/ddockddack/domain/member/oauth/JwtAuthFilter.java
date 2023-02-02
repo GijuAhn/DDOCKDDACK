@@ -43,7 +43,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         if (accessToken != null && tokenService.verifyToken(accessToken)) {
             Long id = tokenService.getUid(accessToken);
             Member member = memberRepository.getReferenceById(id);
-            log.info("member {}", member);
+//            log.info("member {}", member);
             if (member == null) {
                 throw new NotFoundException(ErrorCode.MEMBER_NOT_FOUND);
             }

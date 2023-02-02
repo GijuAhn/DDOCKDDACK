@@ -3,46 +3,28 @@
 </template>
 
 <script setup>
-import { apiInstance } from "@/api/index";
 import { useStore } from "vuex";
+import { apiInstance } from "@/api/index";
 import { ref } from "vue";
 
 const api = apiInstance();
-
 const store = useStore();
-
 const myGameList = ref();
 
-onCreated(() => {
-  const callApi = () => {
-    api
-      .get(`/members/games`, {
-        headers: {
-          "access-token": access-token // 변수로 가지고있는 AccessToken
-        },
-      })
-      .then((response) => {
-        console.log(response);
-        myGameList.value = response.data.content;
-      })
-      .catch((error) => {
-        if(error.get("code") == 401){ //401 access 만료 에러가 뜨면 
-          getAccessTokenByRefreshToken(); // refresh 토큰으로 다시 
-          this.callApi(); //갱신된 access-token으로 다시 요청
-        } else {
-          console.log(error);
-        }
-      });
-    }
-})
-
-
-//공통 메서드로 만들기 mixin??
-const getByRefreshToken = () => { //AccessToken 만료되면 refresh로
+const callApi = () => {
+  console.log("myGameList PRINT");
   api
-    .get(`/token/refresh`, {
+    .get(`/members/1/games`, {
+      params: {
+        order: "RECENT",
+        period: "DAY",
+        search: "MEMBER",
+        keyword: "",
+        page: "1",
+      },
       headers: {
-        "refresh-token": refresh-token
+        "access-token":
+          "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE2NzUzMTU5OTMsImV4cCI6MTY3NTMxNjI5M30.xaLpMhvBYAfdPwUAUDFevx6xSvwQy88Bc5mrSvwl580", // 변수로 가지고있는 AccessToken
       },
     })
     .then((response) => {
@@ -50,10 +32,40 @@ const getByRefreshToken = () => { //AccessToken 만료되면 refresh로
       myGameList.value = response.data.content;
     })
     .catch((error) => {
-      console.log(error);
+      console.log(error.response.status);
+      if (error.response.status != 500) {
+        getAccessTokenByRefreshToken(); // refresh 토큰으로 다시
+      }
     });
-}
+};
 
+callApi();
+
+// 공통 메서드로 만들기 mixin??
+const getAccessTokenByRefreshToken = () => {
+  //AccessToken 만료되면 refresh로
+  api
+    .get(`http://localhost:9999/token/refresh`, {
+      headers: {
+        "refresh-token":
+          "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE2NzUzMTQ1NDEsImV4cCI6MTY3NjUyNDE0MX0.SUIUrChHBtf4j70z8T4-kUXyD9MmEJoJArG6vcIAnM8",
+      },
+    })
+    .then((response) => {
+      console.log(response);
+      myGameList.value = response.data.content;
+    })
+    .catch((error) => {
+      //로그인 페이지로
+      console.log(error);
+      moveLoginPage();
+    });
+};
+
+const moveLoginPage = () => {
+  //AccessToken 만료되면 refresh로
+  console.log("move Page");
+};
 
 store.dispatch("commonStore/setMemberTabAsync", 2);
 </script>

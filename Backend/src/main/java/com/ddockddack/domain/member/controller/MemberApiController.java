@@ -1,7 +1,10 @@
 package com.ddockddack.domain.member.controller;
 
 
+import com.ddockddack.domain.bestcut.response.BestcutRes;
 import com.ddockddack.domain.bestcut.service.BestcutService;
+import com.ddockddack.domain.game.response.GameRes;
+import com.ddockddack.domain.game.response.StarredGameRes;
 import com.ddockddack.domain.game.service.GameService;
 import com.ddockddack.domain.member.entity.Member;
 import com.ddockddack.domain.member.entity.Role;
@@ -9,26 +12,29 @@ import com.ddockddack.domain.member.request.MemberModifyReq;
 import com.ddockddack.domain.member.response.MemberAccessRes;
 import com.ddockddack.domain.member.response.MemberInfoRes;
 import com.ddockddack.domain.member.service.MemberService;
-import com.ddockddack.global.error.exception.AccessDeniedException;
 import com.ddockddack.global.error.ErrorCode;
+import com.ddockddack.global.error.exception.AccessDeniedException;
 import com.ddockddack.global.error.exception.NotFoundException;
+import com.ddockddack.global.util.PageConditionReq;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -86,37 +92,21 @@ public class MemberApiController {
     @GetMapping("/{memberId}")
     public ResponseEntity<?> getMemberInfo(@PathVariable Long memberId) {
 
-        log.info("sec info {}", SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-        MemberAccessRes memberAccessRes = (MemberAccessRes) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if(memberAccessRes.getId()!= memberId){
+        log.info("sec info {}",
+            SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+        MemberAccessRes memberAccessRes = (MemberAccessRes) SecurityContextHolder.getContext()
+            .getAuthentication().getPrincipal();
+        if (memberAccessRes.getId() != memberId) {
             throw new NotFoundException(ErrorCode.MEMBER_NOT_FOUND);
         }
 
         Optional<Member> member = memberService.getMemberById(memberAccessRes.getId());
         log.info("member {}", member.get());
-        if(member.isEmpty()){
+        if (member.isEmpty()) {
             throw new NotFoundException(ErrorCode.MEMBER_NOT_FOUND);
         }
 
         return ResponseEntity.ok(member.get());
-    }
-
-    @Operation(summary = "내 베스트 컷 전체 조회", description = "내 베스트 컷 전체 조회 메소드입니다.")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "내 베스트 컷 전체 조회 성공"),
-        @ApiResponse(responseCode = "400", description = "파라미터 타입 오류"),
-        @ApiResponse(responseCode = "404", description = "존재하지 않는 유저"),
-        @ApiResponse(responseCode = "500", description = "서버 오류")
-    })
-    @GetMapping("/{memberId}/bestcuts")
-    public ResponseEntity<?> getBestcuts(@PathVariable Long memberId) {
-        try {
-//            List<Bestcut> bestcuts = bestcutService.getBestcutsById(memberId);
-
-            return ResponseEntity.ok("success 베스트컷조회");
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body(e);
-        }
     }
 
     @Operation(summary = "회원 탈퇴", description = "회원 탈퇴 메소드입니다.")
@@ -127,11 +117,30 @@ public class MemberApiController {
         @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @DeleteMapping("/{memberId}")
-    public ResponseEntity<?> deleteMember(@PathVariable Long memberId,
-        @RequestHeader(value = "access-token", required = false) String accessToken) {
+    public ResponseEntity<?> deleteMember(@PathVariable Long memberId) {
         try {
             memberService.deleteMemberById(memberId);
             return ResponseEntity.ok("success 삭제");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(e);
+        }
+    }
+
+    @Operation(summary = "내 베스트 컷 전체 조회", description = "내 베스트 컷 전체 조회 메소드입니다.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "내 베스트 컷 전체 조회 성공"),
+        @ApiResponse(responseCode = "400", description = "파라미터 타입 오류"),
+        @ApiResponse(responseCode = "404", description = "존재하지 않는 유저"),
+        @ApiResponse(responseCode = "500", description = "서버 오류")
+    })
+    @GetMapping("/{memberId}/bestcuts")
+    public ResponseEntity<?> getBestcuts(@PathVariable Long memberId,
+        @ModelAttribute PageConditionReq pageCondition) {
+        try {
+            log.info("bestcuts ");
+
+            PageImpl<BestcutRes> bestcutRes = bestcutService.findAll(true, memberId, pageCondition);
+            return ResponseEntity.ok(bestcutRes);
         } catch (Exception e) {
             return ResponseEntity.status(500).body(e);
         }
@@ -145,11 +154,10 @@ public class MemberApiController {
         @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @GetMapping("/{memberId}/games")
-    public ResponseEntity<?> getMyGames(@PathVariable Long memberId,
-        @RequestHeader(value = "access-token", required = false) String accessToken) {
+    public ResponseEntity<?> getMyGames(@PathVariable Long memberId) {
         try {
-//            Member member = gameService.getMyGamesByMemberId(memberId); //member Response에 올려야 하나?
-            return ResponseEntity.ok("MemberRes");
+            List<GameRes> gameResList = gameService.findAllGameByMemberId(memberId);
+            return ResponseEntity.ok(gameResList);
         } catch (Exception e) {
             return ResponseEntity.status(500).body(e);
         }
@@ -166,8 +174,9 @@ public class MemberApiController {
     public ResponseEntity<?> getGames(@PathVariable Long memberId,
         @RequestHeader(value = "access-token", required = false) String accessToken) {
         try {
-//            Member member = gameService.getGamesByStarred(memberId); //member Response에 올려야 하나?
-            return ResponseEntity.ok("즐겨찾기 조회 성공");
+            List<StarredGameRes> starredGameResList = gameService.findAllStarredGames(
+                memberId); //member Response에 올려야 하나?
+            return ResponseEntity.ok(starredGameResList);
         } catch (Exception e) {
             return ResponseEntity.status(500).body(e);
         }
@@ -243,7 +252,8 @@ public class MemberApiController {
 
             if (!isMember) {
                 Member member = new Member(email, nickname, "", Role.MEMBER);
-                MemberInfoRes memberInfoRes = new MemberInfoRes(member.getNickname(), member.getProfile());
+                MemberInfoRes memberInfoRes = new MemberInfoRes(member.getNickname(),
+                    member.getProfile());
 
                 memberService.joinMember(member);
 
@@ -281,7 +291,8 @@ public class MemberApiController {
 
             if (!isMember) {
                 Member member = new Member(email, "", "", Role.MEMBER);
-                MemberInfoRes memberInfoRes = new MemberInfoRes(member.getNickname(), member.getProfile());
+                MemberInfoRes memberInfoRes = new MemberInfoRes(member.getNickname(),
+                    member.getProfile());
 
                 memberService.joinMember(member);
 
@@ -323,3 +334,4 @@ public class MemberApiController {
     }
 
 }
+
