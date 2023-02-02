@@ -8,7 +8,6 @@ server:
       enabled: true
       force: true
 
-
 spring:
 
   profiles:
