@@ -169,7 +169,7 @@ const createGame = () => {
   }
 
   api
-    .post(`/games`, formData)
+    .post(`/api/games`, formData)
     .then(() => {
       router.push({ path: "/member/myGame" });
     })
