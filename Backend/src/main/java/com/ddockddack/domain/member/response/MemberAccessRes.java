@@ -5,14 +5,11 @@ import lombok.Getter;
 
 @Getter
 @Schema(description = "memberLoginPostResponse")
-public class MemberLoginPostRes {
-
+public class MemberAccessRes {
     private String accessToken;
-    private String refreshToken;
     private Long id;
 
-    public MemberLoginPostRes(String accessToken, String refreshToken, Long id) {
-        this.refreshToken = refreshToken;
+    public MemberAccessRes(String accessToken,Long id) {
         this.accessToken = accessToken;
         this.id = id;
     }
