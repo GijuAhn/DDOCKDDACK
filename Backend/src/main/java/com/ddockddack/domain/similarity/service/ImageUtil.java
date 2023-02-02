@@ -20,8 +20,8 @@ import java.io.InputStream;
 import static org.opencv.core.CvType.CV_8UC;
 
 public class ImageUtil {
-
 //    image format must be a jpg
+
     //    BufferedImage to Mat
     public static Mat BufferedImage2Mat(BufferedImage image) throws IOException {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -30,7 +30,7 @@ public class ImageUtil {
         return imdecode(new MatOfByte(byteArrayOutputStream.toByteArray()), Imgcodecs.IMREAD_UNCHANGED);
     }
 
-    //Mat to BufferedImage
+    //    Mat to BufferedImage
     public static BufferedImage Mat2BufferedImage(Mat matrix) throws IOException {
         MatOfByte mob = new MatOfByte();
         Imgcodecs.imencode(".jpg", matrix, mob);
@@ -38,12 +38,14 @@ public class ImageUtil {
     }
 
 
-//  converting byte[] image data (from frontend) to InputStream, and vice versa.
+    //  converting byte[] image data (from frontend) to InputStream, and vice versa.
+    //  byte array to inputStream
     public static InputStream ByteArray2InputStream(byte[] byteArray){
         InputStream inputStream = new ByteArrayInputStream(byteArray);
         return inputStream;
     }
 
+    //    inputStream to byte array
     public static byte[] InputStream2ByteArray(InputStream inputStream) {
         final byte[] byteArray;
         try (inputStream) {
