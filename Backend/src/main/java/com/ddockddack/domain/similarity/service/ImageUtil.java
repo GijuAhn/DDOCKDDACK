@@ -1,5 +1,6 @@
 package com.ddockddack.domain.similarity.service;
 
+import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
@@ -14,6 +15,7 @@ import java.awt.image.DataBufferByte;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 import static org.opencv.core.CvType.CV_8UC;
 
@@ -33,5 +35,22 @@ public class ImageUtil {
         MatOfByte mob = new MatOfByte();
         Imgcodecs.imencode(".jpg", matrix, mob);
         return ImageIO.read(new ByteArrayInputStream(mob.toArray()));
+    }
+
+
+//  converting byte[] image data (from frontend) to InputStream, and vice versa.
+    public static InputStream ByteArray2InputStream(byte[] byteArray){
+        InputStream inputStream = new ByteArrayInputStream(byteArray);
+        return inputStream;
+    }
+
+    public static byte[] InputStream2ByteArray(InputStream inputStream) {
+        final byte[] byteArray;
+        try (inputStream) {
+            byteArray = inputStream.readAllBytes();
+            return byteArray;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

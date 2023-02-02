@@ -80,6 +80,7 @@ public class ImageHistogram {
     }
 
 //    compare histogram similarity
+//    LOWER Comparison value (distance) == HIGHER Similarity
     public double compareHistograms(List<Mat> hist1, List<Mat> hist2){
         double result = Imgproc.compareHist(hist1.get(0), hist2.get(0), Imgproc.CV_COMP_CHISQR);
         result += Imgproc.compareHist(hist1.get(1), hist2.get(1), Imgproc.CV_COMP_CHISQR);
