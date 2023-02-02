@@ -22,12 +22,12 @@ class PerceptualHashTest {
 //        given
         final PerceptualHash perceptualHash = new PerceptualHash();
 
-        File targetHandImage1 = new File("C:/Users/SSAFY/Downloads/image_similarity_test/hand_target/hand1.png");
-        File targetHandImage2 = new File("C:/Users/SSAFY/Downloads/image_similarity_test/hand_target/hand2.png");
-        File targetHandImage3 = new File("C:/Users/SSAFY/Downloads/image_similarity_test/hand_target/hand3.png");
-        File targetHandImage4 = new File("C:/Users/SSAFY/Downloads/image_similarity_test/hand_target/hand4.png");
-        File targetHandImage5 = new File("C:/Users/SSAFY/Downloads/image_similarity_test/hand_target/hand5.png");
-        File targetHandImage6 = new File("C:/Users/SSAFY/Downloads/image_similarity_test/hand_target/hand6.png");
+        File targetHandImage1 = new File("C:/Users/SSAFY/Downloads/image_similarity_test/hand_target/hand1.jpg");
+        File targetHandImage2 = new File("C:/Users/SSAFY/Downloads/image_similarity_test/hand_target/hand2.jpg");
+        File targetHandImage3 = new File("C:/Users/SSAFY/Downloads/image_similarity_test/hand_target/hand3.jpg");
+        File targetHandImage4 = new File("C:/Users/SSAFY/Downloads/image_similarity_test/hand_target/hand4.jpg");
+        File targetHandImage5 = new File("C:/Users/SSAFY/Downloads/image_similarity_test/hand_target/hand5.jpg");
+        File targetHandImage6 = new File("C:/Users/SSAFY/Downloads/image_similarity_test/hand_target/hand6.jpg");
 
         InputStream targetHandImageStream1 = new FileInputStream(targetHandImage1);
         InputStream targetHandImageStream2 = new FileInputStream(targetHandImage2);

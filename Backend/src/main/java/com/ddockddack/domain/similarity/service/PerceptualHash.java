@@ -41,7 +41,8 @@ public class PerceptualHash {
 
 //    private int size = 32;
     private int size = 32;
-    private int smallerSize = 8;
+//    private int smallerSize = 8;
+    private int smallerSize = 16;
 
     public PerceptualHash() {
         initCoefficients();
@@ -148,7 +149,7 @@ public class PerceptualHash {
          */
         long start = System.currentTimeMillis();
         double[][] dctVals = applyDCT(vals);
-        System.out.println("DCT: " + (System.currentTimeMillis() - start));
+//        System.out.println("DCT: " + (System.currentTimeMillis() - start));
 
         /* 4. Reduce the DCT.
          * This is the magic step. While the DCT is 32x32, just keep the

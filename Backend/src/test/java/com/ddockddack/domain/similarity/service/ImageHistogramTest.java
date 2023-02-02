@@ -46,8 +46,8 @@ class ImageHistogramTest {
         }
 
 //        print comparison result
-        System.out.println("hist1 = " + imageHistogram.compareHistograms(hist1, hist2));
-        System.out.println("hist2 = " + imageHistogram.compareHistograms(hist1, hist3));
+        System.out.println("hist 1vs2 = " + imageHistogram.compareHistograms(hist1, hist2));
+        System.out.println("hist 1vs3 = " + imageHistogram.compareHistograms(hist1, hist3));
 
     }
 }
