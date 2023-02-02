@@ -13,7 +13,7 @@ import com.ddockddack.domain.similarity.service.ImageUtil;
 // grayscale (single channel) SSIM
 public class StructuralSimilarity {
 
-    public static double compareImages(InputStream image1, InputStream image2) throws IOException {
+    public double compareImages(InputStream image1, InputStream image2) throws IOException {
         BufferedImage rawImg1 = toGrayscale(ImageIO.read(image1));
         BufferedImage rawImg2 = toGrayscale(ImageIO.read(image2));
 
