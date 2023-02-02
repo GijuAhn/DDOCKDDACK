@@ -16,7 +16,8 @@ const callApi = () => {
   api
     .get(`/members/1/games`, {
       headers: {
-        "access-token": "access-token!", // 변수로 가지고있는 AccessToken
+        "access-token":
+          "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI0Iiwicm9sZSI6IlVTRVIiLCJpYXQiOjE2NzUzNDA3NTcsImV4cCI6MTY3NTM0MTM1N30.uibFshwPFV5W18KO1pkgcgO7UdYjhCUaK-n0GY1bodY", // 변수로 가지고있는 AccessToken
       },
     })
     .then((response) => {
@@ -40,7 +41,7 @@ const getAccessTokenByRefreshToken = () => {
     .get(`http://localhost:9999/token/refresh`, {
       headers: {
         "refresh-token":
-          "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE2NzUzMTQ1NDEsImV4cCI6MTY3NjUyNDE0MX0.SUIUrChHBtf4j70z8T4-kUXyD9MmEJoJArG6vcIAnM8",
+          "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI0Iiwicm9sZSI6IlVTRVIiLCJpYXQiOjE2NzUzNDA3NTcsImV4cCI6MTY3NTM0MTM1N30.uibFshwPFV5W18KO1pkgcgO7UdYjhCUaK-n0GY1bodY",
       },
     })
     .then((response) => {
