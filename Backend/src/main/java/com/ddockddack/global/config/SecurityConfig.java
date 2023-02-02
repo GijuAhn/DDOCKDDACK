@@ -34,19 +34,18 @@ public class SecurityConfig {
                 SessionCreationPolicy.STATELESS)  // jwt token으로 인증하므로 stateless 하도록 처리.
             .and()
             .authorizeRequests()
-            .antMatchers("/", "/bestcut/**", "/game/**",
+                .antMatchers("/", "/bestcut/**", "/game/**",
                     "/gameroom/**", "/swagger-ui/**", "/api-docs/**").permitAll()
-            .anyRequest().authenticated()
 //            .antMatchers("/members/logout").permitAll()
             .and()// 인증권한이 필요한 페이지.// 나머지 모든 요청 허용  ( 생략 가능 )
-            .oauth2Login()
-            .successHandler(successHandler)
-            .userInfoEndpoint().userService(customOAuth2UserService);
+                .oauth2Login()
+                .successHandler(successHandler)
+                .userInfoEndpoint().userService(customOAuth2UserService);
 
 //            .failureHandler(oAuth2AuthenticationFailureHandler);
 
-        http.addFilterBefore(new JwtAuthFilter(tokenService, memberRepository),
-            BasicAuthenticationFilter.class);
+        http.addFilterAfter(new JwtAuthFilter(tokenService, memberRepository),
+            UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 }

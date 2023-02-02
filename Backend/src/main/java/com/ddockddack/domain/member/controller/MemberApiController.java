@@ -171,8 +171,7 @@ public class MemberApiController {
         @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @GetMapping("/{memberId}/starred")
-    public ResponseEntity<?> getGames(@PathVariable Long memberId,
-        @RequestHeader(value = "access-token", required = false) String accessToken) {
+    public ResponseEntity<?> getGames(@PathVariable Long memberId) {
         try {
             List<StarredGameRes> starredGameResList = gameService.findAllStarredGames(
                 memberId); //member Response에 올려야 하나?

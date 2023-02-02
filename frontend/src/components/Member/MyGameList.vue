@@ -15,16 +15,9 @@ const callApi = () => {
   console.log("myGameList PRINT");
   api
     .get(`/members/1/games`, {
-      params: {
-        order: "RECENT",
-        period: "DAY",
-        search: "MEMBER",
-        keyword: "",
-        page: "1",
-      },
       headers: {
         "access-token":
-          "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE2NzUzMTU5OTMsImV4cCI6MTY3NTMxNjI5M30.xaLpMhvBYAfdPwUAUDFevx6xSvwQy88Bc5mrSvwl580", // 변수로 가지고있는 AccessToken
+          "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE2NzUzMjY3OTQsImV4cCI6MTY3NTMyNzM5NH0.qc1XXQLZaUpcj0HMQdBqVcjJtfl1mVJwKgeonr-QAbU", // 변수로 가지고있는 AccessToken
       },
     })
     .then((response) => {
@@ -33,7 +26,7 @@ const callApi = () => {
     })
     .catch((error) => {
       console.log(error.response.status);
-      if (error.response.status != 500) {
+      if (error.response.status != 401) {
         getAccessTokenByRefreshToken(); // refresh 토큰으로 다시
       }
     });
