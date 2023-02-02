@@ -1,6 +1,6 @@
 <template>
   <navigation-bar-in-member-page />
-  <router-view></router-view>
+  <!-- <router-view></router-view> -->
 </template>
 
 <script setup>
@@ -16,17 +16,10 @@ const myGameList = ref();
 const callApi = () => {
   console.log("myGameList PRINT");
   api
-    .get(`/members/1/games`, {
-      params: {
-        order: "RECENT",
-        period: "DAY",
-        search: "MEMBER",
-        keyword: "",
-        page: "1",
-      },
+    .get(`/members/4`, {
       headers: {
         "access-token":
-          "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE2NzUzMjI2OTgsImV4cCI6MTY3NTMyMzI5OH0.MyEjlj58rLiAWm7Ky8gxkI1ZA_zBR8i67JHjm71JQbU", // 변수로 가지고있는 AccessToken
+          "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI0Iiwicm9sZSI6IlVTRVIiLCJpYXQiOjE2NzUzNDI2NDksImV4cCI6MTY3NTM0MzI0OX0.bM1C10tn5eDPJyVIU8FGRSiqb-id7Z5oqhLZPDWRU5k", // 변수로 가지고있는 AccessToken
       },
     })
     .then((response) => {

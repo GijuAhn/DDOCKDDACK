@@ -96,7 +96,7 @@ public class MemberApiController {
             SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
         MemberAccessRes memberAccessRes = (MemberAccessRes) SecurityContextHolder.getContext()
             .getAuthentication().getPrincipal();
-        if (memberAccessRes.getId() != memberId) {
+        if (memberAccessRes.toString().equals("anonymousUser") || memberAccessRes.getId() != memberId) {
             throw new NotFoundException(ErrorCode.MEMBER_NOT_FOUND);
         }
 

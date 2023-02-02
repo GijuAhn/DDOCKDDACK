@@ -4,6 +4,7 @@
 
 <script setup>
 import { useStore } from "vuex";
+
 import { apiInstance } from "@/api/index";
 import { ref } from "vue";
 
@@ -13,7 +14,7 @@ const starredList = ref();
 
 const callApi = () => {
   api
-    .get(`/members/4/records`, {
+    .get(`/members/4/starred`, {
       headers: {
         "access-token":
           "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE2NzUzMjc0OTEsImV4cCI6MTY3NTMyODA5MX0.aIJ0mMbicn9nAygejotvzmCqv_LoOFmfaKfkJzqIHcU", // 변수로 가지고있는 AccessToken
