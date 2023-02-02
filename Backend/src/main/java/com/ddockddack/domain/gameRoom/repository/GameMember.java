@@ -19,7 +19,7 @@ public class GameMember {
     private Member member;
     private String nickname;
     private Integer score = 0;
-    private List<String> images = new ArrayList<>();
+    private List<byte[]> images = new ArrayList<>();
 
     public GameMember(String socketId, Member member, String nickname) {
         this.socketId = socketId;

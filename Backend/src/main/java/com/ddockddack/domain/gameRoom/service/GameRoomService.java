@@ -2,8 +2,6 @@ package com.ddockddack.domain.gameRoom.service;
 
 import com.ddockddack.domain.game.entity.Game;
 import com.ddockddack.domain.game.repository.GameRepository;
-import com.ddockddack.domain.game.response.GameDetailRes;
-import com.ddockddack.domain.game.service.GameService;
 import com.ddockddack.domain.gameRoom.repository.GameRoom;
 import com.ddockddack.domain.gameRoom.repository.GameRoomRepository;
 import com.ddockddack.domain.gameRoom.response.GameRoomRes;
@@ -16,15 +14,9 @@ import io.openvidu.java.client.OpenViduHttpException;
 import io.openvidu.java.client.OpenViduJavaClientException;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.codec.binary.Base64;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -33,8 +25,6 @@ public class GameRoomService {
     private final GameRoomRepository gameRoomRepository;
     private final GameRepository gameRepository;
     private final MemberRepository memberRepository;
-    @Value("${memberImageUploadPath}")
-    private String memberImageUploadPath;
 
     /**
      * 방 생성
@@ -45,9 +35,9 @@ public class GameRoomService {
      * @throws OpenViduHttpException
      */
     public String createRoom(Long gameId)
-        throws OpenViduJavaClientException, OpenViduHttpException {
+            throws OpenViduJavaClientException, OpenViduHttpException {
         Game game = gameRepository.findById(gameId)
-            .orElseThrow(() -> new NotFoundException(ErrorCode.GAME_NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.GAME_NOT_FOUND));
 
         return gameRoomRepository.create(game);
     }
@@ -63,12 +53,12 @@ public class GameRoomService {
      * @throws OpenViduHttpException
      */
     public GameRoomRes joinRoom(String pinNumber, Long memberId, String nickname)
-        throws OpenViduJavaClientException, OpenViduHttpException {
+            throws OpenViduJavaClientException, OpenViduHttpException {
         Member member = null;
         //로그인 한 유저면 memberId로 검색해서 넘겨줌
         if (memberId != null) {
             member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
+                    .orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
         }
 
         String token = gameRoomRepository.join(pinNumber, member, nickname);
@@ -150,6 +140,7 @@ public class GameRoomService {
 
     /**
      * 게임 멤버 이미지 저장
+     *
      * @param pinNumber
      * @param sessionId
      * @param data
@@ -159,21 +150,9 @@ public class GameRoomService {
         Optional.ofNullable(gameRoomRepository.findById(pinNumber).orElseThrow(() ->
                 new NotFoundException(ErrorCode.GAME_ROOM_NOT_FOUND)));
 
-        String path = memberImageUploadPath + pinNumber;
+        byte[] byteImage = Base64.decodeBase64(data);
+        gameRoomRepository.saveMemberImageUrl(pinNumber, sessionId, byteImage);
 
-        File file = new File(path);
-        // 디렉토리가 존재 하지 않는 경우
-        if (!file.exists()) {
-            file.mkdirs();
-        }
-        String fileName = UUID.randomUUID().toString() + ".jpg";
-        try (FileOutputStream stream = new FileOutputStream(file.getAbsolutePath() + File.separator + fileName)) {
-            byte[] image = Base64.decodeBase64(data);
-            stream.write(image);
-            gameRoomRepository.saveMemberImageUrl(pinNumber, sessionId, fileName);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
 }

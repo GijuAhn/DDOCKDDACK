@@ -97,10 +97,10 @@ public class GameService {
      * @param gameSaveReq
      * @return gameId
      */
-    public Long saveGame(GameSaveReq gameSaveReq) {
+    public Long saveGame(Long memberId, GameSaveReq gameSaveReq) {
 
         // memberId로 member 조회. 조회 결과가 null 이면 NotFoundException 발생.
-        Member getMember = Optional.ofNullable(memberRepository.findById(gameSaveReq.getMemberId()).orElseThrow(() ->
+        Member getMember = Optional.ofNullable(memberRepository.findById(memberId).orElseThrow(() ->
                 new NotFoundException(ErrorCode.MEMBER_NOT_FOUND))).get();
 
         // 게임 생성

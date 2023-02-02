@@ -6,28 +6,20 @@ import com.ddockddack.domain.game.response.GameDetailRes;
 import com.ddockddack.domain.game.response.GameRes;
 import com.ddockddack.domain.game.service.GameService;
 import com.ddockddack.domain.report.entity.ReportType;
-import com.ddockddack.global.util.OrderCondition;
 import com.ddockddack.global.util.PageConditionReq;
-import com.ddockddack.global.util.PeriodCondition;
-import com.ddockddack.global.util.SearchCondition;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.codec.binary.Base64;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/games")
@@ -41,8 +33,8 @@ public class GameApiController {
             @ApiResponse(responseCode = "200", description = "게임 목록 조회 성공")
     })
     public ResponseEntity<PageImpl<GameRes>> gameList(@ModelAttribute PageConditionReq pageConditionReq,
-                                             @RequestHeader(value = "access-token", required = false) String accessToken) {
-
+                                                      @RequestHeader(value = "access-token", required = false) String accessToken) {
+        log.info("들어온 값 확인 {}. ", pageConditionReq);
 
         PageImpl<GameRes> allGames = gameService.findAllGames(null, pageConditionReq);
 
@@ -70,9 +62,10 @@ public class GameApiController {
             @ApiResponse(responseCode = "414", description = "입력 범위 벗어남"),
             @ApiResponse(responseCode = "414", description = "지원 하지 않는 확장자")
     })
-    public ResponseEntity gameSave(@ModelAttribute @Valid GameSaveReq gameSaveReq) {
+    public ResponseEntity gameSave(@ModelAttribute @Valid GameSaveReq gameSaveReq,
+                                   @RequestHeader(value = "access-token", required = false) String accessToken) {
 
-        gameService.saveGame(gameSaveReq);
+        gameService.saveGame(1L, gameSaveReq);
         return ResponseEntity.ok().build();
 
     }
@@ -103,7 +96,7 @@ public class GameApiController {
             @ApiResponse(responseCode = "404", description = "존재 하지 않는 유저")
     })
     public ResponseEntity gameRemove(@PathVariable Long gameId,
-            @RequestHeader(value = "access-token", required = false) String accessToken) {
+                                     @RequestHeader(value = "access-token", required = false) String accessToken) {
 
         gameService.removeGame(1L, gameId);
 
@@ -163,7 +156,6 @@ public class GameApiController {
         return ResponseEntity.ok().build();
 
     }
-
 
 
 }

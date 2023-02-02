@@ -57,7 +57,6 @@ public class GameRoomApiController {
             //로그인 한 경우 token에서 memberId 추출
             memberId = 1L;
         }
-
         return new ResponseEntity<>(gameRoomService.joinRoom(pinNumber, memberId, nickname), HttpStatus.OK);
     }
 

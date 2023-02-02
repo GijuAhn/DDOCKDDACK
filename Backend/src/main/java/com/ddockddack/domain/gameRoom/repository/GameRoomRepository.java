@@ -116,11 +116,16 @@ public class GameRoomRepository {
         this.gameRooms.put(pinNumber,gameRoom);
     }
 
-    public void saveMemberImageUrl(String pinNumber, String sessionId, String imageUrl) {
+    public void saveMemberImageUrl(String pinNumber, String sessionId, byte[] byteImage) {
         GameRoom gameRoom = this.gameRooms.get(pinNumber);
         GameMember gameMember = gameRoom.getMembers().get(sessionId);
-        gameMember.getImages().add(imageUrl);
+        gameMember.getImages().add(byteImage);
         this.gameRooms.put(pinNumber, gameRoom);
+    }
+
+    public byte[] findByImageIndex(String pinNumber, String sessionId, int index) {
+        GameMember gameMember = gameRooms.get(pinNumber).getMembers().get(sessionId);
+        return gameMember.getImages().get(index);
     }
 
 }
