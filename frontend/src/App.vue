@@ -4,7 +4,6 @@
     <router-link to="/gameList">게임 목록</router-link> |
     <router-link to="/gameMake">게임 만들기</router-link> |
     <router-link to="/bestcut">베스트컷</router-link> |
-    <router-link to="/gameroom">게임 룸</router-link> |
     <router-link to="/member">마이 페이지</router-link> |
     <router-link to="/admin">관리자 페이지</router-link>
   </nav>

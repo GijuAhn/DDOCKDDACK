@@ -31,7 +31,7 @@ const routes = [
     component: () => import("@/views/BestcutView.vue"),
   },
   {
-    path: "/gameroom",
+    path: "/gameroom/:pinNumber",
     name: "gameroom",
     component: () => import("@/views/GameroomView.vue"),
   },
