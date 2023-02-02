@@ -32,8 +32,9 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     public void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
         FilterChain filterChain)
         throws IOException, ServletException {
-
         log.info("Filter 진입");
+        log.info("요청 타입 {}", request.getMethod());
+        log.info("요청 타입 uri {}", request.getRequestURI());
         String accessToken = (request).getHeader("access-token");
         String refreshToken = (request).getHeader("refresh-token");
 
@@ -66,9 +67,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
             Authentication auth = getAuthentication(memberAccessRes);
             SecurityContextHolder.getContext().setAuthentication(auth);
-        } else { //access token이 만료 된 경우
+        } else if(!request.getMethod().equals("GET")){ //GET Mapping이 아닌 경우만 ERROR처리 하지만
             throw new AccessDeniedException(ErrorCode.EXPIRED_ACCESSTOKEN);
         }
+
         filterChain.doFilter(request, response);
     }
 

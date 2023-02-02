@@ -93,7 +93,7 @@ public class MemberApiController {
     public ResponseEntity<?> getMemberInfo(@PathVariable Long memberId) {
 
         log.info("sec info {}",
-            SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+            SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
         MemberAccessRes memberAccessRes = (MemberAccessRes) SecurityContextHolder.getContext()
             .getAuthentication().getPrincipal();
         if (memberAccessRes.getId() != memberId) {
@@ -119,7 +119,7 @@ public class MemberApiController {
     @DeleteMapping("/{memberId}")
     public ResponseEntity<?> deleteMember(@PathVariable Long memberId) {
         try {
-            memberService.deleteMemberById(memberId);
+            memberService.deleteMemberById(memberId); //탈퇴로직에 access, refresh Token 정지시키는 로직 추가해야함
             return ResponseEntity.ok("success 삭제");
         } catch (Exception e) {
             return ResponseEntity.status(500).body(e);
