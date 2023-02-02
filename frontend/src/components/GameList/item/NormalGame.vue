@@ -28,7 +28,7 @@
         <div id="etc" v-show="state" class="test">
           <div><span>즐겨찾기</span></div>
           <div><span>베스트 컷</span></div>
-          <div><span>문제 미리보기</span></div>
+          <div @click="test"><span>문제 미리보기</span></div>
           <div><span>신고</span></div>
         </div>
       </div>
@@ -38,6 +38,9 @@
 
 <script setup>
 import { defineProps, ref } from "vue";
+import { useStore } from "vuex";
+
+const store = useStore();
 
 const props = defineProps(["game"]);
 
@@ -51,6 +54,10 @@ const open = () => {
 };
 
 const state = ref(false);
+
+const test = () => {
+  store.dispatch("commonStore/setCurrentModalAsync", "preview");
+};
 </script>
 
 <style scoped>
@@ -143,6 +150,9 @@ const state = ref(false);
   border-radius: 10px;
   padding: 10px 0;
   display: block;
+}
+#etc :hover {
+  cursor: pointer;
 }
 #etc span {
   font-size: 16px;
