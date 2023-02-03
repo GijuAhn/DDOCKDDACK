@@ -1,11 +1,13 @@
 server:
   port: 9999
+
   servlet:
     context-path: /
     encoding:
       charset: utf-8
       enabled: true
       force: true
+
   tomcat:
     basedir: .                              # access log를 저장할 base directory 지정
     accesslog:
@@ -16,7 +18,6 @@ server:
       suffix: .log                          # access log 파일이름 suffix (확장자 포함)
       rotate: true                          # access log rotation 여부
       rename-on-rotate: true                # rotation 시, 새로운 이름 지정 여부 (rotate 될 때의 날짜명이 로그 파일이름에 찍힘)
-
 
 spring:
 
@@ -106,3 +107,12 @@ kakao:
 
 server:
   port: 8080
+
+logging:
+  pattern:
+    file: "[%d{HH:mm:ss.SSS}][%-5level][%logger.%method:line%line] - %msg%n"
+  file:
+    name: /logs/spring.log
+  level:
+    org:
+      springframework: INFO
