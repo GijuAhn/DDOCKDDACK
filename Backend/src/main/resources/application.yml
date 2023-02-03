@@ -1,7 +1,6 @@
 server:
   port: 9999
-  address:
-    - localhost
+  address: localhost
   servlet:
     context-path: /
     encoding:
