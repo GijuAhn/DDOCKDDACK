@@ -65,9 +65,8 @@ public class GameRoomService {
         GameRoom gameRoom = this.findGameRoom(pinNumber);
 
         if (gameRoom.isStarted()) {
-            throw new AccessDeniedException(ErrorCode.ALREADY_EXIST_REPORTEDGAME);
+            throw new AccessDeniedException(ErrorCode.ALREADY_STARTED_GAME);
         }
-
         GameRoomRes gameRoomRes = GameRoomRes.of(gameRoom);
         gameRoomRes.setToken(token);
         return gameRoomRes;

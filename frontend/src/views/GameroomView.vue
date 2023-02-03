@@ -9,7 +9,7 @@
           핀번호 : {{ room.pinNumber }} 인원 :
           {{ openviduInfo.subscribers.length + 1 }}
           <span v-show="!isEnd">/ 게임 라운드 : {{ round }}</span>
-          <button @click="linkShare()">
+          <button @click="linkShare">
             <img
               src="https://developers.kakao.com/assets/img/about/logos/kakaotalksharing/kakaotalk_sharing_btn_medium.png"
               alt="카카오톡 공유 보내기 버튼"
@@ -94,7 +94,12 @@ onBeforeMount(() => {
     .then((res) => {
       //access-token 없으면 닉네임 입력 받도록 수정 필요
       if (!accessToken.value) {
-        nickname.value = prompt("닉네임을 입력해주세요.");
+        do {
+          nickname.value = prompt("닉네임을 입력해주세요.");
+          if (nickname.value == null) {
+            router.replace("/");
+          }
+        } while (nickname.value.trim() == "");
       }
 
       openviduInfo.value.OV = new OpenVidu();
@@ -176,6 +181,9 @@ onBeforeMount(() => {
       if (err.response.status === 404) {
         alert("존재하지 않는 게임방입니다.");
       }
+      if (err.response.status === 401) {
+        console.log(err.response);
+      }
     });
 });
 
@@ -238,13 +246,11 @@ const linkShare = async () => {
   const file = await convertURLtoFile(
     `/static/images/${room.value.gameId}/${room.value.gameImages[0].gameImage}`
   );
-  console.log(file);
   const files = [file];
 
   let response = await window.Kakao.Share.uploadImage({
     file: files,
   });
-  console.log(response);
   window.Kakao.Link.sendDefault({
     objectType: "feed",
     content: {

@@ -125,10 +125,4 @@ public class GameRoomApiController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/test")
-    public ResponseEntity upload(@RequestBody List<String> images) {
-        System.out.println(images);
-        return ResponseEntity.ok().build();
-    }
-
 }

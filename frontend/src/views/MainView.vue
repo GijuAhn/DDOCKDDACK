@@ -2,7 +2,7 @@
   <img alt="Vue logo" src="../assets/logo.png" />
   <div>
     <label>PIN</label>
-    <input v-model="pinNumber" class="form-control" type="text" required />
+    <input v-model.trim="pinNumber" class="form-control" type="text" required />
   </div>
   <div>
     <button class="btn btn-lg btn-success" @click="join(pinNumber)">
@@ -11,13 +11,10 @@
   </div>
 </template>
 
-<script>
-// import HelloWorld from "@/components/HelloWorld.vue";
+<script setup>
+import router from "@/router/index.js";
 
-export default {
-  name: "HomeView",
-  components: {
-    // HelloWorld,
-  },
+const join = (pinNumber) => {
+  router.replace(`/gameroom/${pinNumber}`);
 };
 </script>
