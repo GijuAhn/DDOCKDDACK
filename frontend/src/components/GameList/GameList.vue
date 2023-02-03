@@ -1,31 +1,33 @@
 <template>
-  <div id="searchBar">
-    <div>
-      <button @click="sortGames('P')">인기순</button>
-      <button @click="sortGames('R')">최신순</button>
+  <div id="view">
+    <div id="searchBar">
+      <div>
+        <button @click="sortGames('P')">인기순</button>
+        <button @click="sortGames('R')">최신순</button>
+      </div>
+      <div>
+        <select name="choice">
+          <option value="1" selected>전체기간</option>
+          <option value="2">1일</option>
+          <option value="3">1주</option>
+          <option value="4">1개월</option>
+          <option value="5">6개월</option>
+        </select>
+      </div>
+      <div>
+        <select name="choice">
+          <option value="1" selected>게임 제목</option>
+          <option value="2">제작자</option>
+        </select>
+      </div>
+      <div>
+        <input type="text" />
+        <button>검색</button>
+      </div>
     </div>
-    <div>
-      <select name="choice">
-        <option value="1" selected>전체기간</option>
-        <option value="2">1일</option>
-        <option value="3">1주</option>
-        <option value="4">1개월</option>
-        <option value="5">6개월</option>
-      </select>
+    <div id="list">
+      <normal-game v-for="game in games" :key="game" :game="game"></normal-game>
     </div>
-    <div>
-      <select name="choice">
-        <option value="1" selected>게임 제목</option>
-        <option value="2">제작자</option>
-      </select>
-    </div>
-    <div>
-      <input type="text" />
-      <button>검색</button>
-    </div>
-  </div>
-  <div id="list">
-    <normal-game v-for="game in games" :key="game" :game="game"></normal-game>
   </div>
 </template>
 
@@ -37,21 +39,27 @@ import { ref } from "vue";
 
 const api = apiInstance();
 let games = ref();
-let selectedOption = ref("POPULARITY");
+let pageConditionReq = ref({
+  order: "POPULARITY",
+  period: "ALL",
+  search: "GAME",
+  keyword: "",
+  page: 1,
+});
 const callApi = () => {
   api
-    .get(`/games`, {
+    .get(`/api/games`, {
       params: {
-        order: selectedOption.value,
-        // period: "ALL", //작동안됨
-        // search: "GAME",
-        // keyword: "",
-        // page: 1,
+        order: pageConditionReq.value.order,
+        period: pageConditionReq.value.period,
+        search: pageConditionReq.value.search,
+        keyword: pageConditionReq.value.keyword,
+        page: pageConditionReq.value.page,
       },
     })
-    .then(({ data }) => {
-      //console.log(data.content);
-      games.value = data.content;
+    .then((response) => {
+      console.log(response);
+      games.value = response.data.content;
     })
     .catch((error) => {
       console.log(error);
@@ -61,13 +69,24 @@ const callApi = () => {
 callApi();
 
 const sortGames = (option) => {
+  //변경 이벤트 발생시
   if (option === "P") {
-    selectedOption.value = "POPULARITY";
+    pageConditionReq.value.order = "POPULARITY";
   } else {
-    selectedOption.value = "RECENT";
+    pageConditionReq.value.order = "RECENT";
   }
   callApi();
 };
 </script>
 
-<style></style>
+<style scoped>
+#view {
+  border: 2px solid black;
+  width: 1200px;
+  position: relative;
+  top: -320px;
+  left: 50%;
+  transform: translate(-50%, 0);
+  background-color: white;
+}
+</style>

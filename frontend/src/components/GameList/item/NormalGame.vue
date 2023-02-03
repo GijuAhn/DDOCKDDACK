@@ -11,7 +11,11 @@
     {{ props.game.gameTitle }}
     {{ props.game.gameDesc }}
     {{ props.game.popularity }}
-    <button @click="createSession(props.game.gameId)">방 생성</button>
+    <button>방 생성</button>
+    <button>즐겨찾기</button>
+    <button>베스트컷</button>
+    <button>문제 미리보기</button>
+    <button>신고</button>
   </div>
 </template>
 

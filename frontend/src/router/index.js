@@ -27,7 +27,7 @@ const routes = [
   },
   {
     path: "/bestcut",
-    name: "bestcut",
+    name: "bestcutList", //bestcut 중복 체크
     component: () => import("@/views/BestcutView.vue"),
   },
   {
