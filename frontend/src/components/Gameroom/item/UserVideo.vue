@@ -1,20 +1,11 @@
 <template>
   <div>
     <div v-if="props.streamManager">
-      <span v-if="props.isStart && !props.isEnd">
-        <img
-          :src="`${GAMEIMAGES_PATH}/${props.room.gameId}/${
-            props.room.gameImages[round - 1].gameImage
-          }`"
-        />
-      </span>
-      <div class="parent">
-        <ov-video
-          class="child1"
-          :class="{ blinking: resultMode }"
-          :stream-manager="props.streamManager"
-        />
-      </div>
+      <ov-video
+        class="child1"
+        :class="{ blinking: resultMode }"
+        :stream-manager="props.streamManager"
+      />
 
       <div>
         <p>{{ clientData }}</p>
@@ -58,7 +49,6 @@ import OvVideo from "./OvVideo";
 import html2canvas from "html2canvas";
 import { apiInstance } from "@/api/index";
 import { computed, defineProps, watch, ref, onMounted } from "vue";
-import process from "process";
 
 const api = apiInstance();
 const props = defineProps({
@@ -71,7 +61,6 @@ const props = defineProps({
   resultMode: Boolean,
 });
 
-const GAMEIMAGES_PATH = process.env.VUE_APP_GAMEIMAGES_PATH;
 const resultImages = ref([]);
 const bestcutSaveReq = ref({
   pinNumber: undefined,
@@ -197,13 +186,5 @@ const upload = () => {
   100% {
     opacity: 1;
   }
-}
-
-.parent {
-  position: relative;
-}
-.child,
-.child {
-  position: absolute;
 }
 </style>

@@ -18,7 +18,7 @@
 </template>
 
 <script setup>
-import { defineProps, onMounted } from "vue";
+import { defineProps } from "vue";
 import { apiInstance } from "@/api/index";
 import router from "@/router/index.js";
 import process from "process";
@@ -26,10 +26,6 @@ import process from "process";
 const props = defineProps(["game"]);
 const api = apiInstance();
 const GAMEIMAGES_PATH = process.env.VUE_APP_GAMEIMAGES_PATH;
-
-onMounted(() => {
-  console.log(process.env);
-});
 
 const createSession = (gameId) => {
   api.post("/api/game-rooms", { gameId }).then((res) => {
