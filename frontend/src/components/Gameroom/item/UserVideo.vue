@@ -3,7 +3,7 @@
     <div v-if="props.streamManager">
       <span v-if="props.isStart && !props.isEnd">
         <img
-          :src="`http://localhost:9999/static/images/${props.room.gameId}/${
+          :src="`${GAMEIMAGES_PATH}/${props.room.gameId}/${
             props.room.gameImages[round - 1].gameImage
           }`"
         />
@@ -42,7 +42,7 @@
             placeholder="제목을 입력하세요"
           />
           <img
-            :src="`http://localhost:9999/static/images/${props.room.gameId}/${props.room.gameImages[index].gameImage}`"
+            :src="`${GAMEIMAGES_PATH}/${props.room.gameId}/${props.room.gameImages[index].gameImage}`"
           />
           <img :src="image" id="bestcutImg" /> <br />
         </div>
@@ -58,6 +58,7 @@ import OvVideo from "./OvVideo";
 import html2canvas from "html2canvas";
 import { apiInstance } from "@/api/index";
 import { computed, defineProps, watch, ref, onMounted } from "vue";
+import process from "process";
 
 const api = apiInstance();
 const props = defineProps({
@@ -70,6 +71,7 @@ const props = defineProps({
   resultMode: Boolean,
 });
 
+const GAMEIMAGES_PATH = process.env.VUE_APP_GAMEIMAGES_PATH;
 const resultImages = ref([]);
 const bestcutSaveReq = ref({
   pinNumber: undefined,
@@ -113,7 +115,7 @@ const capture = () => {
     let param = {
       memberGameImage: byteString,
     };
-    api.post(`/game-rooms/${pinNumber}/${sessionId}/images`, param);
+    api.post(`/api/game-rooms/${pinNumber}/${sessionId}/images`, param);
 
     resultImages.value.push(myImg);
   });
@@ -173,7 +175,7 @@ const upload = () => {
     }
   });
   api
-    .post("/bestcuts", bestcutSaveReq.value)
+    .post("/api/bestcuts", bestcutSaveReq.value)
     .then(() => {
       this.$swal({
         text: "업로드가 완료 되었습니다.",

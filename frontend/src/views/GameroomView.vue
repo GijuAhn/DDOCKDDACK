@@ -55,6 +55,7 @@ import {
 } from "@vue/runtime-core";
 import { useRoute } from "vue-router";
 import { OpenVidu } from "openvidu-browser";
+import UserVideo from "@/components/Gameroom/item/UserVideo.vue";
 import { useStore } from "vuex";
 import router from "@/router/index.js";
 
@@ -91,7 +92,7 @@ const resultMode = ref(false);
 
 onBeforeMount(() => {
   api
-    .post(`/game-rooms/${route.params.pinNumber}`, {})
+    .post(`/api/game-rooms/${route.params.pinNumber}`, {})
     .then((res) => {
       //access-token 없으면 닉네임 입력 받도록 수정 필요
       if (!accessToken.value) {
@@ -204,13 +205,15 @@ const leaveSession = () => {
     // 방에 유저가 있는 경우 멤버삭제
     if (openviduInfo.value.subscribers.length) {
       api
-        .delete(`/game-rooms/${route.params.pinNumber}/sessions/${sessionId}`)
+        .delete(
+          `/api/game-rooms/${route.params.pinNumber}/sessions/${sessionId}`
+        )
         .catch((err) => {
           console.log(err);
         });
     } else {
       // 남아있는 유저가 나 혼자인 경우 방삭제
-      api.delete(`/game-rooms/${route.params.pinNumber}`).catch((err) => {
+      api.delete(`/api/game-rooms/${route.params.pinNumber}`).catch((err) => {
         console.log(err);
       });
     }
@@ -229,7 +232,7 @@ const leaveSession = () => {
 };
 const play = () => {
   api
-    .put(`/game-rooms/${route.params.pinNumber}`)
+    .put(`/api/game-rooms/${route.params.pinNumber}`)
     .then(() => {
       setTimeout(() => {
         openviduInfo.value.session.signal({

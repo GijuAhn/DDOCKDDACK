@@ -75,7 +75,7 @@ springdoc:
 OPENVIDU_URL : http://localhost:4443/
 OPENVIDU_SECRET: MY_SECRET
 
-gameImageUploadPath : src/main/resources/static/images/
+gameImageUploadPath : src/main/resources/static/gameImages/
 bestcutImageUploadPath : src/main/resources/static/bestcuts/
 
 ---

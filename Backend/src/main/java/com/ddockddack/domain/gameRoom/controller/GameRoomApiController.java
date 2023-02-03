@@ -20,7 +20,7 @@ import java.util.Map;
 @CrossOrigin(origins = "*")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/game-rooms")
+@RequestMapping("/api/game-rooms")
 public class GameRoomApiController {
 
     private final GameRoomService gameRoomService;
