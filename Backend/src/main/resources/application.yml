@@ -107,3 +107,4 @@ kakao:
 
 server:
   port: 8080
+  address: i8a409.p.ssafy.io
