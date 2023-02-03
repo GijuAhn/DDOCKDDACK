@@ -25,10 +25,10 @@
             class="etc"
           />
         </div>
-        <div id="etc" v-show="state" class="test">
+        <div id="etc" v-show="state">
           <div><span>즐겨찾기</span></div>
           <div><span>베스트 컷</span></div>
-          <div @click="test"><span>문제 미리보기</span></div>
+          <div @click="setCurrentModalAsync"><span>문제 미리보기</span></div>
           <div><span>신고</span></div>
         </div>
       </div>
@@ -54,7 +54,7 @@ const open = () => {
 
 const state = ref(false);
 
-const test = () => {
+const setCurrentModalAsync = () => {
   store.dispatch("commonStore/setCurrentModalAsync", {
     name: "preview",
     data: props.game,
