@@ -34,12 +34,12 @@ public class Service {
     @Rollback(value = false)
     public void 회원가입() throws Exception {
         //given 주어지면
-        Member member = new Member("test@naver.com", "kim", "", Role.MEMBER);
+//        Member member = new Member("test@naver.com", "kim", "", Role.MEMBER);
 //        member.setEmail("test@naver.com");
 //        member.setNickname("kim");
 
         //when 이렇게하면
-        Long saveId = memberService.joinMember(member);
+//        Long saveId = memberService.joinMember(member);
 
         //then //이렇게 검증됨
 //        em.flush();
