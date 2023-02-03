@@ -151,7 +151,6 @@ public class GameRoomService {
 
         byte[] byteImage = Base64.decodeBase64(data);
         gameRoomRepository.saveMemberImageUrl(pinNumber, sessionId, byteImage);
-
     }
 
 }

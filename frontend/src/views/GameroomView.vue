@@ -56,7 +56,6 @@ import {
 import { useRoute } from "vue-router";
 import { OpenVidu } from "openvidu-browser";
 import { useStore } from "vuex";
-import UserVideo from "@/components/Gameroom/item/UserVideo.vue";
 import router from "@/router/index.js";
 
 const api = apiInstance();
@@ -259,16 +258,16 @@ const linkShare = async () => {
       description: `${room.value.gameDescription}`,
       imageUrl: response.infos.original.url,
       link: {
-        mobileWebUrl: `http://localhost:8080/game-room/${room.value.pinNumber}`,
-        webUrl: `http://localhost:8080/game-room/${room.value.pinNumber}`,
+        mobileWebUrl: `http://localhost:8080/gameroom/${room.value.pinNumber}`,
+        webUrl: `http://localhost:8080/gameroom/${room.value.pinNumber}`,
       },
     },
     buttons: [
       {
         title: "게임 하러가기 ",
         link: {
-          mobileWebUrl: `http://localhost:8080/game-room/${room.value.pinNumber}`,
-          webUrl: `http://localhost:8080/game-room/${room.value.pinNumber}`,
+          mobileWebUrl: `http://localhost:8080/gameroom/${room.value.pinNumber}`,
+          webUrl: `http://localhost:8080/gameroom/${room.value.pinNumber}`,
         },
       },
     ],
@@ -296,7 +295,7 @@ watch(
 watch(
   timerCount,
   (value) => {
-    if (value >= 0 && timerEnabled.value) {
+    if (value > 0 && timerEnabled.value) {
       setTimeout(() => {
         timerCount.value--;
       }, 1000);
@@ -305,7 +304,7 @@ watch(
       timerEnabled.value = false;
       isEnd.value = true;
     }
-    if (value < 0) {
+    if (value === 0) {
       resultMode.value = true;
       setTimeout(() => {
         round.value++;
