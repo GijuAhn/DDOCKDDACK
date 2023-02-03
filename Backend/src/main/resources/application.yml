@@ -105,6 +105,9 @@ kakao:
     api_key: { $KAKAO_LOGIN_API_KEY }
     redirect_uri: { $KAKAO_LOGIN_REDIRECT_URL }
 
+OPENVIDU_URL : { $OPENVIDU_URL }
+OPENVIDU_SECRET: MY_SECRET
+
 server:
   port: 8080
 
