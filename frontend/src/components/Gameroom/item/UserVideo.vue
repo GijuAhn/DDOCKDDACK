@@ -177,17 +177,11 @@ const upload = () => {
   api
     .post("/api/bestcuts", bestcutSaveReq.value)
     .then(() => {
-      this.$swal({
-        text: "업로드가 완료 되었습니다.",
-      });
+      alert("업로드가 완료 되었습니다.");
     })
     .catch((err) => {
       err;
-      this.$swal({
-        icon: "error",
-        title: "Oops...",
-        text: "업로드 실패 ㅠㅠ",
-      });
+      alert("업로드 실패");
     });
 };
 </script>
