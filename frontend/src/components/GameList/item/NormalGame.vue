@@ -1,32 +1,89 @@
 <template>
-  <div>
-    <img
-      :src="`${GAMEIMAGES_PATH}/${props.game.gameId}/${props.game.thumbnail}`"
-      alt="대표사진"
-      width="200"
-      height="200"
-    />
-    {{ props.game.gameTitle }}
-    {{ props.game.gameDesc }}
-    {{ props.game.popularity }}
-    <button @click="createSession(props.game.gameId)">방 생성</button>
-    <button>즐겨찾기</button>
-    <button>베스트컷</button>
-    <button>문제 미리보기</button>
-    <button>신고</button>
+  <div id="content">
+    <div id="topSection">
+      <img
+        :src="`${GAMEIMAGES_PATH}/${props.game.gameId}/${props.game.thumbnail}`"
+        alt="대표사진"
+        class="image"
+      />
+
+      <div class="imageBehind2">
+        플 : {{ props.game.popularity }} <br />즐 : {{ props.game.starredCnt }}
+        <br />제 :
+        {{ props.game.creator }}
+      </div>
+    </div>
+    <div id="bottomSection">
+      <div id="gameTitle">
+        <span>{{ props.game.gameTitle }}</span>
+      </div>
+      <div id="gameDesc">
+        <span>{{ props.game.gameDesc }}</span>
+      </div>
+      <div id="createRoomButton">
+        <button @click="createSession(props.game.gameId)">방 생성</button>
+      </div>
+      <div id="etcSection" v-click-outside-element="onClickOutside">
+        <div id="etcButton" @click="open">
+          <img
+            :src="require(`@/assets/images/etc-button.png`)"
+            alt="기타버튼"
+            class="etc"
+          />
+        </div>
+        <div id="etc" v-show="state">
+          <div><span>즐겨찾기</span></div>
+          <div><span>베스트 컷</span></div>
+          <div @click="setCurrentModalAsync(`preview`)">
+            <span>문제 미리보기</span>
+          </div>
+          <div @click="setCurrentModalAsync(`reportReason`)">
+            <span>신고</span>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { defineProps, onMounted } from "vue";
+import { defineProps, onMounted, ref } from "vue";
+import { useStore } from "vuex";
 import { apiInstance } from "@/api/index";
 import router from "@/router/index.js";
 import process from "process";
+const store = useStore();
 
 const props = defineProps(["game"]);
 const api = apiInstance();
 const GAMEIMAGES_PATH = process.env.VUE_APP_GAMEIMAGES_PATH;
 
+
+const onClickOutside = () => {
+  state.value = false;
+};
+
+const open = () => {
+  state.value = !state.value;
+};
+
+const state = ref(false);
+
+const setCurrentModalAsync = (what) => {
+  if (what === "preview") {
+    store.dispatch("commonStore/setCurrentModalAsync", {
+      name: "preview",
+      data: props.game,
+    });
+  }
+  if (what === "reportReason") {
+    store.dispatch("commonStore/setCurrentModalAsync", {
+      name: "reportReason",
+      data: "",
+    });
+  }
+  open();
+};
 onMounted(() => {
   console.log(process.env);
 });
@@ -36,7 +93,137 @@ const createSession = (gameId) => {
     router.replace(`/gameroom/${res.data}`);
   });
 };
-// console.log(props.game);
 </script>
 
-<style></style>
+<style scoped>
+#content {
+  border: 2px solid black;
+  width: 325px;
+  height: 380px;
+}
+#createRoomButton {
+  margin-top: 10px;
+}
+#gameTitle {
+  width: 95%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+#gameDesc {
+  margin-top: 5px;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+#createRoomButton button {
+  border: 1px solid #da6c6b;
+  background-color: white;
+  font-size: 14px;
+  font-family: "NanumSquareRoundB";
+  width: 100%;
+  padding: 10px 0;
+  color: #da6c6b;
+}
+#createRoomButton button:hover {
+  color: white;
+  background-color: #da6c6b;
+  cursor: pointer;
+  transition: 0.3s;
+}
+#gameTitle span {
+  font-size: 22px;
+}
+#gameDesc span {
+  font-size: 16px;
+  color: #656565;
+}
+#topSection {
+  position: relative;
+}
+.image {
+  width: 325px;
+  height: 260px;
+  object-fit: cover;
+  display: inline-block;
+  /* display: none; */
+}
+.image:hover {
+  filter: brightness(50%);
+}
+.image:hover ~ .imageBehind2 {
+  display: inline-block;
+}
+
+.imageBehind {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 325px;
+  height: 260px;
+  background-color: black;
+  opacity: 0.5;
+}
+.imageBehind2 {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  display: none;
+}
+#bottomSection {
+  padding: 5px 10px;
+  position: relative;
+}
+#etcButton {
+  position: absolute;
+  top: 0px;
+  left: 290px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  text-align: center;
+}
+#etcButton:hover {
+  background-color: #d9d9d9;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.etc {
+  width: 50%;
+  height: 50%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+/* #content:hover {
+  box-shadow: 0 0 20px #8b8b8b;
+  transition: 0.3s;
+} */
+#etc {
+  position: absolute;
+  top: 30px;
+  left: 290px;
+  background-color: white;
+  width: 130px;
+  box-shadow: 0 0 10px #8b8b8b;
+  z-index: 1;
+  border-radius: 10px;
+  padding: 10px 0;
+  display: block;
+}
+#etc :hover {
+  cursor: pointer;
+}
+#etc span {
+  font-size: 16px;
+  display: block;
+  padding: 10px;
+}
+#etc span:hover {
+  background-color: #d9d9d9;
+}
+</style>
