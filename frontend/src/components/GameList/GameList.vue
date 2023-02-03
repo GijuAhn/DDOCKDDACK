@@ -89,16 +89,16 @@ const sortGames = (option) => {
 <style scoped>
 #view {
   border: 2px solid black;
-  width: 1200px;
+  width: 1060px;
   position: relative;
   top: -320px;
   left: 50%;
   transform: translate(-50%, 0);
   background-color: white;
+  padding: 70px;
 }
 #searchBar {
-  margin: 70px;
-  /* border: 1px solid blue; */
+  margin-bottom: 70px;
 }
 #searchBar > span {
   margin: 0 15px;
@@ -200,9 +200,6 @@ select:focus {
   display: grid;
   gap: 35px 0;
   grid-template-columns: repeat(3, 1fr);
-  /* border: 1px solid red; */
   width: 1090px;
-  place-items: center;
-  margin: 0 auto;
 }
 </style>
