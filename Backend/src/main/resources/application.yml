@@ -42,6 +42,8 @@ spring:
     multipart:
       max-file-size: 2MB
       max-request-size: 20MB
+  mvc:
+    static-path-pattern: /static/**
 
 logging:
   level:
@@ -72,8 +74,8 @@ springdoc:
 OPENVIDU_URL : http://localhost:4443/
 OPENVIDU_SECRET: MY_SECRET
 
-memberImageUploadPath : src/main/resources/static/memberImages/
 gameImageUploadPath : src/main/resources/static/images/
+bestcutImageUploadPath : src/main/resources/static/bestcuts/
 
 ---
 
