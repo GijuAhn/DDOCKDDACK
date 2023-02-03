@@ -45,9 +45,6 @@ public class Game {
     @OneToMany(mappedBy = "game", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<GameImage> images;
 
-    @OneToMany(mappedBy = "game", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<StarredGame> starredGame;
-
     @Builder
     public Game(Member member, String title, Category category, String description) {
         this.member = member;
