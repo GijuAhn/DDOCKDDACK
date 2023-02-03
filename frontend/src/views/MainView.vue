@@ -48,7 +48,7 @@ store.dispatch("commonStore/setColorAsync", "default");
 }
 
 .logo {
-  font-family: "Gugi", cursive;
+  font-family: "Gugi-Regular";
   font-size: 96px;
   text-align: center;
 }
