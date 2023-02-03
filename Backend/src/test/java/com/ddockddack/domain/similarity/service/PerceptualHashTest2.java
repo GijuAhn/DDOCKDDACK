@@ -50,7 +50,7 @@ class PerceptualHashTest2 {
         File face3 = new File("C:/Users/SSAFY/Downloads/image_similarity_test/face3.jpg");
         InputStream faceStream3 = new FileInputStream(face3);
 
-        File face4 = new File("C:/Users/SSAFY/Downloads/image_similarity_test/face4.jpg");
+        File face4 = new File("C:/Users/SSAFY/Downloads/image_similarity_test/face4.jpeg");
         InputStream faceStream4 = new FileInputStream(face4);
 
 

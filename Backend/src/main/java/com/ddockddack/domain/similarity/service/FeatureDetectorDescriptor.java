@@ -23,7 +23,7 @@ public class FeatureDetectorDescriptor {
     }
 
 
-    public float compareFeatures(InputStream input1, InputStream input2) throws IOException {
+    public double compareFeatures(InputStream input1, InputStream input2) throws IOException {
 
         BufferedImage img1 = ImageIO.read(input1);
         Mat image1 = ImageUtil.BufferedImage2Mat(img1);
@@ -47,11 +47,11 @@ public class FeatureDetectorDescriptor {
         matcher.knnMatch(descriptors1, descriptors2, matches, 2);
 
         // Filter matches using the Lowe's ratio test = 0.75f
-//        float ratioThreshold = 0.75f;
-//        float ratioThreshold = 0.70f;
-        float ratioThreshold = 0.80f;
-//        float ratioThreshold = 0.90f;
-//        float ratioThreshold = 0.999f;
+//        double ratioThreshold = 0.75f;
+//        double ratioThreshold = 0.70f;
+        double ratioThreshold = 0.80f;
+//        double ratioThreshold = 0.90f;
+//        double ratioThreshold = 0.999f;
         List<DMatch> goodMatches = new LinkedList<>();
         for (MatOfDMatch matOfDMatch : matches) {
             DMatch[] dmatcharray = matOfDMatch.toArray();
@@ -63,9 +63,9 @@ public class FeatureDetectorDescriptor {
             }
         }
 
-        // Calculate similarity score as the ratio of good matches to total matches
-        float score = (float) goodMatches.size() / (float) keypoints1.rows();
-
-        return score;
+        // Calculate similarity featureScore as the ratio of good matches to total matches
+        double featureScore = (double) goodMatches.size() / (double) keypoints1.rows();
+        System.out.println("@KAZE = " + featureScore);
+        return featureScore;
     }
 }

@@ -3,10 +3,11 @@ package com.ddockddack.domain.similarity.service;
 import org.junit.jupiter.api.Test;
 import org.opencv.core.Mat;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class ImageHistogramTest2 {
 
@@ -56,9 +57,9 @@ class ImageHistogramTest2 {
 //         에러 발생
 //      ※  JPG, JPEG 리터럴 포맷은 관계없이 정상적으로 변환되는 것 확인.
 
-//        File face2 = new File("C:/Users/SSAFY/Downloads/image_similarity_test/face2.jpg");
-//        InputStream faceStream2 = new FileInputStream(face2);
-//        List<Mat> faceHist2 = imageHistogram.getHistogram(faceStream2);
+        File face2 = new File("C:/Users/SSAFY/Downloads/image_similarity_test/face2.jpg");
+        InputStream faceStream2 = new FileInputStream(face2);
+        List<Mat> faceHist2 = imageHistogram.getHistogram(faceStream2);
 
         File face3 = new File("C:/Users/SSAFY/Downloads/image_similarity_test/face3.jpg");
         InputStream faceStream3 = new FileInputStream(face3);
@@ -84,12 +85,12 @@ class ImageHistogramTest2 {
         System.out.println("hurray vs arms: " +
                 imageHistogram.compareHistograms(hurrayHist3, armsHist3));
 
-//        System.out.println("-------------------------");
-//        System.out.println("비슷한 오브젝트, 다른 도메인 비교");
-//        System.out.println("face(사람얼굴,사람얼굴그림) 1,2: " +
-//                imageHistogram.compareHistograms(faceHist1, faceHist2));
+        System.out.println("-------------------------");
+        System.out.println("비슷한 오브젝트, 다른 도메인 비교");
+        System.out.println("face(사람얼굴,사람얼굴그림) 1,2: " +
+                imageHistogram.compareHistograms(faceHist1, faceHist2));
         System.out.println("face(호랑이얼굴,화난얼굴) 3,4: " +
                 imageHistogram.compareHistograms(faceHist3, faceHist4));
-
+        System.out.println("Unit Test End.");
     }
 }

@@ -9,6 +9,8 @@ import java.nio.Buffer;
 import javax.imageio.ImageIO;
 
 import com.ddockddack.domain.similarity.service.ImageUtil;
+import com.ddockddack.global.error.ErrorCode;
+import com.ddockddack.global.error.exception.ImageExtensionException;
 
 // grayscale (single channel) SSIM
 public class StructuralSimilarity {
@@ -60,8 +62,13 @@ public class StructuralSimilarity {
         double SSIMScore = (2 * meanX * meanY + 0.0001) * (2 * covariance + 0.0001) /
                 ((meanX * meanX + meanY * meanY + 0.0001) * (standardDeviationX * standardDeviationX + standardDeviationY * standardDeviationY + 0.0001));
 
-//        HIGHER SSIM => HIGHER Similarity
-        return SSIMScore;
+//        prevent SSIMScore got negative value, logarithm shift
+//        [-1.0 ~ +1.0 -> -1.0 ~ +1.0] -> [-1.0 ~ +1.0 -> +0.0 ~ +ln3]
+        double shiftedSSIMScore = logShift(SSIMScore);
+        System.out.println("@ShiftedSSIM = " + shiftedSSIMScore);
+
+        //        HIGHER SSIM => HIGHER Similarity
+        return shiftedSSIMScore;
     }
 
     private static BufferedImage toGrayscale(BufferedImage image) {
@@ -70,4 +77,11 @@ public class StructuralSimilarity {
         return grayImage;
     }
 
+//  prevent SSIMScore got negative value, logarithm shift
+//  [-1.0 ~ +1.0 -> -1.0 ~ +1.0] -> [-1.0 ~ +1.0 -> +0.0 ~ +ln3]
+    private double logShift(double x){
+        double y;
+        y = Math.log(x+2);
+        return y;
+    }
 }

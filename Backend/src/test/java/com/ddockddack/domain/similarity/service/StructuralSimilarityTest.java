@@ -2,11 +2,10 @@ package com.ddockddack.domain.similarity.service;
 
 import org.junit.jupiter.api.Test;
 
-import java.io.*;
-
-import com.ddockddack.domain.similarity.service.StructuralSimilarity;
-
-import static org.junit.jupiter.api.Assertions.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 class StructuralSimilarityTest {
 
@@ -44,7 +43,7 @@ class StructuralSimilarityTest {
         File face3 = new File("C:/Users/SSAFY/Downloads/image_similarity_test/face3.jpg");
         InputStream faceStream3 = new FileInputStream(face3);
 
-        File face4 = new File("C:/Users/SSAFY/Downloads/image_similarity_test/face4.jpg");
+        File face4 = new File("C:/Users/SSAFY/Downloads/image_similarity_test/face4.jpeg");
         InputStream faceStream4 = new FileInputStream(face4);
 
 

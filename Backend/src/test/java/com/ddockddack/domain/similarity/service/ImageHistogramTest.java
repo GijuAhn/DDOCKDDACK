@@ -3,7 +3,10 @@ package com.ddockddack.domain.similarity.service;
 import org.junit.jupiter.api.Test;
 import org.opencv.core.Mat;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 
