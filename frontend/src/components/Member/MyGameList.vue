@@ -74,7 +74,7 @@ const getAccessTokenByRefreshToken = () => {
 };
 
 const moveLoginPage = () => {
-  //AccessToken 만료되면 refresh로
+  //refreshToken도 만료되면 로그아웃
   console.log("move Page");
 };
 
