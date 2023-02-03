@@ -55,7 +55,7 @@ public class GameRepositorySupport {
                 .where(searchCond(pageCondition.getSearchCondition(), pageCondition), periodCond(pageCondition.getPeriodCondition()))
                 .offset(pageCondition.getPageable().getOffset())
                 .limit(pageCondition.getPageable().getPageSize())
-                .groupBy(game.id)
+                .groupBy(game.id,game.category,game.title,game.description,game.member.nickname,game.playCount)
                 .orderBy(orderCond(pageCondition.getPageable()))
                 .fetch();
 
@@ -105,7 +105,7 @@ public class GameRepositorySupport {
                 .innerJoin(game.member, member)
                 .innerJoin(game.images, gameImage)
                 .where(game.member.id.eq(memberId))
-                .groupBy(game.id)
+                .groupBy(game.id,game.category,game.title,game.description,game.member.nickname,game.playCount)
                 .orderBy(game.id.desc())
                 .fetch();
     }
@@ -128,7 +128,7 @@ public class GameRepositorySupport {
                 .innerJoin(game.images, gameImage)
                 .join(starredGame).on(starredGame.game.id.eq(game.id)
                         .and(starredGame.member.id.eq(memberId)))
-                .groupBy(game.id)
+                .groupBy(game.id,game.category,game.title,game.createdAt,game.member.nickname,game.playCount)
                 .orderBy(starredGame.id.desc())
                 .fetch();
 
