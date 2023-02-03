@@ -11,16 +11,9 @@
       <div class="parent">
         <ov-video
           class="child1"
-          :class="{ blinking: captureMode }"
+          :class="{ blinking: resultMode }"
           :stream-manager="props.streamManager"
         />
-        <div class="child2" v-if="captureMode">
-          <img
-            :src="`http://localhost:9999/static/images/${props.room.gameId}/${
-              props.room.gameImages[round - 1].gameImage
-            }`"
-          />
-        </div>
       </div>
 
       <div>
@@ -74,6 +67,7 @@ const props = defineProps({
   isStart: Boolean,
   round: Number,
   room: Object,
+  resultMode: Boolean,
 });
 
 const resultImages = ref([]);
@@ -87,7 +81,6 @@ const inputs = ref([]);
 const isChecked = ref([]);
 const rankingImage = ref([]);
 const isShow = ref(false);
-const captureMode = ref(false);
 
 const clientData = computed(() => {
   const { clientData } = getConnectionData();
@@ -102,9 +95,7 @@ watch(
   () => props.timerCount,
   (value) => {
     if (value === 0) {
-      captureMode.value = true;
       capture();
-      captureMode.value = false;
     }
   },
   { immediate: true }
@@ -201,7 +192,7 @@ const upload = () => {
 
 <style scoped>
 .blinking {
-  animation: blink 1s ease-in-out infinite alternate;
+  animation: blink 0.5s ease-in-out infinite alternate;
 }
 @keyframes blink {
   0% {

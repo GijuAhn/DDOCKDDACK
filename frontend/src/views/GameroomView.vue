@@ -29,6 +29,7 @@
           :isStart="isStart"
           :round="round"
           :room="room"
+          :resultMode="resultMode"
         />
       </div>
       <div id="video-container" class="col-md-6">
@@ -87,6 +88,7 @@ const isStart = ref(false);
 const round = ref(1);
 const isHost = ref(false);
 const isEnd = ref(false);
+const resultMode = ref(false);
 
 onBeforeMount(() => {
   api
@@ -164,6 +166,7 @@ onBeforeMount(() => {
           room.value.gameTitle = res.data.gameTitle;
           room.value.gameDescription = res.data.gameDescription;
           room.value.gameImages = res.data.gameImages;
+          isHost.value = res.data.isHost;
         })
         .catch((error) => {
           console.log(
@@ -180,6 +183,7 @@ onBeforeMount(() => {
       }
       if (err.response.status === 404) {
         alert("존재하지 않는 게임방입니다.");
+        router.replace("/");
       }
       if (err.response.status === 401) {
         console.log(err.response);
@@ -192,9 +196,6 @@ onMounted(() => {
   timerEnabled.value = false;
   isStart.value = false;
   round.value = 1;
-  if (openviduInfo.value.subscribers.length === 0) {
-    isHost.value = true;
-  }
 });
 
 const leaveSession = () => {
@@ -305,8 +306,12 @@ watch(
       isEnd.value = true;
     }
     if (value < 0) {
-      round.value++;
-      timerCount.value = 5;
+      resultMode.value = true;
+      setTimeout(() => {
+        round.value++;
+        timerCount.value = 5;
+        resultMode.value = false;
+      }, 500);
     }
   },
   { immediate: true }

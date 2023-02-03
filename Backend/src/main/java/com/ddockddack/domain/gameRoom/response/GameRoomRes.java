@@ -20,27 +20,30 @@ public class GameRoomRes {
     private String gameTitle;
     private String gameDescription;
     private List<GameImageRes> gameImages;
+    private Boolean isHost;
 
     @Builder
     public GameRoomRes(String token, String pinNumber, Long gameId, String gameTitle,
-        String gameDescription, List<GameImageRes> gameImages) {
+            String gameDescription, List<GameImageRes> gameImages, Boolean isHost) {
         this.token = token;
         this.pinNumber = pinNumber;
         this.gameId = gameId;
         this.gameTitle = gameTitle;
         this.gameDescription = gameDescription;
         this.gameImages = gameImages;
+        this.isHost = isHost;
     }
 
     public static GameRoomRes of(GameRoom gameRoom) {
         return GameRoomRes.builder()
-            .pinNumber(gameRoom.getPinNumber())
-            .gameId(gameRoom.getGameId())
-            .gameTitle(gameRoom.getGameTitle())
-            .gameDescription(gameRoom.getGameDescription())
-            .gameImages(gameRoom.getGameImages().stream()
-                .map(i -> GameImageRes.of(i))
-                .collect(Collectors.toList()))
-            .build();
+                .pinNumber(gameRoom.getPinNumber())
+                .gameId(gameRoom.getGameId())
+                .gameTitle(gameRoom.getGameTitle())
+                .gameDescription(gameRoom.getGameDescription())
+                .gameImages(gameRoom.getGameImages().stream()
+                        .map(i -> GameImageRes.of(i))
+                        .collect(Collectors.toList()))
+                .isHost(gameRoom.getMembers().size() == 1 ? true : false)
+                .build();
     }
 }
