@@ -45,7 +45,6 @@ const store = useStore();
 const props = defineProps(["game"]);
 
 const onClickOutside = () => {
-  // console.log(e);
   state.value = false;
 };
 
@@ -56,7 +55,11 @@ const open = () => {
 const state = ref(false);
 
 const test = () => {
-  store.dispatch("commonStore/setCurrentModalAsync", "preview");
+  store.dispatch("commonStore/setCurrentModalAsync", {
+    name: "preview",
+    data: props.game,
+  });
+  open();
 };
 </script>
 
