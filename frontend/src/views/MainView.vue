@@ -11,13 +11,13 @@
   </div>
 </template>
 
-<script>
-// import HelloWorld from "@/components/HelloWorld.vue";
+<script setup>
+import { ref } from "vue";
+import router from "@/router/index.js";
 
-export default {
-  name: "HomeView",
-  components: {
-    // HelloWorld,
-  },
+const pinNumber = ref(undefined);
+
+const join = (pinNumber) => {
+  router.replace(`/gameroom/${pinNumber.trim()}`);
 };
 </script>
