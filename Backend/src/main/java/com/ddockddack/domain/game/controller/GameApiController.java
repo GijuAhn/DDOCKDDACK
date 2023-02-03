@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,9 +23,10 @@ import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
 
+@Log4j2
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/games")
+@RequestMapping("/api/games")
 public class GameApiController {
 
     private final GameService gameService;
@@ -37,7 +39,7 @@ public class GameApiController {
     public ResponseEntity<PageImpl<GameRes>> gameList(@ModelAttribute PageConditionReq pageConditionReq,
                                              @RequestHeader(value = "access-token", required = false) String accessToken) {
 
-
+    log.info("들어온 값 확인 {}", pageConditionReq);
         PageImpl<GameRes> allGames = gameService.findAllGames(null, pageConditionReq);
 
         return ResponseEntity.ok(allGames);

@@ -51,7 +51,7 @@ let pageConditionReq = ref({
 });
 const callApi = () => {
   api
-    .get(`/games`, {
+    .get(`/api/games`, {
       params: {
         order: pageConditionReq.value.order,
         period: pageConditionReq.value.period,

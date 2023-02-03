@@ -8,18 +8,14 @@ server:
       enabled: true
       force: true
 
-
 spring:
 
   profiles:
     active:
       - develop
     group:
-      green:
-        - server
-      develop:
-        - dev
-        - env
+      green: "server"
+      develop: "dev,env"
 
   jpa:
     hibernate:
