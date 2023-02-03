@@ -2,9 +2,7 @@
   <div id="content">
     <div id="topSection">
       <img
-        :src="
-          require(`@/../../Backend/images/${props.game.gameId}/${props.game.thumbnail}`)
-        "
+        :src="`${GAMEIMAGES_PATH}/${props.game.gameId}/${props.game.thumbnail}`"
         alt="대표사진"
         class="image"
       />
@@ -22,7 +20,9 @@
       <div id="gameDesc">
         <span>{{ props.game.gameDesc }}</span>
       </div>
-      <div id="createRoomButton"><button>방 생성</button></div>
+      <div id="createRoomButton">
+        <button @click="createSession(props.game.gameId)">방 생성</button>
+      </div>
       <div id="etcSection" v-click-outside-element="onClickOutside">
         <div id="etcButton" @click="open">
           <img
@@ -47,12 +47,16 @@
 </template>
 
 <script setup>
-import { defineProps, ref } from "vue";
+import { defineProps, onMounted, ref } from "vue";
 import { useStore } from "vuex";
-
+import { apiInstance } from "@/api/index";
+import router from "@/router/index.js";
+import process from "process";
 const store = useStore();
 
 const props = defineProps(["game"]);
+const api = apiInstance();
+const GAMEIMAGES_PATH = process.env.VUE_APP_GAMEIMAGES_PATH;
 
 const onClickOutside = () => {
   state.value = false;
@@ -78,6 +82,16 @@ const setCurrentModalAsync = (what) => {
     });
   }
   open();
+};
+
+onMounted(() => {
+  console.log(process.env);
+});
+
+const createSession = (gameId) => {
+  api.post("/api/game-rooms", { gameId }).then((res) => {
+    router.replace(`/gameroom/${res.data}`);
+  });
 };
 </script>
 

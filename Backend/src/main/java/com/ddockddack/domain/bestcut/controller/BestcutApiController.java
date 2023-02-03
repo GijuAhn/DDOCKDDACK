@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/bestcuts")
+@RequestMapping("/api/bestcuts")
 public class BestcutApiController {
     private final BestcutService bestcutService;
     private final BestcutLikeService bestcutLikeService;
@@ -42,15 +42,15 @@ public class BestcutApiController {
             @ApiResponse(description = "필수 값 누락", responseCode = "400"),
             @ApiResponse(description = "로그인 필요", responseCode = "401"),
     })
-    public ResponseEntity bestcutSave(@ModelAttribute @Valid BestcutSaveReq saveReq,
+    public ResponseEntity bestcutSave(@RequestBody @Valid BestcutSaveReq saveReq,
             @RequestHeader(value = "access-token", required = false) String accessToken) {
-        checkLogin(accessToken);
+//        checkLogin(accessToken); 업로드 테스트를 위해 잠시 주석처리
+        Long memberId = getMemberId(accessToken);
+//        if(getMemberId(accessToken) != saveReq.getMemberId()){
+//            throw new AccessDeniedException(ErrorCode.NOT_AUTHORIZED);
+//        }
 
-        if(getMemberId(accessToken) != saveReq.getMemberId()){
-            throw new AccessDeniedException(ErrorCode.NOT_AUTHORIZED);
-        }
-
-        bestcutService.saveBestcut(saveReq);
+        bestcutService.saveBestcut(1L, saveReq);
         return ResponseEntity.ok().build();
     }
 

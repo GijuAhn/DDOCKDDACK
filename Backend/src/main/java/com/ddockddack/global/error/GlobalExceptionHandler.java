@@ -1,5 +1,6 @@
 package com.ddockddack.global.error;
 
+import com.ddockddack.global.error.exception.AccessDeniedException;
 import com.ddockddack.global.error.exception.AlreadyExistResourceException;
 import com.ddockddack.global.error.exception.ImageExtensionException;
 import com.ddockddack.global.error.exception.NotFoundException;
@@ -19,11 +20,11 @@ public class GlobalExceptionHandler {
     /**
      * Authentication 객체가 필요한 권한을 보유하지 않은 경우 발생합
      */
-    @ExceptionHandler(com.ddockddack.global.error.exception.AccessDeniedException.class)
+    @ExceptionHandler(AccessDeniedException.class)
     protected ResponseEntity<ErrorResponse> handleAccessDeniedException(AccessDeniedException e) {
         log.error("handleAccessDeniedException", e);
-        final ErrorResponse response = ErrorResponse.of(ErrorCode.NOT_AUTHORIZED);
-        return new ResponseEntity<>(response, HttpStatus.valueOf(ErrorCode.NOT_AUTHORIZED.getCode()));
+        final ErrorResponse response = ErrorResponse.of(e.getErrorCode());
+        return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
     }
 
     /**
