@@ -6,6 +6,11 @@
       class="modalContent"
       v-if="currentModal.name === `preview`"
     />
+    <report-reason-modal
+      id="reportReasonModal"
+      class="modalContent"
+      v-if="currentModal.name === `reportReason`"
+    />
   </div>
 </template>
 
@@ -25,6 +30,7 @@ const setCurrentModalAsync = () => {
 };
 
 import PreviewModal from "@/components/common/modal/PreviewModal";
+import ReportReasonModal from "@/components/common/modal/ReportReasonModal";
 </script>
 
 <style scoped>
@@ -54,5 +60,9 @@ import PreviewModal from "@/components/common/modal/PreviewModal";
 #previewModal {
   width: 650px;
   height: 525px;
+}
+#reportReasonModal {
+  width: 235px;
+  height: 225px;
 }
 </style>

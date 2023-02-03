@@ -8,6 +8,12 @@
         alt="대표사진"
         class="image"
       />
+
+      <div class="imageBehind2">
+        플 : {{ props.game.popularity }} <br />즐 : {{ props.game.starredCnt }}
+        <br />제 :
+        {{ props.game.creator }}
+      </div>
     </div>
     <div id="bottomSection">
       <div id="gameTitle">
@@ -21,15 +27,19 @@
         <div id="etcButton" @click="open">
           <img
             :src="require(`@/assets/images/etc-button.png`)"
-            alt="대표사진"
+            alt="기타버튼"
             class="etc"
           />
         </div>
         <div id="etc" v-show="state">
           <div><span>즐겨찾기</span></div>
           <div><span>베스트 컷</span></div>
-          <div @click="setCurrentModalAsync"><span>문제 미리보기</span></div>
-          <div><span>신고</span></div>
+          <div @click="setCurrentModalAsync(`preview`)">
+            <span>문제 미리보기</span>
+          </div>
+          <div @click="setCurrentModalAsync(`reportReason`)">
+            <span>신고</span>
+          </div>
         </div>
       </div>
     </div>
@@ -54,11 +64,19 @@ const open = () => {
 
 const state = ref(false);
 
-const setCurrentModalAsync = () => {
-  store.dispatch("commonStore/setCurrentModalAsync", {
-    name: "preview",
-    data: props.game,
-  });
+const setCurrentModalAsync = (what) => {
+  if (what === "preview") {
+    store.dispatch("commonStore/setCurrentModalAsync", {
+      name: "preview",
+      data: props.game,
+    });
+  }
+  if (what === "reportReason") {
+    store.dispatch("commonStore/setCurrentModalAsync", {
+      name: "reportReason",
+      data: "",
+    });
+  }
   open();
 };
 </script>
@@ -107,10 +125,39 @@ const setCurrentModalAsync = () => {
   font-size: 16px;
   color: #656565;
 }
+#topSection {
+  position: relative;
+}
 .image {
   width: 325px;
   height: 260px;
   object-fit: cover;
+  display: inline-block;
+  /* display: none; */
+}
+.image:hover {
+  filter: brightness(50%);
+}
+.image:hover ~ .imageBehind2 {
+  display: inline-block;
+}
+
+.imageBehind {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 325px;
+  height: 260px;
+  background-color: black;
+  opacity: 0.5;
+}
+.imageBehind2 {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  display: none;
 }
 #bottomSection {
   padding: 5px 10px;
