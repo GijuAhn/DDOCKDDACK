@@ -26,21 +26,21 @@ class ImageHistogramTest {
 
 //        calculate histogram similarity
 
-        File myHandImage0 = new File("./src/main/resources/static/image_similarity_test/hand_input/hand1/3.jpg");
+        File myHandImage0 = new File("./src/test/resources/testImage/image_similarity_test/hand_input/hand1/3.jpg");
         List<Mat> hist1;
         try (InputStream targetHandImageStream1 = new FileInputStream(myHandImage0)) {
             hist1 = imageHistogram.getHistogram(targetHandImageStream1);
             System.out.println("hist1 = " + hist1);
         }
 
-        File myHandImage1 = new File("./src/main/resources/static/image_similarity_test/hand_input/hand1/1.jpg");
+        File myHandImage1 = new File("./src/test/resources/testImage/image_similarity_test/hand_input/hand1/1.jpg");
         List<Mat> hist2;
         try (InputStream myHandImageStream1 = new FileInputStream(myHandImage1)) {
             hist2 = imageHistogram.getHistogram(myHandImageStream1);
             System.out.println("hist2 = " + hist2);
         }
 
-        File myHandImage2 = new File("./src/main/resources/static/image_similarity_test/hand_input/hand2/1.jpg");
+        File myHandImage2 = new File("./src/test/resources/testImage/image_similarity_test/hand_input/hand2/1.jpg");
         List<Mat> hist3;
         try (InputStream myHandImageStream2 = new FileInputStream(myHandImage2)) {
             hist3 = imageHistogram.getHistogram(myHandImageStream2);

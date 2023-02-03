@@ -22,12 +22,12 @@ class PerceptualHashTest {
 //        given
         final PerceptualHash perceptualHash = new PerceptualHash();
 
-        File targetHandImage1 = new File("./src/main/resources/static/image_similarity_test/hand_target/hand1.jpg");
-        File targetHandImage2 = new File("./src/main/resources/static/image_similarity_test/hand_target/hand2.jpg");
-        File targetHandImage3 = new File("./src/main/resources/static/image_similarity_test/hand_target/hand3.jpg");
-        File targetHandImage4 = new File("./src/main/resources/static/image_similarity_test/hand_target/hand4.jpg");
-        File targetHandImage5 = new File("./src/main/resources/static/image_similarity_test/hand_target/hand5.jpg");
-        File targetHandImage6 = new File("./src/main/resources/static/image_similarity_test/hand_target/hand6.jpg");
+        File targetHandImage1 = new File("./src/test/resources/testImage/image_similarity_test/hand_target/hand1.jpg");
+        File targetHandImage2 = new File("./src/test/resources/testImage/image_similarity_test/hand_target/hand2.jpg");
+        File targetHandImage3 = new File("./src/test/resources/testImage/image_similarity_test/hand_target/hand3.jpg");
+        File targetHandImage4 = new File("./src/test/resources/testImage/image_similarity_test/hand_target/hand4.jpg");
+        File targetHandImage5 = new File("./src/test/resources/testImage/image_similarity_test/hand_target/hand5.jpg");
+        File targetHandImage6 = new File("./src/test/resources/testImage/image_similarity_test/hand_target/hand6.jpg");
 
         InputStream targetHandImageStream1 = new FileInputStream(targetHandImage1);
         InputStream targetHandImageStream2 = new FileInputStream(targetHandImage2);
@@ -36,12 +36,12 @@ class PerceptualHashTest {
         InputStream targetHandImageStream5 = new FileInputStream(targetHandImage5);
         InputStream targetHandImageStream6 = new FileInputStream(targetHandImage6);
 
-        File myHandImage1 = new File("./src/main/resources/static/image_similarity_test/hand_input/hand1/1.jpg");
-        File myHandImage2 = new File("./src/main/resources/static/image_similarity_test/hand_input/hand2/1.jpg");
-        File myHandImage3 = new File("./src/main/resources/static/image_similarity_test/hand_input/hand3/1.jpg");
-        File myHandImage4 = new File("./src/main/resources/static/image_similarity_test/hand_input/hand4/1.jpg");
-        File myHandImage5 = new File("./src/main/resources/static/image_similarity_test/hand_input/hand5/1.jpg");
-        File myHandImage6 = new File("./src/main/resources/static/image_similarity_test/hand_input/hand6/1.jpg");
+        File myHandImage1 = new File("./src/test/resources/testImage/image_similarity_test/hand_input/hand1/1.jpg");
+        File myHandImage2 = new File("./src/test/resources/testImage/image_similarity_test/hand_input/hand2/1.jpg");
+        File myHandImage3 = new File("./src/test/resources/testImage/image_similarity_test/hand_input/hand3/1.jpg");
+        File myHandImage4 = new File("./src/test/resources/testImage/image_similarity_test/hand_input/hand4/1.jpg");
+        File myHandImage5 = new File("./src/test/resources/testImage/image_similarity_test/hand_input/hand5/1.jpg");
+        File myHandImage6 = new File("./src/test/resources/testImage/image_similarity_test/hand_input/hand6/1.jpg");
 
         InputStream myHandImageStream1 = new FileInputStream(myHandImage1);
         InputStream myHandImageStream2 = new FileInputStream(myHandImage2);
