@@ -5,6 +5,7 @@ import com.ddockddack.domain.bestcut.repository.BestcutRepository;
 import com.ddockddack.domain.bestcut.request.BestcutImageReq;
 import com.ddockddack.domain.bestcut.request.BestcutSaveReq;
 import com.ddockddack.domain.bestcut.response.BestcutRes;
+import com.ddockddack.domain.gameRoom.repository.GameRoomRepository;
 import com.ddockddack.domain.member.entity.Member;
 import com.ddockddack.domain.member.entity.Role;
 import com.ddockddack.domain.member.repository.MemberRepository;
@@ -18,8 +19,13 @@ import com.ddockddack.global.error.exception.NotFoundException;
 import com.ddockddack.global.util.PageCondition;
 import com.ddockddack.global.util.PageConditionReq;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.UUID;
+
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.codec.binary.Base64;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,33 +39,49 @@ public class BestcutService {
     private final BestcutRepository bestcutRepository;
     private final MemberRepository memberRepository;
     private final ReportedBestcutRepository reportedBestcutRepository;
-
+    private final GameRoomRepository gameRoomRepository;
+    @Value("${bestcutImageUploadPath}")
+    private String bestcutImageUploadPath;
 
     @Transactional
-    public void saveBestcut(BestcutSaveReq saveReq) {
+    public void saveBestcut(Long memberId, BestcutSaveReq saveReq) {
 
-        Member member = memberRepository.findById(saveReq.getMemberId())
+        Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
 
-        for (BestcutImageReq imageReq : saveReq.getImages()) {
-            MultipartFile imageFile = imageReq.getBestcutImg();
+        String pinNumber = saveReq.getPinNumber();
+        String sessionId = saveReq.getSessionId();
 
-            try {
-                imageFile.transferTo(new File(imageFile.getOriginalFilename()));
+        for (BestcutImageReq imageReq : saveReq.getImages()) {
+            int index = imageReq.getBestcutIndex();
+            String path = bestcutImageUploadPath;
+            File file = new File(path);
+
+            if( !file.exists()){
+                file.mkdirs();
+            }
+
+            String fileName = UUID.randomUUID().toString() + ".jpg";
+
+            try (FileOutputStream stream = new FileOutputStream(file.getAbsolutePath()+File.separator+fileName)){
+
+                byte[] byteImage = gameRoomRepository.findByImageIndex(pinNumber, sessionId, index);
+                stream.write(byteImage);
+                Bestcut bestcut = Bestcut.builder()
+                        .member(member)
+                        .gameTitle(saveReq.getGameTitle())
+                        .gameImageUrl(imageReq.getGameImgUrl())
+                        .gameImgDesc(imageReq.getGameImgDesc())
+                        .imageUrl(fileName)
+                        .title(imageReq.getBestcutImgTitle())
+                        .build();
+
+                bestcutRepository.save(bestcut);
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
-            Bestcut bestcut = Bestcut.builder()
-                    .member(member)
-                    .gameTitle(saveReq.getGameTitle())
-                    .gameImageUrl(imageReq.getGameImgUrl())
-                    .gameImgDesc(imageReq.getGameImgDesc())
-                    .imageUrl(imageFile.getOriginalFilename())
-                    .title(imageReq.getBestcutImgTitle())
-                    .build();
 
-            bestcutRepository.save(bestcut);
         }
     }
 

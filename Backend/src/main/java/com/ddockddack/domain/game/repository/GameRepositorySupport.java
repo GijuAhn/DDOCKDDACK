@@ -1,7 +1,6 @@
 package com.ddockddack.domain.game.repository;
 
 import com.ddockddack.domain.game.response.*;
-import com.ddockddack.global.util.OrderCondition;
 import com.ddockddack.global.util.PageCondition;
 import com.ddockddack.global.util.PeriodCondition;
 import com.ddockddack.global.util.SearchCondition;
@@ -157,7 +156,7 @@ public class GameRepositorySupport {
     // 정렬
     private OrderSpecifier orderCond(Pageable pageable) {
         Sort.Order order = pageable.getSort().iterator().next();
-        if(order.getProperty().equals("createdDate")) {
+        if (order.getProperty().equals("createdDate")) {
             return game.id.desc();
         } else {
             return game.playCount.desc();

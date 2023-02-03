@@ -43,6 +43,8 @@ import { useStore } from "vuex";
 const store = useStore();
 
 const props = defineProps(["game"]);
+const api = apiInstance();
+const GAMEIMAGES_PATH = process.env.VUE_APP_GAMEIMAGES_PATH;
 
 const onClickOutside = () => {
   // console.log(e);

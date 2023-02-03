@@ -24,9 +24,6 @@ public class GameSaveReq {
     @NotNull(message = "gameCategory cannot be empty.")
     private Category gameCategory;
 
-    @NotNull(message = "memberId cannot be empty.")
-    private Long memberId;
-
     @Size(max = 50, message = "The maximum length of the gameDesc is 50.")
     private String gameDesc;
 

@@ -21,14 +21,15 @@ import com.ddockddack.domain.member.repository.MemberRepository;
 import com.ddockddack.domain.report.entity.ReportType;
 import com.ddockddack.domain.report.entity.ReportedGame;
 import com.ddockddack.domain.report.repository.ReportedGameRepository;
-import com.ddockddack.global.error.AccessDeniedException;
 import com.ddockddack.global.error.ErrorCode;
+import com.ddockddack.global.error.exception.AccessDeniedException;
 import com.ddockddack.global.error.exception.AlreadyExistResourceException;
 import com.ddockddack.global.error.exception.ImageExtensionException;
 import com.ddockddack.global.error.exception.NotFoundException;
 import com.ddockddack.global.util.PageCondition;
 import com.ddockddack.global.util.PageConditionReq;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.env.Environment;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,6 +59,8 @@ public class GameService {
     private final ReportedGameRepository reportedGameRepository;
 
     private final GameRepositorySupport gameRepositorySupport;
+
+    private final Environment env;
 
 
     /**
@@ -94,10 +97,10 @@ public class GameService {
      * @param gameSaveReq
      * @return gameId
      */
-    public Long saveGame(GameSaveReq gameSaveReq) {
+    public Long saveGame(Long memberId, GameSaveReq gameSaveReq) {
 
         // memberId로 member 조회. 조회 결과가 null 이면 NotFoundException 발생.
-        Member getMember = Optional.ofNullable(memberRepository.findById(gameSaveReq.getMemberId()).orElseThrow(() ->
+        Member getMember = Optional.ofNullable(memberRepository.findById(memberId).orElseThrow(() ->
                 new NotFoundException(ErrorCode.MEMBER_NOT_FOUND))).get();
 
         // 게임 생성
@@ -111,11 +114,12 @@ public class GameService {
 
         Long gameId = gameRepository.save(game).getId();
 
-        // 게임 이미지 업로드
-        String absolutePath = new File("").getAbsolutePath() + File.separator;
 
-        String path = "images" + File.separator + gameId;
+        // 게임 이미지 업로드
+
+        String path = env.getProperty("gameImageUploadPath") + gameId;
         File file = new File(path);
+        path = file.getAbsolutePath();
 
         // 디렉토리가 존재 하지 않는 경우
         if (!file.exists()) {
@@ -143,7 +147,7 @@ public class GameService {
             // UUID + 확장자, 중복을 피하기 위함
             String fileName = UUID.randomUUID().toString() + imageExtension;
 
-            file = new File(absolutePath + path + File.separator + fileName);
+            file = new File(path + File.separator + fileName);
             try {
                 gameImageParam.getGameImage().transferTo(file);
             } catch (IOException e) {
@@ -223,7 +227,6 @@ public class GameService {
     }
 
     /**
-
      * 게임 삭제
      *
      * @param memberId
@@ -372,7 +375,7 @@ public class GameService {
         if (getMember.getRole().equals(Role.ADMIN)) {
             return;
         }
-        
+
         // 삭제 권한을 가진 유저인지 검증
         if ((memberId != getGame.getMember().getId())) {
             throw new AccessDeniedException(ErrorCode.NOT_AUTHORIZED);
