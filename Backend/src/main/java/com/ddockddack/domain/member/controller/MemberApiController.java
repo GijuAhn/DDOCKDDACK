@@ -137,9 +137,10 @@ public class MemberApiController {
     public ResponseEntity<?> getBestcuts(@PathVariable Long memberId,
         @ModelAttribute PageConditionReq pageCondition) {
         try {
-            log.info("bestcuts ");
+            log.info("bestcuts {}, {}",  memberId, pageCondition.toString());
 
             PageImpl<BestcutRes> bestcutRes = bestcutService.findAll(true, memberId, pageCondition);
+            log.info("bestcuts2 {}", bestcutRes);
             return ResponseEntity.ok(bestcutRes);
         } catch (Exception e) {
             return ResponseEntity.status(500).body(e);
@@ -154,9 +155,10 @@ public class MemberApiController {
         @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @GetMapping("/{memberId}/games")
-    public ResponseEntity<?> getMyGames(@PathVariable Long memberId) {
+    public ResponseEntity<?> getMyGames(@PathVariable Long memberId,
+        @ModelAttribute PageConditionReq pageCondition) {
         try {
-            List<GameRes> gameResList = gameService.findAllGameByMemberId(memberId);
+            PageImpl<GameRes> gameResList = gameService.findAllGames(memberId, pageCondition);
             return ResponseEntity.ok(gameResList);
         } catch (Exception e) {
             return ResponseEntity.status(500).body(e);

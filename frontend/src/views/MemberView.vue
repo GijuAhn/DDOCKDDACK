@@ -1,6 +1,6 @@
 <template>
   <navigation-bar-in-member-page />
-  <!-- <router-view></router-view> -->
+  <router-view></router-view>
 </template>
 
 <script setup>
@@ -16,10 +16,10 @@ const myGameList = ref();
 const callApi = () => {
   console.log("myGameList PRINT");
   api
-    .get(`/members/4`, {
+    .get(`/api/members/1`, {
       headers: {
         "access-token":
-          "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI0Iiwicm9sZSI6IlVTRVIiLCJpYXQiOjE2NzUzNDI2NDksImV4cCI6MTY3NTM0MzI0OX0.bM1C10tn5eDPJyVIU8FGRSiqb-id7Z5oqhLZPDWRU5k", // 변수로 가지고있는 AccessToken
+          "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE2NzU0MDExODMsImV4cCI6MTY3NTQwOTgyM30.S1aYJDH4C4evRPKA5pO56MY5EM5pYz75VaHHYEnJJAk", // 변수로 가지고있는 AccessToken
       },
     })
     .then((response) => {
@@ -27,9 +27,9 @@ const callApi = () => {
       myGameList.value = response.data.content;
     })
     .catch((error) => {
-      console.log(error.response.status);
+      console.log(error);
       if (error.response.status != 401) {
-        getAccessTokenByRefreshToken(); // refresh 토큰으로 다시
+        // getAccessTokenByRefreshToken(); // refresh 토큰으로 다시
       }
     });
 };
@@ -37,30 +37,30 @@ const callApi = () => {
 callApi();
 
 // 공통 메서드로 만들기 mixin??
-const getAccessTokenByRefreshToken = () => {
-  //AccessToken 만료되면 refresh로
-  api
-    .get(`http://localhost:9999/token/refresh`, {
-      headers: {
-        "refresh-token":
-          "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE2NzUzMTQ1NDEsImV4cCI6MTY3NjUyNDE0MX0.SUIUrChHBtf4j70z8T4-kUXyD9MmEJoJArG6vcIAnM8",
-      },
-    })
-    .then((response) => {
-      console.log(response);
-      myGameList.value = response.data.content;
-    })
-    .catch((error) => {
-      //로그인 페이지로
-      console.log(error);
-      moveLoginPage();
-    });
-};
+// const getAccessTokenByRefreshToken = () => {
+//   //AccessToken 만료되면 refresh로
+//   api
+//     .get(`http://localhost:9999/token/refresh`, {
+//       headers: {
+//         "refresh-token":
+//           "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE2NzUzODkyMDksImV4cCI6MTY3NTM5Nzg0OX0.RJOrSdRvTzkfZUNC-QBFj9gf000oPWwVpZU3krFsgnc",
+//       },
+//     })
+//     .then((response) => {
+//       console.log(response);
+//       myGameList.value = response.data.content;
+//     })
+//     .catch((error) => {
+//       //로그인 페이지로
+//       console.log(error);
+//       moveLoginPage();
+//     });
+// };
 
-const moveLoginPage = () => {
-  //AccessToken 만료되면 refresh로
-  console.log("move Page");
-};
+// const moveLoginPage = () => {
+//   //AccessToken 만료되면 refresh로
+//   console.log("move Page");
+// };
 
 store.dispatch("commonStore/setColorAsync", "default");
 </script>

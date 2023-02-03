@@ -14,10 +14,10 @@ const starredList = ref();
 
 const callApi = () => {
   api
-    .get(`/members/4/starred`, {
+    .get(`/api/members/1/records`, {
       headers: {
         "access-token":
-          "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE2NzUzMjc0OTEsImV4cCI6MTY3NTMyODA5MX0.aIJ0mMbicn9nAygejotvzmCqv_LoOFmfaKfkJzqIHcU", // 변수로 가지고있는 AccessToken
+          "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE2NzU0MDExODMsImV4cCI6MTY3NTQwOTgyM30.S1aYJDH4C4evRPKA5pO56MY5EM5pYz75VaHHYEnJJAk", // 변수로 가지고있는 AccessToken
       },
     })
     .then((response) => {
@@ -71,5 +71,13 @@ store.dispatch("commonStore/setMemberTabAsync", 0);
   left: 50%;
   transform: translate(-50%, 0);
   background-color: white;
+}
+
+#list {
+  display: grid;
+  gap: 35px 0;
+  grid-template-columns: repeat(3, 1fr);
+  width: 1090px;
+  margin: 2%;
 }
 </style>

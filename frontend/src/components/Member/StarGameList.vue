@@ -1,8 +1,18 @@
 <template>
-  <div id="view"><h1>즐겨찾기 목록 입니다.</h1></div>
+  <div id="view">
+    <div id="list">
+      <normal-game
+        v-for="game in starredList"
+        :key="game"
+        :game="game"
+      ></normal-game>
+    </div>
+  </div>
 </template>
 
 <script setup>
+import NormalGame from "@/components/GameList/item/NormalGame";
+
 import { useStore } from "vuex";
 import { apiInstance } from "@/api/index";
 import { ref } from "vue";
@@ -13,15 +23,15 @@ const starredList = ref();
 
 const callApi = () => {
   api
-    .get(`/members/4/starred`, {
+    .get(`/api/members/1/starred`, {
       headers: {
         "access-token":
-          "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE2NzUzMjc0OTEsImV4cCI6MTY3NTMyODA5MX0.aIJ0mMbicn9nAygejotvzmCqv_LoOFmfaKfkJzqIHcU", // 변수로 가지고있는 AccessToken
+          "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE2NzU0MDExODMsImV4cCI6MTY3NTQwOTgyM30.S1aYJDH4C4evRPKA5pO56MY5EM5pYz75VaHHYEnJJAk", // 변수로 가지고있는 AccessToken
       },
     })
     .then((response) => {
       console.log(response);
-      starredList.value = response.data.content;
+      starredList.value = response.data;
     })
     .catch((error) => {
       console.log(error.response.status);
@@ -55,7 +65,7 @@ const getAccessTokenByRefreshToken = () => {
 };
 
 const moveLoginPage = () => {
-  //AccessToken 만료되면 refresh로
+  //refreshToken도 만료되면 로그아웃
   console.log("move Page");
 };
 
@@ -64,11 +74,18 @@ store.dispatch("commonStore/setMemberTabAsync", 1);
 
 <style scoped>
 #view {
-  border: 2px solid black;
+  /* border: 2px solid black; */
   width: 1200px;
   position: relative;
   left: 50%;
   transform: translate(-50%, 0);
   background-color: white;
+}
+#list {
+  display: grid;
+  gap: 35px 0;
+  grid-template-columns: repeat(3, 1fr);
+  width: 1090px;
+  margin: 2%;
 }
 </style>

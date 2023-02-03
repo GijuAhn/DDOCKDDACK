@@ -1,36 +1,48 @@
 <template>
-  <div id="view"><h1>나의 베스트 컷 목록 입니다.</h1></div>
+  <div id="view">
+    <div id="list">
+      <normal-bestcut
+        v-for="besctcut in myBestcuts"
+        :key="besctcut"
+        :besctcut="besctcut"
+      ></normal-bestcut>
+    </div>
+  </div>
 </template>
 
 <script setup>
+import NormalBestcut from "@/components/BestcutList/item/NormalBestcut";
+
 import { useStore } from "vuex";
 import { apiInstance } from "@/api/index";
 import { ref } from "vue";
 
 const api = apiInstance();
 const store = useStore();
-const myGameList = ref();
+const myBestcuts = ref();
 // const memberId = 1;
 const callApi = () => {
+  console.log("베스트 컷!");
   api
-    .get(`/members/1/bestcuts`, {
+    .get(`/api/members/1/bestcuts`, {
       params: {
         order: "RECENT",
-        period: "DAY",
+        period: "WEEK",
         search: "MEMBER",
         keyword: "",
         page: "1",
       },
       headers: {
         "access-token":
-          "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE2NzUzMjY3OTQsImV4cCI6MTY3NTMyNzM5NH0.qc1XXQLZaUpcj0HMQdBqVcjJtfl1mVJwKgeonr-QAbU", // 변수로 가지고있는 AccessToken
+          "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE2NzU0MDExODMsImV4cCI6MTY3NTQwOTgyM30.S1aYJDH4C4evRPKA5pO56MY5EM5pYz75VaHHYEnJJAk", // 변수로 가지고있는 AccessToken
       },
     })
     .then((response) => {
-      console.log(response);
-      myGameList.value = response.data.content;
+      console.log("access-MyBestcut: " + response.data.content);
+      myBestcuts.value = response.data.content;
     })
     .catch((error) => {
+      console.log(error);
       if (error.response.status == 401) {
         getAccessTokenByRefreshToken(); // refresh 토큰으로 다시
       }
@@ -50,12 +62,18 @@ const getAccessTokenByRefreshToken = () => {
       },
     })
     .then((response) => {
-      console.log(response);
-      myGameList.value = response.data.content;
+      console.log("refresh-MyBestcut: " + response);
+      myBestcuts.value = response.data.content;
     })
     .catch((error) => {
       console.log(error);
+      moveLoginPage();
     });
+};
+
+const moveLoginPage = () => {
+  //refreshToken도 만료되면 로그아웃
+  console.log("move Page");
 };
 
 store.dispatch("commonStore/setMemberTabAsync", 3);
@@ -63,11 +81,19 @@ store.dispatch("commonStore/setMemberTabAsync", 3);
 
 <style scoped>
 #view {
-  border: 2px solid black;
+  /* border: 2px solid black; */
   width: 1200px;
   position: relative;
   left: 50%;
   transform: translate(-50%, 0);
   background-color: white;
+}
+
+#list {
+  display: grid;
+  gap: 35px 0;
+  grid-template-columns: repeat(3, 1fr);
+  width: 1090px;
+  margin: 2%;
 }
 </style>
