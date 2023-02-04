@@ -10,7 +10,7 @@ server:
   tomcat:
     basedir: .                              # access log를 저장할 base directory 지정
     accesslog:
-      enabled: true                         # access log 저장 여부 (default: false)
+      enabled: false                         # access log 저장 여부 (default: false)
       directory: logs                       # access log를 저장할 상세 directory (base directory에 기반한) (default: logs)
       pattern: '%h %l %u %t "%r" %s %b %D'  # access log 출력 패턴
       prefix: access                        # access log 파일이름 prefix
@@ -49,6 +49,10 @@ logging:
   level:
     org.hibernate.SQL: debug
     org.hibernate.type: trace
+    com:
+      amazonaws:
+        util:
+          EC2MetadataUtils: error
 
 
 jwt:
@@ -71,11 +75,21 @@ springdoc:
   default-consumes-media-type: application/json;charset=UTF-8
   default-produces-media-type: application/json;charset=UTF-8
 
+cloud:
+  aws:
+    s3:
+      bucket: ddockddack-s3-bucket
+    credentials:
+      access-key: AKIA5NI54G2BG5P3CPQC
+      secret-key: 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
+    region:
+      static: ap-northeast-2
+      auto: false
+    stack:
+      auto: false
+
 OPENVIDU_URL : http://localhost:4443/
 OPENVIDU_SECRET: MY_SECRET
-
-gameImageUploadPath : src/main/resources/static/gameImages/
-bestcutImageUploadPath : src/main/resources/static/bestcuts/
 
 ---
 

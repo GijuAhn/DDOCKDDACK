@@ -1,7 +1,7 @@
 <template>
   <div>
     <img
-      :src="`${GAMEIMAGES_PATH}/${props.game.gameId}/${props.game.thumbnail}`"
+      :src="`${IMAGE_PATH}/${props.game.thumbnail}`"
       alt="대표사진"
       width="200"
       height="200"
@@ -25,7 +25,7 @@ import process from "process";
 
 const props = defineProps(["game"]);
 const api = apiInstance();
-const GAMEIMAGES_PATH = process.env.VUE_APP_GAMEIMAGES_PATH;
+const IMAGE_PATH = process.env.VUE_APP_IMAGE_PATH;
 
 const createSession = (gameId) => {
   api.post("/api/game-rooms", { gameId }).then((res) => {

@@ -20,11 +20,7 @@
       </div>
       <div id="game-image">
         <span v-if="isStart && !isEnd">
-          <img
-            :src="`${GAMEIMAGES_PATH}/${room.gameId}/${
-              room.gameImages[round - 1].gameImage
-            }`"
-          />
+          <img :src="`${IMAGE_PATH}/${room.gameImages[round - 1].gameImage}`" />
         </span>
       </div>
       <div>
@@ -86,7 +82,7 @@ import {
   mdiVideoOff,
 } from "@mdi/js";
 
-const GAMEIMAGES_PATH = process.env.VUE_APP_GAMEIMAGES_PATH;
+const IMAGE_PATH = process.env.VUE_APP_IMAGE_PATH;
 const api = apiInstance();
 const route = useRoute();
 const store = useStore();
