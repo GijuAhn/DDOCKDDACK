@@ -1,22 +1,22 @@
 <template>
   <div id="content">
-    <div id="topSection">
+    <div id="top-section">
       <img
         :src="`${BESTCUTS_PATH}/${props.bestcut.bestcutImgUrl}`"
         alt="베스트컷"
         @click="bestcutDetail"
         class="image"
       />
-      <div class="imageBehind2">
+      <div class="image-behind2">
         <img
           :src="`${GAMEIMAGES_PATH}/${props.bestcut.gameImgUrl}`"
           alt="원본사진"
           @click="bestcutDetail"
-          class="game-image"
+          class="image"
         />
       </div>
     </div>
-    <div id="bottomSection">
+    <div id="bottom-section">
       <img
         :src="`https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/340px-Default_pfp.svg.png?20220226140232`"
         alt="유저프로필사진"
@@ -25,16 +25,16 @@
       <div id="nickname">
         <span>{{ props.bestcut.nickname }}</span>
       </div>
-      <div id="bestcutTitle">
+      <div id="bestcut-title">
         <span>{{ props.bestcut.bestcutImgTitle }}</span>
       </div>
-      <div id="gameDesc">
+      <div id="game-desc">
         <span>{{ props.bestcut.gameTitle }}</span> |
         <span>{{ props.bestcut.gameImgDesc }}</span>
       </div>
 
-      <div id="etcSection" v-click-outside-element="onClickOutside">
-        <div id="etcButton" @click="open">
+      <div id="etc-section" v-click-outside-element="onClickOutside">
+        <div id="etc-button" @click="open">
           <img
             :src="require(`@/assets/images/etc-button.png`)"
             alt="기타버튼"
@@ -134,9 +134,7 @@ const setCurrentModalAsync = (what) => {
   width: 325px;
   height: 380px;
 }
-#createRoomButton {
-  margin-top: 10px;
-}
+
 #nickname {
   width: 95%;
   overflow: hidden;
@@ -147,41 +145,33 @@ const setCurrentModalAsync = (what) => {
   margin-top: 4px;
   margin-left: 10px;
 }
-#gameDesc {
+#game-desc {
   margin-top: 15px;
   width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-#bestcutTitle {
+#bestcut-title {
   margin-top: 15px;
   width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-#createRoomButton button {
-  border: 1px solid #da6c6b;
-  background-color: white;
-  font-size: 14px;
-  font-family: "NanumSquareRoundB";
-  width: 100%;
-  padding: 10px 0;
-  color: #da6c6b;
-}
+
 #nickname span {
   font-size: 22px;
 }
-#bestcutTitle span {
+#bestcut-title span {
   font-size: 16px;
   color: #656565;
 }
-#gameDesc span {
+#game-desc span {
   font-size: 16px;
   color: #656565;
 }
-#topSection {
+#top-section {
   position: relative;
 }
 .image {
@@ -190,22 +180,17 @@ const setCurrentModalAsync = (what) => {
   object-fit: cover;
   display: inline-block;
 }
-.game-image {
-  width: 325px;
-  height: 260px;
-  object-fit: cover;
-  display: inline-block;
-}
+
 .profile-image {
   widows: 30px;
   height: 30px;
 }
 
-.image:hover ~ .imageBehind2 {
+.image:hover ~ .image-behind2 {
   display: inline-block;
 }
 
-.imageBehind {
+.image-behind {
   position: absolute;
   top: 0;
   left: 0;
@@ -214,7 +199,7 @@ const setCurrentModalAsync = (what) => {
   background-color: black;
   opacity: 0.5;
 }
-.imageBehind2 {
+.image-behind2 {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -222,11 +207,11 @@ const setCurrentModalAsync = (what) => {
   color: white;
   display: none;
 }
-#bottomSection {
+#bottom-section {
   padding: 5px 10px;
   position: relative;
 }
-#etcButton {
+#etc-button {
   position: absolute;
   top: 0px;
   left: 290px;
@@ -235,7 +220,7 @@ const setCurrentModalAsync = (what) => {
   border-radius: 50%;
   text-align: center;
 }
-#etcButton:hover {
+#etc-button:hover {
   background-color: #d9d9d9;
   cursor: pointer;
   transition: 0.3s;

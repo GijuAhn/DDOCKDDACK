@@ -1,5 +1,13 @@
 <template>
   <div id="view">
+    <bestcut-detail
+      class="modal"
+      v-if="detailBestcut"
+      :bestcut="detailBestcut"
+      @bestcutLike="(bestcutId) => bestcutLike(bestcutId)"
+      @bestcutDislike="(bestcutId) => bestcutDislike(bestcutId)"
+      @openReportModal="(bestcutId) => openReportModal(bestcutId)"
+    ></bestcut-detail>
     <div id="searchBar">
       <span>
         <button id="btn-p" :class="tabP" @click="sortGames('P')">인기순</button>
@@ -48,13 +56,7 @@
         @changePage="(num) => changePage(num)"
       ></page-nav>
     </div>
-    <bestcut-detail
-      v-if="detailBestcut"
-      :bestcut="detailBestcut"
-      @bestcutLike="(bestcutId) => bestcutLike(bestcutId)"
-      @bestcutDislike="(bestcutId) => bestcutDislike(bestcutId)"
-      @openReportModal="(bestcutId) => openReportModal(bestcutId)"
-    ></bestcut-detail>
+
     <report-modal
       v-if="reportInfo.status"
       @report="(reportType) => bestcutReport(reportType)"
