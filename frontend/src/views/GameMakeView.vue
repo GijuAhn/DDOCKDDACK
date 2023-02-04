@@ -1,11 +1,16 @@
 <template>
-  <div>
-    <router-view></router-view>
-  </div>
+  <content-header />
+  <router-view></router-view>
 </template>
 
-<script>
-export default { name: "GameMakeView" };
+<script setup>
+import ContentHeader from "@/components/common/ContentHeader";
+
+import { useStore } from "vuex";
+
+const store = useStore();
+
+store.dispatch("commonStore/setColorAsync", "variant2");
 </script>
 
 <style></style>

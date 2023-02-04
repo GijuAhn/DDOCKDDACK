@@ -26,11 +26,11 @@ public class BestcutLike {
     @Column(name = "bestcut_like_id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "bestcut_id", foreignKey = @ForeignKey(name = "fk_bestcut_like_bestcut_id_idx"))
     private Bestcut bestcut;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", foreignKey = @ForeignKey(name = "fk_bestcut_like_member_id_idx"))
     private Member member;
 

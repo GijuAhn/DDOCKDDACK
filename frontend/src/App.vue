@@ -1,29 +1,44 @@
 <template>
-  <nav>
-    <router-link to="/">메인</router-link> |
-    <router-link to="/gameList">게임 목록</router-link> |
-    <router-link to="/gameMake">게임 만들기</router-link> |
-    <router-link to="/bestcut">베스트컷</router-link> |
-    <router-link to="/gameroom">게임 룸</router-link> |
-    <router-link to="/member">마이 페이지</router-link> |
-    <router-link to="/admin">관리자 페이지</router-link>
-  </nav>
+  <navigation-bar />
   <router-view />
 </template>
 
+<script setup>
+import NavigationBar from "@/components/common/NavigationBar";
+</script>
+
 <style>
 @font-face {
-  font-family: "NanumSquareRound";
-  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_two@1.0/NanumSquareRound.woff")
-    format("woff");
-  font-weight: normal;
-  font-style: normal;
+  font-family: "Gugi-Regular";
+  src: url("@/assets/fonts/Gugi-Regular.ttf") format("truetype");
+}
+@font-face {
+  font-family: "NanumSquareRoundEB";
+  src: url("@/assets/fonts/NanumSquareRoundEB.ttf") format("truetype");
+}
+@font-face {
+  font-family: "NanumSquareRoundB";
+  src: url("@/assets/fonts/NanumSquareRoundB.ttf") format("truetype");
+}
+@font-face {
+  font-family: "NanumSquareRoundR";
+  src: url("@/assets/fonts/NanumSquareRoundR.ttf") format("truetype");
+}
+@font-face {
+  font-family: "SDSamliphopangcheTTFOutline";
+  src: url("@/assets/fonts/SDSamliphopangcheTTFOutline.ttf") format("truetype");
+}
+#app {
+  font-family: "NanumSquareRoundB";
 }
 
-#app {
-  font-family: "NanumSquareRound";
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+* {
+  margin: 0;
+}
+
+body {
+  min-width: calc(1920px - 100px);
+  overflow-y: scroll;
 }
 
 /* nav {

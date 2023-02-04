@@ -27,11 +27,11 @@ const routes = [
   },
   {
     path: "/bestcut",
-    name: "bestcutList",
+    name: "bestcutList", //bestcut 중복 체크
     component: () => import("@/views/BestcutView.vue"),
   },
   {
-    path: "/gameroom",
+    path: "/gameroom/:pinNumber",
     name: "gameroom",
     component: () => import("@/views/GameroomView.vue"),
   },

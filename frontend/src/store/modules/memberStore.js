@@ -1,7 +1,7 @@
 export const memberStore = {
   namespaced: true,
   state: {
-    accessToken: 1,
+    accessToken: undefined,
   },
   getters: {},
   mutations: {
