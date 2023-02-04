@@ -17,7 +17,7 @@ const callApi = () => {
     .get(`/api/members/1/records`, {
       headers: {
         "access-token":
-          "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE2NzU0MDExODMsImV4cCI6MTY3NTQwOTgyM30.S1aYJDH4C4evRPKA5pO56MY5EM5pYz75VaHHYEnJJAk", // 변수로 가지고있는 AccessToken
+          "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE2NzU1MjIzODQsImV4cCI6MTY3NjI0MjM4NH0.6kuEJj0P3ybQ6Cu4AgtqLNf3HJxWGSYyJc9m6T7wvO0", // 변수로 가지고있는 AccessToken
       },
     })
     .then((response) => {
@@ -41,7 +41,7 @@ const getAccessTokenByRefreshToken = () => {
     .get(`http://localhost:9999/token/refresh`, {
       headers: {
         "refresh-token":
-          "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI0Iiwicm9sZSI6IlVTRVIiLCJpYXQiOjE2NzUzNDA3NTcsImV4cCI6MTY3NTM0MTM1N30.uibFshwPFV5W18KO1pkgcgO7UdYjhCUaK-n0GY1bodY",
+          "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI0Iiwicm9sZSI6IlVTRVIiLCJpYXQiOjE2NzU0MjE5MzAsImV4cCI6MTY3NTQ5MzkzMH0.4M9gF-qOLufgiIgxmgc-wQTIV-7M3FJHOOfxd8w_tII",
       },
     })
     .then((response) => {

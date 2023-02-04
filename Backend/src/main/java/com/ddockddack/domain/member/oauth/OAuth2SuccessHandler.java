@@ -47,6 +47,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
                 .build();
             memberRepository.save(member);
         }
+        log.info("Member Id {} {}", member.getId(), member.getEmail());
 
         Token token = tokenService.generateToken(member.getId(), "USER");
         log.info("JwT : {}", token);

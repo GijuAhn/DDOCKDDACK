@@ -2,9 +2,7 @@
   <div id="content">
     <div id="topSection">
       <img
-        :src="
-          require(`@/../../Backend/images/bestcuts/${props.besctcut.bestcutId}/${props.besctcut.gameImgUrl}`)
-        "
+        :src="`${BESTCUTS_PATH}/${props.besctcut.bestcutId}/${props.besctcut.gameImgUrl}`"
         alt="대표사진"
         class="image"
       />
@@ -44,6 +42,7 @@
 import { defineProps, ref } from "vue";
 
 const props = defineProps(["besctcut"]);
+const BESTCUTS_PATH = process.env.VUE_APP_BESTCUTS_PATH;
 
 const onClickOutside = () => {
   // console.log(e);

@@ -157,6 +157,8 @@ public class MemberApiController {
     @GetMapping("/{memberId}/games")
     public ResponseEntity<?> getMyGames(@PathVariable Long memberId,
         @ModelAttribute PageConditionReq pageCondition) {
+
+        log.info("Page Condition {}", pageCondition);
         try {
             PageImpl<GameRes> gameResList = gameService.findAllGames(memberId, pageCondition);
             return ResponseEntity.ok(gameResList);

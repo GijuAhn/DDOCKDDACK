@@ -33,5 +33,14 @@ public class PageConditionReq {
                 .build();
     }
 
-
+    @Override
+    public String toString() {
+        return "PageConditionReq{" +
+                "order='" + order + '\'' +
+                ", period='" + period + '\'' +
+                ", search='" + search + '\'' +
+                ", keyword='" + keyword + '\'' +
+                ", page=" + page +
+                '}';
+    }
 }

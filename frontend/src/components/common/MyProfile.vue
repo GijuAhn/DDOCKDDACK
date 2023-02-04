@@ -3,15 +3,21 @@
     <div id="profile">
       <div id="profileImg" style="float: left">
         <img
-          :src="require(`@/../../Backend/images/profile/1/abc2.jpg`)"
+          :src="
+            require(`@/../../Backend/images/profile/1/${props.myProfile.nickname}`)
+          "
           alt="대표사진"
           class="image"
         />
       </div>
     </div>
     <div id="nameAndEmail">
-      <div id="nickname">이름</div>
-      <div id="email">이메일</div>
+      <div id="nickname">
+        <span>{{ props.myProfile.nickname }}</span>
+      </div>
+      <div id="email">
+        <span>{{ props.myProfile.email }}</span>
+      </div>
       <!-- ${{ props.profile.gameId }}, ${{ props.profile.gameId }} -->
     </div>
   </div>
