@@ -78,7 +78,7 @@ const setCurrentModalAsync = (what) => {
   if (what === "reportReason") {
     store.dispatch("commonStore/setCurrentModalAsync", {
       name: "reportReason",
-      data: "",
+      data: props.game,
     });
   }
   open();

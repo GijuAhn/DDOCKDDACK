@@ -2,14 +2,16 @@
   <div id="modal">
     <div id="modalBackground" @click="setCurrentModalAsync"></div>
     <preview-modal
-      id="previewModal"
       class="modalContent"
       v-if="currentModal.name === `preview`"
     />
     <report-reason-modal
-      id="reportReasonModal"
       class="modalContent"
       v-if="currentModal.name === `reportReason`"
+    />
+    <report-complete-modal
+      class="modalContent"
+      v-if="currentModal.name === `reportComplete`"
     />
   </div>
 </template>
@@ -31,6 +33,7 @@ const setCurrentModalAsync = () => {
 
 import PreviewModal from "@/components/common/modal/PreviewModal";
 import ReportReasonModal from "@/components/common/modal/ReportReasonModal";
+import ReportCompleteModal from "@/components/common/modal/ReportCompleteModal";
 </script>
 
 <style scoped>
@@ -50,19 +53,9 @@ import ReportReasonModal from "@/components/common/modal/ReportReasonModal";
   opacity: 0.5;
 }
 .modalContent {
-  background-color: white;
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-}
-
-#previewModal {
-  width: 650px;
-  height: 525px;
-}
-#reportReasonModal {
-  width: 235px;
-  height: 225px;
 }
 </style>
