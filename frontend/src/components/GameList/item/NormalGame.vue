@@ -7,10 +7,27 @@
         class="image"
       />
 
-      <div class="imageBehind2">
-        플 : {{ props.game.popularity }} <br />즐 : {{ props.game.starredCnt }}
-        <br />제 :
-        {{ props.game.creator }}
+      <div class="imageBehind">
+        <div class="count">
+          <span>
+            <span>
+              <img
+                :src="require(`@/assets/images/play.png`)"
+                width="14"
+                height="14" /></span
+            ><span>{{ props.game.popularity }} </span> </span
+          ><span>
+            <span>
+              <img
+                :src="require(`@/assets/images/star.png`)"
+                width="14"
+                height="14" /></span
+            ><span>{{ props.game.starredCnt }} </span>
+          </span>
+        </div>
+        <div class="creator">
+          <span>made by. {{ props.game.creator }}</span>
+        </div>
       </div>
     </div>
     <div id="bottomSection">
@@ -21,7 +38,10 @@
         <span>{{ props.game.gameDesc }}</span>
       </div>
       <div id="createRoomButton">
-        <button @click="createSession(props.game.gameId)">방 생성</button>
+        <button @click="createSession(props.game.gameId)">
+          <span class="play-btn"></span>
+          &nbsp;방 생성
+        </button>
       </div>
       <div id="etcSection" v-click-outside-element="onClickOutside">
         <div id="etcButton" @click="open">
@@ -132,6 +152,18 @@ const createSession = (gameId) => {
   cursor: pointer;
   transition: 0.3s;
 }
+#createRoomButton button:hover .play-btn {
+  background-image: url("@/assets/images/play.png");
+}
+.play-btn {
+  display: inline-block;
+  background-size: contain;
+  background-repeat: no-repeat;
+  width: 12px;
+  height: 12px;
+  vertical-align: middle;
+  background-image: url("@/assets/images/play2.png");
+}
 #gameTitle span {
   font-size: 22px;
 }
@@ -152,26 +184,38 @@ const createSession = (gameId) => {
 .image:hover {
   filter: brightness(50%);
 }
-.image:hover ~ .imageBehind2 {
+.image:hover ~ .imageBehind {
   display: inline-block;
 }
-
 .imageBehind {
-  position: absolute;
-  top: 0;
-  left: 0;
   width: 325px;
   height: 260px;
-  background-color: black;
-  opacity: 0.5;
-}
-.imageBehind2 {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   color: white;
   display: none;
+}
+.count {
+  position: absolute;
+  top: 50%;
+  width: 325px;
+  text-align: center;
+}
+.count > span {
+  margin: 10px;
+  font-size: 20px;
+}
+.count > span > span {
+  margin: 5px;
+}
+.creator {
+  width: 325px;
+  position: absolute;
+  right: 3px;
+  bottom: 3px;
+  text-align: right;
 }
 #bottomSection {
   padding: 5px 10px;

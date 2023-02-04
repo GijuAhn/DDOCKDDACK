@@ -1,29 +1,67 @@
 <template>
   <div id="view">
     <div id="searchBar">
-      <span>
+      <div>
         <button id="btn-p" :class="tabP" @click="sortGames('P')">인기순</button>
         <button id="btn-r" :class="tabR" @click="sortGames('R')">최신순</button>
-      </span>
-      <span>
-        <select name="choice">
-          <option value="1" selected>전체기간</option>
-          <option value="2">1일</option>
-          <option value="3">1주</option>
-          <option value="4">1개월</option>
-          <option value="5">6개월</option>
-        </select>
-      </span>
-      <span>
-        <select name="choice">
-          <option value="1" selected>게임 제목</option>
-          <option value="2">제작자</option>
-        </select>
-      </span>
-      <span>
+      </div>
+      <div>
+        <div class="choice" v-click-outside-element="offPeriodState">
+          <div
+            class="periodChoiced"
+            @click="updatePeriodState"
+            :class="periodRadius"
+          >
+            <div>
+              <span>{{ period }}</span>
+              <span class="arrow"></span>
+            </div>
+          </div>
+          <div class="periodChoice" v-if="periodState === `on`">
+            <div @click="updatePeriod(`전체기간`)">
+              <span>전체기간</span>
+            </div>
+            <div @click="updatePeriod(`1일`)">
+              <span>1일</span>
+            </div>
+            <div @click="updatePeriod(`1주`)">
+              <span>1주</span>
+            </div>
+            <div @click="updatePeriod(`1개월`)">
+              <span>1개월</span>
+            </div>
+            <div @click="updatePeriod(`6개월`)">
+              <span>6개월</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="choice" v-click-outside-element="offSearchState">
+          <div
+            class="searchChoiced"
+            @click="updateSearchState"
+            :class="searchRadius"
+          >
+            <div>
+              <span>{{ search }}</span>
+              <span class="arrow"></span>
+            </div>
+          </div>
+          <div class="searchChoice" v-if="searchState === `on`">
+            <div @click="updateSearch(`게임 제목`)">
+              <span>게임 제목</span>
+            </div>
+            <div @click="updateSearch(`제작자`)">
+              <span>제작자</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
         <input type="text" placeholder="검색어를 입력해주세요" />
         <button id="btn-s">검색</button>
-      </span>
+      </div>
     </div>
     <div id="list">
       <normal-game v-for="game in games" :key="game" :game="game"></normal-game>
@@ -35,10 +73,45 @@
 import NormalGame from "@/components/GameList/item/NormalGame";
 
 import { apiInstance } from "@/api/index";
-import { ref } from "vue";
+import { ref, watch } from "vue";
 
 const tabP = ref("on");
 const tabR = ref("off");
+const period = ref("전체기간");
+const search = ref("게임 제목");
+const periodState = ref("off");
+const searchState = ref("off");
+const periodRadius = ref();
+const searchRadius = ref();
+watch(periodState, () => {
+  periodRadius.value = "period-radius-" + periodState.value;
+});
+watch(searchState, () => {
+  searchRadius.value = "search-radius-" + searchState.value;
+});
+
+const updatePeriodState = () => {
+  if (periodState.value === "on") periodState.value = "off";
+  else periodState.value = "on";
+};
+const updateSearchState = () => {
+  if (searchState.value === "on") searchState.value = "off";
+  else searchState.value = "on";
+};
+const offPeriodState = () => {
+  periodState.value = "off";
+};
+const offSearchState = () => {
+  searchState.value = "off";
+};
+const updatePeriod = (option) => {
+  period.value = option;
+  updatePeriodState();
+};
+const updateSearch = (option) => {
+  search.value = option;
+  updateSearchState();
+};
 
 const api = apiInstance();
 let games = ref();
@@ -98,13 +171,18 @@ const sortGames = (option) => {
   padding: 70px;
 }
 #searchBar {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row; /*수평 정렬*/
+  align-items: center;
+  justify-content: center;
   margin-bottom: 70px;
 }
-#searchBar > span {
-  margin: 0 15px;
+#searchBar > div {
+  margin: auto;
 }
 #btn-p {
-  margin-left: -15px;
+  margin-left: -10px;
   border-top-left-radius: 5px;
   border-bottom-left-radius: 5px;
   border-top: 2px solid black;
@@ -153,6 +231,7 @@ input {
 }
 
 #btn-s {
+  margin-right: -10px;
   background-color: white;
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
@@ -167,23 +246,55 @@ input {
   background-color: #f08383;
   color: white;
   width: 80px;
-  margin-right: -15px;
 }
 #btn-s:hover {
   cursor: pointer;
 }
 
-select {
-  width: 150px;
-  border: 2px solid black;
+.choice {
+  position: relative;
   font-size: 20px;
   font-family: "NanumSquareRoundB";
-  display: inline-block;
-  height: 48px;
-  border-radius: 5px;
-  text-align: center;
+  height: 44px;
+  line-height: 44px;
+  cursor: pointer;
+  display: inline;
 }
-select:focus {
+.choice span {
+  padding: 0 10px;
+}
+.periodChoiced > div,
+.searchChoiced > div {
+  width: 150px;
+  border: 2px solid black;
+  background-color: white;
+  border-radius: 5px;
+}
+.periodChoice,
+.searchChoice {
+  z-index: 10;
+  position: absolute;
+  top: 48px;
+  left: 0px;
+}
+.periodChoice > div,
+.searchChoice > div {
+  background-color: white;
+  width: 150px;
+  border-left: 2px solid black;
+  border-right: 2px solid black;
+  border-bottom: 2px solid black;
+}
+.periodChoice > div:hover,
+.searchChoice > div:hover {
+  background-color: #d9d9d9;
+}
+.periodChoice > div:last-child,
+.searchChoice > div:last-child {
+  border-radius: 0 0 5px 5px;
+}
+.period-radius-on > div,
+.search-radius-on > div {
   border-radius: 5px 5px 0 0;
 }
 
@@ -201,5 +312,23 @@ select:focus {
   gap: 35px 0;
   grid-template-columns: repeat(3, 1fr);
   width: 1090px;
+}
+.arrow {
+  /* border: 1px solid red; */
+  background-size: contain;
+  background-repeat: no-repeat;
+  width: 20px;
+  height: 20px;
+  background-image: url("@/assets/images/up-arrow.png");
+  position: absolute;
+  top: 50%;
+  right: -5px;
+  transform: translate(0, -50%);
+}
+.period-radius-on .arrow {
+  background-image: url("@/assets/images/down-arrow.png");
+}
+.search-radius-on .arrow {
+  background-image: url("@/assets/images/down-arrow.png");
 }
 </style>
