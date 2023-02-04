@@ -59,8 +59,12 @@
         </div>
       </div>
       <div>
-        <input type="text" placeholder="검색어를 입력해주세요" />
-        <button id="btn-s">검색</button>
+        <input
+          type="text"
+          v-model="pageConditionReq.keyword"
+          placeholder="검색어를 입력해주세요"
+        />
+        <button id="btn-s" @click="callApi">검색</button>
       </div>
     </div>
     <div id="list">
@@ -106,10 +110,27 @@ const offSearchState = () => {
 };
 const updatePeriod = (option) => {
   period.value = option;
+  if (option === "전체기간") {
+    pageConditionReq.value.period = "ALL";
+  } else if (option === "1일") {
+    pageConditionReq.value.period = "DAY";
+  } else if (option === "1주") {
+    pageConditionReq.value.period = "WEEK";
+  } else if (option === "1개월") {
+    pageConditionReq.value.period = "MONTH";
+  } else if (option === "6개월") {
+    pageConditionReq.value.period = "HALF_YEAR";
+  }
+
   updatePeriodState();
 };
 const updateSearch = (option) => {
   search.value = option;
+  if (option === "게임 제목") {
+    pageConditionReq.value.search = "GAME";
+  } else if (option === "제작자") {
+    pageConditionReq.value.search = "MEMBER";
+  }
   updateSearchState();
 };
 
