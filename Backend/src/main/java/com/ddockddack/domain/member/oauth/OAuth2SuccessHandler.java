@@ -3,11 +3,12 @@ package com.ddockddack.domain.member.oauth;
 import com.ddockddack.domain.member.entity.Member;
 import com.ddockddack.domain.member.entity.Role;
 import com.ddockddack.domain.member.repository.MemberRepository;
-import com.ddockddack.domain.member.response.MemberLoginPostRes;
+import com.ddockddack.domain.member.response.MemberInfoRes;
 import com.ddockddack.domain.member.service.TokenService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -51,19 +52,34 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
         Token token = tokenService.generateToken(member.getId(), "USER");
         log.info("JwT : {}", token);
+
+        Cookie cookie = new Cookie("refreshToken", token.getRefreshToken());
+        // expires in 7 days
+        cookie.setMaxAge(7 * 24 * 60 * 60);
+
+        // optional properties
+        cookie.setSecure(true);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+
+        // add cookie to response
+        response.addCookie(cookie);
+
         writeTokenResponse(response, token, member.getId());
     }
 
     private void writeTokenResponse(HttpServletResponse response, Token token, Long id)
         throws IOException {
         response.setContentType("text/html;charset=UTF-8");
-        Member member = memberRepository.getReferenceById(id);
-        MemberLoginPostRes memberLoginPostRes = new MemberLoginPostRes(token.getToken(),
-            token.getRefreshToken(), member.getId());
+        response.setHeader("accessToken", token.getToken());
 
-        log.info(" {} ", memberLoginPostRes);
+        Member member = memberRepository.findById(id).get();
+        MemberInfoRes memberInfoRes = new MemberInfoRes(member.getId(), member.getEmail(),
+            member.getNickname(), member.getProfile(), member.getRole());
 
-        String json = new ObjectMapper().writeValueAsString(memberLoginPostRes);
+        log.info(" {} ", memberInfoRes);
+
+        String json = new ObjectMapper().writeValueAsString(memberInfoRes);
 
         response.setStatus(HttpStatus.OK.value());
         response.getWriter().write(json);

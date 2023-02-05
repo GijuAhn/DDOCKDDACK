@@ -56,6 +56,24 @@ public class TokenService {
                 .compact());
     }
 
+    public Token reGenerateAccessToken(Long uid, String role, String refreshToken) {
+        long tokenPeriod = Long.parseLong(
+                env.getProperty("jwt.access-token.expire-length")); // 15 min
+
+        Claims claims = Jwts.claims().setSubject(uid.toString());
+        claims.put("role", role);
+
+        Date now = new Date();
+        return new Token(
+                Jwts.builder()
+                        .setClaims(claims)
+                        .setIssuedAt(now)
+                        .setExpiration(new Date(now.getTime() + tokenPeriod))
+                        .signWith(SignatureAlgorithm.HS256, secretKey)
+                        .compact(),
+                refreshToken);
+    }
+
     public boolean verifyToken(String token) {
         try {
             Jws<Claims> claims = Jwts.parser()

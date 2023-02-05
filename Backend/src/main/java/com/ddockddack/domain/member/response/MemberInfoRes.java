@@ -16,19 +16,13 @@ public class MemberInfoRes {
     private String profile;
     private Role role;
 
-    private String accessToken;
-    private String refreshToken;
-
     @QueryProjection
-    public MemberInfoRes(Long memberId, String email, String nickname, String profile,
-        String accessToken,
-        String refreshToken) {
+    public MemberInfoRes(Long memberId, String email, String nickname, String profile, Role role) {
         this.memberId = memberId;
         this.email = email;
         this.nickname = nickname;
         this.profile = profile;
-        this.accessToken = accessToken;
-        this.refreshToken = refreshToken;
+        this.role = role;
     }
 
     public MemberInfoRes(String nickname, String profile) {

@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +37,16 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         log.info("요청 타입 {}", request.getMethod());
         log.info("요청 타입 uri {}", request.getRequestURI());
         String accessToken = (request).getHeader("access-token");
-        String refreshToken = (request).getHeader("refresh-token");
+        String refreshToken = null;
+
+        Cookie[] cookies = request.getCookies();
+        for(Cookie cookie:cookies) {
+            if(cookie.getName().equals("refreshToken")) {
+                logger.info(cookie.getValue());
+                refreshToken = cookie.getValue();
+                break;
+            }
+        }
 
         log.info("accessToken {} ", accessToken);
         log.info("refreshToken {} ", refreshToken);
@@ -56,14 +66,14 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         } else if (refreshToken != null && tokenService.verifyToken(refreshToken)) { //access-token으로 먼저 접근한 경우 클라이언트에 refresh 토큰 보내달라고 알림
             //refresh-token을 받음 access-token 재발급
             Long id = tokenService.getUid(refreshToken);
-//            Token token = tokenService.generateToken(id, "USER");
+            Token token = tokenService.reGenerateAccessToken(id, "USER", refreshToken);
             Member member = memberRepository.getReferenceById(id);
 
             if (member == null) {
                 throw new NotFoundException(ErrorCode.MEMBER_NOT_FOUND);
             }
 
-            MemberAccessRes memberAccessRes = new MemberAccessRes(refreshToken, member.getId());
+            MemberAccessRes memberAccessRes = new MemberAccessRes(token.getToken(), member.getId());
 
             Authentication auth = getAuthentication(memberAccessRes);
             SecurityContextHolder.getContext().setAuthentication(auth);
