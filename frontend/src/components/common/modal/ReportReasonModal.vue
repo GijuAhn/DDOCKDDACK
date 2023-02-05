@@ -5,10 +5,10 @@
         <div><span>게임 신고</span></div>
       </div>
       <div id="reportReason">
-        <div @click="setCurrentModalAsync"><span>스팸</span></div>
-        <div @click="setCurrentModalAsync"><span>선정적</span></div>
-        <div @click="setCurrentModalAsync"><span>폭력적</span></div>
-        <div @click="setCurrentModalAsync"><span>혐오스러움</span></div>
+        <div @click="reportGame(`SPAM`)"><span>스팸</span></div>
+        <div @click="reportGame(`SEXUAL`)"><span>선정적</span></div>
+        <div @click="reportGame(`VIOLENT`)"><span>폭력적</span></div>
+        <div @click="reportGame(`DISGUSTING`)"><span>혐오스러움</span></div>
       </div>
     </div>
   </div>
@@ -16,9 +16,25 @@
 
 <script setup>
 import { useStore } from "vuex";
+import { computed } from "vue";
+import { apiInstance } from "@/api/index";
 
+const api = apiInstance();
 const store = useStore();
+const currentModal = computed(() => store.state.commonStore.currentModal);
 
+const reportGame = (reportType) => {
+  api
+    .post(`/api/games/report/${currentModal.value.data.gameId}`, {
+      reportType: reportType,
+    })
+    .then(() => {
+      setCurrentModalAsync();
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+};
 const setCurrentModalAsync = () => {
   store.dispatch("commonStore/setCurrentModalAsync", {
     name: "reportComplete",
