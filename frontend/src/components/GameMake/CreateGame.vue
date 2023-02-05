@@ -3,40 +3,45 @@
     <div v-show="step === 0">
       <form>
         <div>
-          <label for="gameTitle" class="input-name">제목</label>
-          <input
-            id="gameTitle"
-            type="text"
-            v-model="gameSaveReq.gameTitle"
-            placeholder="게임 제목을 입력해 주세요."
-          />
+          <div><label for="gameTitle" class="input-name">제목</label></div>
+          <div>
+            <input
+              id="gameTitle"
+              type="text"
+              v-model="gameSaveReq.gameTitle"
+              placeholder="게임 제목을 입력해 주세요."
+            />
+          </div>
         </div>
         <div>
-          <label for="gameDesc" class="input-name">설명</label>
-          <input
-            id="gameDesc"
-            type="text"
-            v-model="gameSaveReq.gameDesc"
-            placeholder="게임 설명을 입력하세요."
-          />
+          <div><label for="gameDesc" class="input-name">설명</label></div>
+          <div>
+            <input
+              id="gameDesc"
+              type="text"
+              v-model="gameSaveReq.gameDesc"
+              placeholder="게임 설명을 입력하세요."
+            />
+          </div>
         </div>
         <div>
-          <label class="input-name">이미지 업로드</label>
-          <input type="file" @change="storeImage" accept="image/*" multiple />
-        </div>
-      </form>
-      <div>
-        <ul>
-          <li v-for="item in gameSaveReq.images" :key="item">
+          <div><label class="input-name">이미지 업로드</label></div>
+          <div>
+            <input type="file" @change="storeImage" accept="image/*" multiple />
+          </div>
+          <div id="previewSection">
             <img
+              v-for="item in gameSaveReq.images"
+              :key="item"
               :src="convertFile(item.gameImage)"
               alt="이미지 미리보기..."
-              width="200"
-              height="200"
+              width="180"
+              height="180"
             />
-          </li>
-        </ul>
-      </div>
+          </div>
+        </div>
+      </form>
+
       <button @click="changeStep">다음</button>
     </div>
     <div v-show="step === 1">
@@ -182,11 +187,45 @@ const createGame = () => {
 <style scoped>
 #view {
   border: 2px solid black;
-  width: 1200px;
+  width: 1060px;
   position: relative;
   top: -320px;
   left: 50%;
   transform: translate(-50%, 0);
   background-color: white;
+  padding: 70px;
+}
+form > div {
+  margin-bottom: 40px;
+}
+form > div > div {
+  margin-bottom: 3px;
+}
+label {
+  font-size: 20px;
+}
+input[type="text"] {
+  outline: none;
+  border-radius: 5px;
+  border: 2px solid black;
+  font-size: 20px;
+  font-family: "NanumSquareRoundB";
+  padding: 0 10px;
+  height: 44px;
+  width: 100%;
+}
+#previewSection {
+  border-radius: 5px;
+  border: 2px solid black;
+  width: 100%;
+  height: 820px;
+  display: grid;
+  grid-template-rows: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
+  place-items: center;
+}
+#previewSection > img {
+  border-radius: 5px;
+  object-fit: cover;
 }
 </style>
