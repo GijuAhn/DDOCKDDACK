@@ -7,61 +7,35 @@
 import NavigationBarInMemberPage from "@/components/common/NavigationBarInMemberPage";
 // import MyProfile from "@/components/common/MyProfile";
 import { useStore } from "vuex";
-import { apiInstance } from "@/api/index";
-import { ref } from "vue";
+// import { apiInstance } from "@/api/index";
+// import { ref } from "vue";
 
-const api = apiInstance();
+// const api = apiInstance();
 const store = useStore();
-const myProfile = ref();
+// const myProfile = ref();
 
-const callApi = () => {
-  console.log("myProfile PRINT");
-  api
-    .get(`/api/members/1`, {
-      headers: {
-        "access-token":
-          "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE2NzU1MjIzODQsImV4cCI6MTY3NjI0MjM4NH0.6kuEJj0P3ybQ6Cu4AgtqLNf3HJxWGSYyJc9m6T7wvO0", // 변수로 가지고있는 AccessToken
-      },
-    })
-    .then((response) => {
-      console.log(response);
-      myProfile.value = response.data.content;
-    })
-    .catch((error) => {
-      console.log(error);
-      if (error.response.status != 401) {
-        // getAccessTokenByRefreshToken(); // refresh 토큰으로 다시
-      }
-    });
-};
-
-callApi();
-
-// 공통 메서드로 만들기 mixin??
-// const getAccessTokenByRefreshToken = () => {
-//   //AccessToken 만료되면 refresh로
+// const callApi = () => {
+//   console.log("myProfile PRINT");
 //   api
-//     .get(`http://localhost:9999/token/refresh`, {
+//     .get(`/api/members/1`, {
 //       headers: {
-//         "refresh-token":
-//           "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE2NzUzODkyMDksImV4cCI6MTY3NTM5Nzg0OX0.RJOrSdRvTzkfZUNC-QBFj9gf000oPWwVpZU3krFsgnc",
+//         "access-token":
+//           "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE2NzU1MjIzODQsImV4cCI6MTY3NjI0MjM4NH0.6kuEJj0P3ybQ6Cu4AgtqLNf3HJxWGSYyJc9m6T7wvO0", // 변수로 가지고있는 AccessToken
 //       },
 //     })
 //     .then((response) => {
 //       console.log(response);
-//       myGameList.value = response.data.content;
+//       myProfile.value = response.data.content;
 //     })
 //     .catch((error) => {
-//       //로그인 페이지로
 //       console.log(error);
-//       moveLoginPage();
+//       if (error.response.status != 401) {
+//         // getAccessTokenByRefreshToken(); // refresh 토큰으로 다시
+//       }
 //     });
 // };
 
-// const moveLoginPage = () => {
-//   //AccessToken 만료되면 refresh로
-//   console.log("move Page");
-// };
+// callApi();
 
 store.dispatch("commonStore/setColorAsync", "default");
 </script>

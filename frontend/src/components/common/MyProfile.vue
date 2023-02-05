@@ -4,7 +4,7 @@
       <div id="profileImg" style="float: left">
         <img
           :src="
-            require(`@/../../Backend/images/profile/1/${props.myProfile.nickname}`)
+            require(`@/../../Backend/images/profile/1/${myProfile.profile}`)
           "
           alt="대표사진"
           class="image"
@@ -13,17 +13,26 @@
     </div>
     <div id="nameAndEmail">
       <div id="nickname">
-        <span>{{ props.myProfile.nickname }}</span>
+        <span>{{ myProfile.nickname }}</span>
       </div>
       <div id="email">
-        <span>{{ props.myProfile.email }}</span>
+        <span>{{ myProfile.email }}</span>
       </div>
       <!-- ${{ props.profile.gameId }}, ${{ props.profile.gameId }} -->
     </div>
   </div>
 </template>
 
-<script></script>
+<script setup>
+import { useStore } from "vuex";
+import { computed } from "vue";
+
+const store = useStore();
+
+console.log("bestCuts !!");
+
+const myProfile = computed(() => store.state.memberStore.memberInfo);
+</script>
 
 <style scoped>
 img {

@@ -1,7 +1,7 @@
-127.0.0.1 - - [05/Feb/2023:01:27:19 +0900] "GET /api/members/1 HTTP/1.1" 200 105 36
-127.0.0.1 - - [05/Feb/2023:01:39:37 +0900] "GET /api/members/1 HTTP/1.1" 200 105 27
-127.0.0.1 - - [05/Feb/2023:01:52:42 +0900] "GET /api/members/1 HTTP/1.1" 200 105 28
-127.0.0.1 - - [05/Feb/2023:02:34:24 +0900] "GET /api/members/1 HTTP/1.1" 200 105 84
-0:0:0:0:0:0:0:1 - - [05/Feb/2023:17:23:16 +0900] "GET /oauth2/authorization/kakao HTTP/1.1" 302 - 1344
-0:0:0:0:0:0:0:1 - - [05/Feb/2023:17:23:31 +0900] "GET /login/oauth2/code/kakao?code=6uEVHf74_8Pw-UHq64r37oruQwzvkiru-6zOhx-6gTQm1XAFuhKuWXX-F3B7D9bYP4Sc2gopyNoAAAGGIKxegg&state=jnD70Vutrmh25H6UpMGnLmBRoo1WvUGBR5zJji3UsHg%3D HTTP/1.1" 200 343 683
-0:0:0:0:0:0:0:1 - - [05/Feb/2023:17:23:32 +0900] "GET /favicon.ico HTTP/1.1" 404 144 63
+0:0:0:0:0:0:0:1 - - [06/Feb/2023:00:02:41 +0900] "OPTIONS /api/members/1 HTTP/1.1" 403 31 3
+0:0:0:0:0:0:0:1 - - [06/Feb/2023:00:03:01 +0900] "OPTIONS /api/members/1 HTTP/1.1" 403 31 2
+0:0:0:0:0:0:0:1 - - [06/Feb/2023:00:03:07 +0900] "OPTIONS /api/members/1 HTTP/1.1" 403 31 3
+0:0:0:0:0:0:0:1 - - [06/Feb/2023:00:03:27 +0900] "OPTIONS /api/members/1 HTTP/1.1" 403 31 2
+0:0:0:0:0:0:0:1 - - [06/Feb/2023:00:03:35 +0900] "OPTIONS /api/members/1 HTTP/1.1" 403 31 4
+0:0:0:0:0:0:0:1 - - [06/Feb/2023:00:04:32 +0900] "OPTIONS /api/members/1 HTTP/1.1" 403 31 3
+0:0:0:0:0:0:0:1 - - [06/Feb/2023:00:04:54 +0900] "OPTIONS /api/members/1 HTTP/1.1" 403 31 3
