@@ -29,17 +29,23 @@ const reportGame = (reportType) => {
       reportType: reportType,
     })
     .then(() => {
-      setCurrentModalAsync();
+      setCurrentModalAsync("then");
     })
     .catch((error) => {
       console.log(error);
+      alert("이미 신고한 게임입니다!");
+      setCurrentModalAsync("catch");
     });
 };
-const setCurrentModalAsync = () => {
-  store.dispatch("commonStore/setCurrentModalAsync", {
-    name: "reportComplete",
-    data: "",
-  });
+const setCurrentModalAsync = (value) => {
+  if (value === "then") {
+    store.dispatch("commonStore/setCurrentModalAsync", {
+      name: "reportComplete",
+      data: "",
+    });
+  } else {
+    store.dispatch("commonStore/setCurrentModalAsync", "");
+  }
 };
 </script>
 

@@ -68,7 +68,13 @@
       </div>
     </div>
     <div id="list">
-      <normal-game v-for="game in games" :key="game" :game="game"></normal-game>
+      <normal-game
+        v-for="(game, index) in games"
+        :key="index"
+        :game="game"
+        :index="index"
+        @updateProps="(value) => updateProps(value)"
+      ></normal-game>
     </div>
     <page-nav
       :totalPageCount="totalPages"
@@ -191,6 +197,16 @@ const sortGames = (option) => {
     tabR.value = "on";
   }
   callApi();
+};
+
+const updateProps = (value) => {
+  if (value.status === "starred") {
+    games.value[value.index].isStarred = 1;
+    games.value[value.index].starredCnt++;
+  } else {
+    games.value[value.index].isStarred = 0;
+    games.value[value.index].starredCnt--;
+  }
 };
 </script>
 

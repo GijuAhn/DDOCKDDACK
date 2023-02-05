@@ -52,7 +52,12 @@
           />
         </div>
         <div id="etc" v-show="state">
-          <div><span>즐겨찾기</span></div>
+          <div v-if="props.game.isStarred === 0" @click="starredGame">
+            <span>즐겨찾기</span>
+          </div>
+          <div v-if="props.game.isStarred === 1" @click="unstarredGame">
+            <span>즐겨찾기 해제</span>
+          </div>
           <div><span>베스트 컷</span></div>
           <div @click="setCurrentModalAsync(`preview`)">
             <span>문제 미리보기</span>
@@ -67,14 +72,15 @@
 </template>
 
 <script setup>
-import { defineProps, onMounted, ref } from "vue";
+import { defineProps, defineEmits, onMounted, ref } from "vue";
 import { useStore } from "vuex";
 import { apiInstance } from "@/api/index";
 import router from "@/router/index.js";
 import process from "process";
-const store = useStore();
 
-const props = defineProps(["game"]);
+const store = useStore();
+const emit = defineEmits(["updateProps"]);
+const props = defineProps(["game", "index"]);
 const api = apiInstance();
 const GAMEIMAGES_PATH = process.env.VUE_APP_GAMEIMAGES_PATH;
 
@@ -89,19 +95,11 @@ const open = () => {
 const state = ref(false);
 
 const setCurrentModalAsync = (what) => {
-  if (what === "preview") {
-    store.dispatch("commonStore/setCurrentModalAsync", {
-      name: "preview",
-      data: props.game,
-    });
-  }
-  if (what === "reportReason") {
-    store.dispatch("commonStore/setCurrentModalAsync", {
-      name: "reportReason",
-      data: props.game,
-    });
-  }
   open();
+  store.dispatch("commonStore/setCurrentModalAsync", {
+    name: what,
+    data: props.game,
+  });
 };
 
 onMounted(() => {
@@ -112,6 +110,29 @@ const createSession = (gameId) => {
   api.post("/api/game-rooms", { gameId }).then((res) => {
     router.replace(`/gameroom/${res.data}`);
   });
+};
+
+const starredGame = () => {
+  open();
+  api
+    .post(`/api/games/starred/${props.game.gameId}`)
+    .then(() => {
+      emit("updateProps", { status: "starred", index: props.index });
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+};
+const unstarredGame = () => {
+  open();
+  api
+    .delete(`/api/games/unstarred/${props.game.gameId}`)
+    .then(() => {
+      emit("updateProps", { status: "unstarred", index: props.index });
+    })
+    .catch((error) => {
+      console.log(error);
+    });
 };
 </script>
 
