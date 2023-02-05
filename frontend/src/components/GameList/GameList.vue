@@ -70,11 +70,24 @@
     <div id="list">
       <normal-game v-for="game in games" :key="game" :game="game"></normal-game>
     </div>
+    <page-nav
+      :totalPageCount="totalPages"
+      :value="pageConditionReq.page"
+      @change="(num) => changePage(num)"
+    ></page-nav>
   </div>
 </template>
 
 <script setup>
 import NormalGame from "@/components/GameList/item/NormalGame";
+import PageNav from "@/components/GameList/item/PageNav.vue";
+
+let totalPages = ref();
+//페이징 이동
+const changePage = (page) => {
+  pageConditionReq.value.page = page;
+  callApi();
+};
 
 import { apiInstance } from "@/api/index";
 import { ref, watch } from "vue";
@@ -157,6 +170,7 @@ const callApi = () => {
     .then((response) => {
       console.log(response);
       games.value = response.data.content;
+      totalPages = response.data.totalPages;
     })
     .catch((error) => {
       console.log(error);
