@@ -29,8 +29,6 @@ import { computed } from "vue";
 
 const store = useStore();
 
-console.log("bestCuts !!");
-
 const myProfile = computed(() => store.state.memberStore.memberInfo);
 </script>
 

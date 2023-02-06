@@ -1,18 +1,16 @@
 import router from "@/router";
-import store from "@/store";
 import {
   login,
   findByAccessToken,
   tokenRegeneration,
   logout,
 } from "@/api/member";
-import { computed } from "vue";
 
 export const memberStore = {
   namespaced: true,
   state: {
     accessToken:
-      "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE2NzU2NTg4MDQsImV4cCI6MTY3NTY2NzQ0NH0.K7e-_1FTR-vCsL4FPYChr0mKmzygJJ4BWk9FVf8GGhQ",
+      "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE2NzU2ODIzMDUsImV4cCI6MTY3NTY5MDk0NX0.QWOv54vIg9v2r4AVZ1S8BK2If385XZCkMmfJTY2BEZ4",
     memberInfo: {
       id: 1,
       nickname: "이종민",
@@ -31,6 +29,9 @@ export const memberStore = {
       return state.isValidToken;
     },
     checkMemberInfo(state) {
+      return state.memberInfo;
+    },
+    getMemberInfo(state) {
       return state.memberInfo;
     },
   },
@@ -52,10 +53,10 @@ export const memberStore = {
     setTokensAsync({ commit }, value) {
       commit("setToken", value);
     },
-    setMemberInfo({ commit }, value) {
-      console.log("setMemberInfo: ", value);
-      commit("setMemberInfo", value);
-    },
+    // setMemberInfo({ commit }, value) {
+    //   console.log("setMemberInfo: ", value);
+    //   commit("setMemberInfo", value);
+    // },
     async userConfirm({ commit }, user) {
       // console.log(user,"^^");
       await login(
@@ -85,18 +86,16 @@ export const memberStore = {
       );
     },
 
-    async getMemberInfo({ commit, dispatch }, id) {
-      console.log(id);
-      let accessToken = computed(
-        () => store.state.memberStore.accessToken
-      ).value;
+    async getMemberInfo({ commit, dispatch, state }, id) {
+      let accessToken = state.accessToken;
       await findByAccessToken(
         id,
         accessToken,
         ({ data }) => {
-          if (data.status === 200) {
+          console.log(data);
+          if (data) {
             // console.log("getMemberInfo data >> ", data);
-            commit("SET_MEMBER_INFO", data.memberInfo);
+            commit("setMemberInfo", data);
           } else {
             console.log("유저 정보 없음!!!!");
           }
