@@ -9,18 +9,17 @@ server:
       force: true
 
   tomcat:
-    basedir: .                              # access log를 저장할 base directory 지정
+    basedir: . # access log를 저장할 base directory 지정
     accesslog:
-      enabled: true                         # access log 저장 여부 (default: false)
-      directory: logs                       # access log를 저장할 상세 directory (base directory에 기반한) (default: logs)
-      pattern: '%h %l %u %t "%r" %s %b %D'  # access log 출력 패턴
-      prefix: access                        # access log 파일이름 prefix
-      suffix: .log                          # access log 파일이름 suffix (확장자 포함)
-      rotate: true                          # access log rotation 여부
-      rename-on-rotate: true                # rotation 시, 새로운 이름 지정 여부 (rotate 될 때의 날짜명이 로그 파일이름에 찍힘)
+      enabled: true # access log 저장 여부 (default: false)
+      directory: logs # access log를 저장할 상세 directory (base directory에 기반한) (default: logs)
+      pattern: '%h %l %u %t "%r" %s %b %D' # access log 출력 패턴
+      prefix: access # access log 파일이름 prefix
+      suffix: .log # access log 파일이름 suffix (확장자 포함)
+      rotate: true # access log rotation 여부
+      rename-on-rotate: true # rotation 시, 새로운 이름 지정 여부 (rotate 될 때의 날짜명이 로그 파일이름에 찍힘)
 
 spring:
-
   profiles:
     active:
       - develop
@@ -35,8 +34,7 @@ spring:
     properties:
       hibernate:
         format_sql: true
-      dialect:
-        org.hibernate.dialect.MySQL8InnoDBDialect
+      dialect: org.hibernate.dialect.MySQL8InnoDBDialect
 
   servlet:
     multipart:
@@ -45,16 +43,18 @@ spring:
   mvc:
     static-path-pattern: /static/**
 
+  redis:
+    host: localhost
+    port: 6379
+
 logging:
   level:
     org.hibernate.SQL: debug
     org.hibernate.type: trace
 
-
 jwt:
   secret: dyAeHubOOc8KaOfYB6XEQoEj1QzRlVgtjNL8PYs1A1tymZvvqkcEU7L1imkKHeDa
   expiration: 1296000000 # unit is ms. 15 * 24 * 60 * 60 * 1000 = 15days
-
 
 springdoc:
   swagger-ui:
@@ -71,14 +71,13 @@ springdoc:
   default-consumes-media-type: application/json;charset=UTF-8
   default-produces-media-type: application/json;charset=UTF-8
 
-OPENVIDU_URL : http://localhost:4443/
+OPENVIDU_URL: http://localhost:4443/
 OPENVIDU_SECRET: MY_SECRET
 
-gameImageUploadPath : src/main/resources/static/gameImages/
-bestcutImageUploadPath : src/main/resources/static/bestcuts/
+gameImageUploadPath: src/main/resources/static/gameImages/
+bestcutImageUploadPath: src/main/resources/static/bestcuts/
 
 ---
-
 spring:
   config:
     activate:
@@ -88,7 +87,6 @@ server:
   port: 9999
 
 ---
-
 spring:
   config:
     activate:
@@ -105,7 +103,7 @@ kakao:
     api_key: { $KAKAO_LOGIN_API_KEY }
     redirect_uri: { $KAKAO_LOGIN_REDIRECT_URL }
 
-OPENVIDU_URL : { $OPENVIDU_URL }
+OPENVIDU_URL: { $OPENVIDU_URL }
 OPENVIDU_SECRET: MY_SECRET
 
 server:

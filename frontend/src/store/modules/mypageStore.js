@@ -1,37 +1,24 @@
 import router from "@/router";
-import store from "@/store";
 import {
-  login,
-  findByAccessToken,
-  tokenRegeneration,
-  logout,
+  getMyBestcut,
+  getMygame,
+  getRecentGame,
+  getStarGame,
 } from "@/api/member";
-import { computed } from "vue";
 
-export const memberStore = {
+export const mypageStore = {
   namespaced: true,
   state: {
-    accessToken:
-      "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE2NzU2NDMyNzYsImV4cCI6MTY3NTY1MTkxNn0.sFrMhWdtseTE_nyLF03Ir5-RMiuTAIV05pdqKiRdqRw",
-    memberInfo: {
-      id: 1,
-      nickname: "이종민",
-      email: "l6778@naver.com",
-      profile: "abc2.jpg",
-      Role: "MEMBER",
-    },
-    isLogin: false,
-    isValidToken: false,
+    memberInfo: null,
+
+    myBestcutList: [],
+    myGameList: [],
+    recentGameList: [],
+    starredList: [],
   },
   getters: {
     getAccessToken(state) {
       return state.accessToken;
-    },
-    checkToken(state) {
-      return state.isValidToken;
-    },
-    checkMemberInfo(state) {
-      return state.memberInfo;
     },
   },
   mutations: {
@@ -41,42 +28,29 @@ export const memberStore = {
     setMemberInfo(state, memberInfo) {
       state.memberInfo = memberInfo;
     },
-    setIsLogin(state, isLogin) {
-      state.isLogin = isLogin;
+    setMyBestcutList(state, getMyBestcutList) {
+      state.getMyBestcutList = getMyBestcutList;
     },
-    setIsValidToken(state, isValidToken) {
-      state.isValidToken = isValidToken;
+    setMyGameList(state, getMyGameList) {
+      state.getMyGameList = getMyGameList;
+    },
+    setRecentGameList(state, getRecentGameList) {
+      state.getRecentGameList = getRecentGameList;
+    },
+    setStarGameList(state, starredList) {
+      state.starredList = starredList;
     },
   },
   actions: {
-    setTokensAsync({ commit }, value) {
-      commit("setToken", value);
-    },
-    setMemberInfo({ commit }, value) {
-      console.log("setMemberInfo: ", value);
-      commit("setMemberInfo", value);
-    },
-    async userConfirm({ commit }, user) {
-      // console.log(user,"^^");
-      await login(
-        //accessToken과 refreshToken이 생성되게
-        user,
+    async getMyBestcutList({ commit }, pageCondition) {
+      await getMyBestcut(
+        pageCondition,
         ({ data }) => {
           console.log(data, "^^");
           if (data.status === 200) {
-            // let accessToken = data["access-token"];
-            // let refreshToken = data["refresh-token"];
-            // console.log("login success token created!!!! >> ", accessToken, refreshToken);
             commit("SET_IS_LOGIN", true);
-            commit("SET_IS_LOGIN_ERROR", false);
-            commit("SET_IS_VALID_TOKEN", true);
-
             // sessionStorage.setItem("access-token", accessToken); //변수에
             // sessionStorage.setItem("refresh-token", refreshToken); //cookie에
-          } else {
-            commit("SET_IS_LOGIN", false);
-            commit("SET_IS_LOGIN_ERROR", true);
-            commit("SET_IS_VALID_TOKEN", false);
           }
         },
         (error) => {
@@ -85,17 +59,12 @@ export const memberStore = {
       );
     },
 
-    async getMemberInfo({ commit, dispatch }, id) {
-      console.log(id);
-      let accessToken = computed(
-        () => store.state.memberStore.accessToken
-      ).value;
-      await findByAccessToken(
-        id,
+    async getMyGameList({ commit, dispatch }, accessToken) {
+      await getMygame(
         accessToken,
         ({ data }) => {
           if (data.status === 200) {
-            // console.log("getMemberInfo data >> ", data);
+            console.log("getMemberInfo data >> ", data);
             commit("SET_MEMBER_INFO", data.memberInfo);
           } else {
             console.log("유저 정보 없음!!!!");
@@ -111,9 +80,10 @@ export const memberStore = {
         }
       );
     },
-    async accesstokenReissue({ commit, state }) {
-      await tokenRegeneration(
+    async getRecentGameList({ commit, state }, pageConditionReq) {
+      await getRecentGame(
         JSON.stringify(state.memberInfo),
+        pageConditionReq,
         ({ data }) => {
           if (data.status === 200) {
             let accessToken = data.accessToken;
@@ -126,7 +96,7 @@ export const memberStore = {
           //AccessToken 갱신 실패시 refreshToken이 문제임 >> 다시 로그인해야함
           if (error.reembersponse.status === 401) {
             console.log("갱신 실패");
-            await logout(
+            await getRecentGame(
               state.memberInfo.id,
               ({ data }) => {
                 if (data.status === 200) {
@@ -152,8 +122,8 @@ export const memberStore = {
     },
   },
 
-  async userLogout({ commit }, id) {
-    await logout(
+  async getStarGameList({ commit }, id) {
+    await getStarGame(
       id,
       ({ data }) => {
         if (data.status === 200) {

@@ -101,9 +101,8 @@ const setCurrentModalAsync = (what) => {
     data: props.game,
   });
 };
-
 onMounted(() => {
-  console.log(process.env);
+  // console.log(process.env);
 });
 
 const createSession = (gameId) => {
