@@ -10,20 +10,20 @@ const authMember = async (to, from, next) => {
   const checkMemberInfo = computed(
     () => store.state.memberStore.memberInfo
   ).value;
-  const checkToken = computed(() => store.state.memberStore.isValidToken).value;
+  // const checkToken = computed(() => store.state.memberStore.isValidToken).value;
   let accessToken = computed(() => store.state.memberStore.accessToken).value;
   console.log("로그인 처리 전", checkMemberInfo, accessToken);
 
   if (checkMemberInfo != null && accessToken) {
     await store.dispatch("memberStore/getMemberInfo", checkMemberInfo.id);
   }
-  if (!checkToken || checkMemberInfo === null) {
-    alert("로그인이 필요한 페이지입니다..");
-    // router.push({ name: "login" }); //login 모달로
-  } else {
-    console.log("로그인 했다!!!!!!!!!!!!!.");
-    next();
-  }
+  // if (!checkToken || checkMemberInfo === null) {
+  //   alert("로그인이 필요한 페이지입니다..");
+  //   // router.push({ name: "login" }); //login 모달로
+  // } else {
+  //   console.log("로그인 했다!!!!!!!!!!!!!.");
+  //   next();
+  // }
   next();
 };
 

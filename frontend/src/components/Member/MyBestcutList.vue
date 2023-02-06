@@ -2,7 +2,7 @@
   <div id="view">
     <div id="list">
       <normal-bestcut
-        v-for="besctcut in myBestcuts"
+        v-for="besctcut in bestcuts"
         :key="besctcut"
         :besctcut="besctcut"
       ></normal-bestcut>
@@ -14,22 +14,31 @@
 import NormalBestcut from "@/components/BestcutList/item/NormalBestcut";
 
 import { useStore } from "vuex";
-import { ref, computed } from "vue";
+import { computed } from "vue";
 
 const store = useStore();
-let pageConditionReq = ref({
+
+const userid = computed(() => store.state.memberStore.memberInfo.id).value;
+const pageConditionReq = {
   order: "RECENT",
   period: "ALL",
   search: "MEMBER",
   keyword: "",
   page: 1,
-});
+};
 
-console.log("bestCuts !!");
+store.dispatch("mypageStore/getMyBestcutList", { pageConditionReq, userid });
 
-store.dispatch("mypageStore/getMyBestcutList", pageConditionReq);
+// const myBestcuts = JSON.parse(
+//   JSON.stringify(computed(() => store.state.mypageStore.myBestcutList).value)
+// );
 
-const myBestcuts = computed(() => store.state.mypageStore.myBestcutList);
+const bestcuts = computed(() => store.getters.myBestcutList);
+
+console.log("@#@#@", bestcuts.value);
+
+// console.log("mybestcuts!! ", this.myBestcuts);
+
 // const memberId = 1;
 // const callApi = () => {
 //   console.log("베스트 컷!");

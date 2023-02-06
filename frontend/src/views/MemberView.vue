@@ -1,5 +1,5 @@
 <template>
-  <navigation-bar-in-member-page />
+  <navigation-bar-in-member-page v-bind="{ userid, pageConditionReq }" />
   <router-view></router-view>
 </template>
 
@@ -7,11 +7,21 @@
 import NavigationBarInMemberPage from "@/components/common/NavigationBarInMemberPage";
 // import MyProfile from "@/components/common/MyProfile";
 import { useStore } from "vuex";
+import { computed } from "vue";
 // import { apiInstance } from "@/api/index";
 // import { ref } from "vue";
 
 // const api = apiInstance();
 const store = useStore();
+const userid = computed(() => store.state.memberStore.memberInfo.id).value;
+const pageConditionReq = {
+  order: "RECENT",
+  period: "ALL",
+  search: "MEMBER",
+  keyword: "",
+  page: 1,
+};
+
 // const myProfile = ref();
 
 // const callApi = () => {

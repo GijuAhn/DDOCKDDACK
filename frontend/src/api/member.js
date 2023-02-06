@@ -9,8 +9,6 @@ const api = apiInstance();
 async function findByAccessToken(userid, accessToken, success, fail) {
   console.log(userid);
   console.log(accessToken);
-  // api.defaults.headers["access-token"] = accessToken;
-  console.log(api.defaults.headers);
   await api
     .get(`/api/members/${userid}`, {
       headers: {
