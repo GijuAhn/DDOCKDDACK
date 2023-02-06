@@ -1,20 +1,11 @@
 <template>
   <div>
     <div v-if="props.streamManager">
-      <span v-if="props.isStart && !props.isEnd">
-        <img
-          :src="`${GAMEIMAGES_PATH}/${props.room.gameId}/${
-            props.room.gameImages[round - 1].gameImage
-          }`"
-        />
-      </span>
-      <div class="parent">
-        <ov-video
-          class="child1"
-          :class="{ blinking: resultMode }"
-          :stream-manager="props.streamManager"
-        />
-      </div>
+      <ov-video
+        class="child1"
+        :class="{ blinking: resultMode }"
+        :stream-manager="props.streamManager"
+      />
 
       <div>
         <p>{{ clientData }}</p>
@@ -42,7 +33,7 @@
             placeholder="제목을 입력하세요"
           />
           <img
-            :src="`${GAMEIMAGES_PATH}/${props.room.gameId}/${props.room.gameImages[index].gameImage}`"
+            :src="`${IMAGE_PATH}/${props.room.gameImages[index].gameImage}`"
           />
           <img :src="image" id="bestcutImg" /> <br />
         </div>
@@ -60,6 +51,7 @@ import { apiInstance } from "@/api/index";
 import { computed, defineProps, watch, ref, onMounted } from "vue";
 import process from "process";
 
+const IMAGE_PATH = process.env.VUE_APP_IMAGE_PATH;
 const api = apiInstance();
 const props = defineProps({
   streamManager: Object,
@@ -71,7 +63,6 @@ const props = defineProps({
   resultMode: Boolean,
 });
 
-const GAMEIMAGES_PATH = process.env.VUE_APP_GAMEIMAGES_PATH;
 const resultImages = ref([]);
 const bestcutSaveReq = ref({
   pinNumber: undefined,
@@ -197,13 +188,5 @@ const upload = () => {
   100% {
     opacity: 1;
   }
-}
-
-.parent {
-  position: relative;
-}
-.child,
-.child {
-  position: absolute;
 }
 </style>
