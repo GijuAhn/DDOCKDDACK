@@ -12,4 +12,9 @@ onMounted(() => {
 });
 </script>
 
-<style></style>
+<style>
+video {
+  width: 50%;
+  border-radius: 20px;
+}
+</style>

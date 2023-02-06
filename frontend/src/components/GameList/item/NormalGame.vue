@@ -2,7 +2,7 @@
   <div id="content">
     <div id="topSection">
       <img
-        :src="`${GAMEIMAGES_PATH}/${props.game.gameId}/${props.game.thumbnail}`"
+        :src="`${IMAGE_PATH}${props.game.thumbnail}`"
         alt="대표사진"
         class="image"
       />
@@ -82,7 +82,7 @@ const store = useStore();
 const emit = defineEmits(["updateProps"]);
 const props = defineProps(["game", "index"]);
 const api = apiInstance();
-const GAMEIMAGES_PATH = process.env.VUE_APP_GAMEIMAGES_PATH;
+const IMAGE_PATH = process.env.VUE_APP_IMAGE_PATH;
 
 const onClickOutside = () => {
   state.value = false;
@@ -101,9 +101,8 @@ const setCurrentModalAsync = (what) => {
     data: props.game,
   });
 };
-
 onMounted(() => {
-  console.log(process.env);
+  // console.log(process.env);
 });
 
 const createSession = (gameId) => {

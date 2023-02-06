@@ -68,12 +68,13 @@ public class GameRepositorySupport {
         return new PageImpl<>(list, pageCondition.getPageable(), getTotalPageCount(memberId, pageCondition));
     }
 
+//
     private long getTotalPageCount(Long memberId, PageCondition pageCondition) {
-        return jpaQueryFactory.select(Wildcard.count)
+        return jpaQueryFactory.selectDistinct(game.id)
                 .from(game)
                 .innerJoin(game.member, member)
                 .innerJoin(game.images, gameImage)
-                .where(searchCond(pageCondition.getSearchCondition(), pageCondition), periodCond(pageCondition.getPeriodCondition())).fetch().get(0);
+                .where(searchCond(pageCondition.getSearchCondition(), pageCondition), periodCond(pageCondition.getPeriodCondition())).fetch().size();
     }
 
     // 게임 상세 조회
