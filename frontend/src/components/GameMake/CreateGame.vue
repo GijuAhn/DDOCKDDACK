@@ -1,9 +1,11 @@
 <template>
   <div id="view">
-    <div v-show="step === 0">
+    <div id="stateIsZero" v-show="step === 0">
       <form>
         <div>
-          <div><label for="gameTitle" class="input-name">제목</label></div>
+          <div class="label">
+            <label for="gameTitle" class="input-name">제목</label>
+          </div>
           <div>
             <input
               id="gameTitle"
@@ -14,7 +16,9 @@
           </div>
         </div>
         <div>
-          <div><label for="gameDesc" class="input-name">설명</label></div>
+          <div class="label">
+            <label for="gameDesc" class="input-name">설명</label>
+          </div>
           <div>
             <input
               id="gameDesc"
@@ -25,7 +29,9 @@
           </div>
         </div>
         <div>
-          <div><label class="input-name">이미지 업로드</label></div>
+          <div class="label">
+            <label class="input-name">이미지 업로드</label>
+          </div>
           <div>
             <input type="file" @change="storeImage" accept="image/*" multiple />
           </div>
@@ -42,18 +48,20 @@
         </div>
       </form>
 
-      <button @click="changeStep">다음</button>
+      <div class="move-btn">
+        <button @click="changeStep" class="yellow">다음</button>
+      </div>
     </div>
-    <div v-show="step === 1">
+    <div id="stateIsOne" v-show="step === 1">
       <div>
-        <h2>사진 설명</h2>
-        <ul>
-          <li v-for="item in gameSaveReq.images" :key="item">
+        <div class="label"><label class="input-name">사진 설명</label></div>
+        <div id="descSection">
+          <div v-for="item in gameSaveReq.images" :key="item">
             <img
               :src="convertFile(item.gameImage)"
               alt="이미지 미리보기..."
-              width="200"
-              height="200"
+              width="120"
+              height="120"
             />
             <input
               id="title"
@@ -61,12 +69,20 @@
               v-model="item.gameImageDesc"
               placeholder="설명을 입력하세요."
             />
-            <button @click="removeLine(item)">삭제</button>
-          </li>
-        </ul>
+            <img
+              :src="require(`@/assets/images/minus.png`)"
+              width="40"
+              height="40"
+              @click="removeLine(item)"
+              class="minus"
+            />
+          </div>
+        </div>
       </div>
-      <button @click="changeStep">이전</button>
-      <button @click="submit">완료</button>
+      <div class="move-btn">
+        <button @click="changeStep" class="gray">이전</button>
+        <button @click="submit" class="yellow">완료</button>
+      </div>
     </div>
   </div>
 </template>
@@ -198,13 +214,13 @@ const createGame = () => {
 form > div {
   margin-bottom: 40px;
 }
-form > div > div {
+.label {
   margin-bottom: 3px;
 }
 label {
   font-size: 20px;
 }
-input[type="text"] {
+#stateIsZero input[type="text"] {
   outline: none;
   border-radius: 5px;
   border: 2px solid black;
@@ -212,7 +228,17 @@ input[type="text"] {
   font-family: "NanumSquareRoundB";
   padding: 0 10px;
   height: 44px;
-  width: 100%;
+  width: 1040px;
+}
+#stateIsOne input[type="text"] {
+  outline: none;
+  border-radius: 5px;
+  border: 2px solid black;
+  font-size: 20px;
+  font-family: "NanumSquareRoundB";
+  padding: 0 10px;
+  height: 44px;
+  width: 680px;
 }
 #previewSection {
   border-radius: 5px;
@@ -224,8 +250,70 @@ input[type="text"] {
   grid-template-columns: repeat(5, 1fr);
   place-items: center;
 }
-#previewSection > img {
+#previewSection:hover {
+  cursor: pointer;
+}
+#descSection {
   border-radius: 5px;
+  border: 2px solid black;
+  width: 1000px;
+  padding: 30px;
+  margin-bottom: 40px;
+}
+#descSection > div {
+  padding-right: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 20px 0;
+}
+
+#descSection > div:first-child,
+#descSection > div:last-child {
+  margin: 0 !important;
+}
+
+/* #descSection > div > * {
+  margin: auto;
+} */
+.move-btn {
+  text-align: right;
+}
+.yellow {
+  background-color: white;
+  border-radius: 5px;
+  border: 2px solid black;
+  font-size: 20px;
+  font-family: "NanumSquareRoundB";
+  height: 48px;
+  background-color: #ffb800;
+  color: white;
+  width: 120px;
+  margin: 20px 0 0 0;
+}
+.yellow:hover {
+  cursor: pointer;
+}
+.gray {
+  background-color: white;
+  border-radius: 5px;
+  border: 2px solid black;
+  font-size: 20px;
+  font-family: "NanumSquareRoundB";
+  height: 48px;
+  background-color: #515151;
+  color: white;
+  width: 120px;
+  margin: 20px 50px 0 0;
+}
+.gray:hover {
+  cursor: pointer;
+}
+img {
   object-fit: cover;
+  border-radius: 5px;
+}
+.minus:hover {
+  cursor: pointer;
 }
 </style>
