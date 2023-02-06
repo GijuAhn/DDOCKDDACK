@@ -9,7 +9,7 @@
 <script setup>
 import GameList from "@/components/GameList/GameList.vue";
 import ContentHeader from "@/components/common/ContentHeader";
-import ModalFrame from "@/components/common/modal/ModalFrame";
+import ModalFrame from "@/components/common/ModalFrame";
 
 import { useStore } from "vuex";
 
