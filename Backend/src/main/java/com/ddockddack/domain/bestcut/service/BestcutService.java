@@ -16,20 +16,13 @@ import com.ddockddack.global.error.ErrorCode;
 import com.ddockddack.global.error.exception.AccessDeniedException;
 import com.ddockddack.global.error.exception.AlreadyExistResourceException;
 import com.ddockddack.global.error.exception.NotFoundException;
+import com.ddockddack.global.service.AwsS3Service;
 import com.ddockddack.global.util.PageCondition;
 import com.ddockddack.global.util.PageConditionReq;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.UUID;
-
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.codec.binary.Base64;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @Transactional(readOnly = true)
@@ -40,9 +33,15 @@ public class BestcutService {
     private final MemberRepository memberRepository;
     private final ReportedBestcutRepository reportedBestcutRepository;
     private final GameRoomRepository gameRoomRepository;
-    @Value("${bestcutImageUploadPath}")
-    private String bestcutImageUploadPath;
+    private final AwsS3Service awsS3Service;
 
+
+    /**
+     * 베스트컷 이미지 게시
+     *
+     * @param memberId
+     * @param saveReq
+     */
     @Transactional
     public void saveBestcut(Long memberId, BestcutSaveReq saveReq) {
 
@@ -54,32 +53,20 @@ public class BestcutService {
 
         for (BestcutImageReq imageReq : saveReq.getImages()) {
             int index = imageReq.getBestcutIndex();
-            String path = bestcutImageUploadPath;
-            File file = new File(path);
 
-            if( !file.exists()){
-                file.mkdirs();
-            }
+            byte[] byteImage = gameRoomRepository.findByImageIndex(pinNumber, sessionId, index);
+            String fileName = awsS3Service.InputStreamUpload(byteImage);
 
-            String fileName = UUID.randomUUID().toString() + ".jpg";
+            Bestcut bestcut = Bestcut.builder()
+                    .member(member)
+                    .gameTitle(saveReq.getGameTitle())
+                    .gameImageUrl(imageReq.getGameImgUrl())
+                    .gameImgDesc(imageReq.getGameImgDesc())
+                    .imageUrl(fileName)
+                    .title(imageReq.getBestcutImgTitle())
+                    .build();
 
-            try (FileOutputStream stream = new FileOutputStream(file.getAbsolutePath()+File.separator+fileName)){
-
-                byte[] byteImage = gameRoomRepository.findByImageIndex(pinNumber, sessionId, index);
-                stream.write(byteImage);
-                Bestcut bestcut = Bestcut.builder()
-                        .member(member)
-                        .gameTitle(saveReq.getGameTitle())
-                        .gameImageUrl(imageReq.getGameImgUrl())
-                        .gameImgDesc(imageReq.getGameImgDesc())
-                        .imageUrl(fileName)
-                        .title(imageReq.getBestcutImgTitle())
-                        .build();
-
-                bestcutRepository.save(bestcut);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            bestcutRepository.save(bestcut);
 
 
         }
@@ -132,7 +119,7 @@ public class BestcutService {
      * @return
      */
     public PageImpl<BestcutRes> findAll(Boolean my, Long loginMemberId,
-            PageConditionReq pageConditionReq) {
+                                        PageConditionReq pageConditionReq) {
         PageCondition pageCondition = pageConditionReq.toEntity();
         return bestcutRepository.findAllBySearch(my, loginMemberId, pageCondition);
     }

@@ -51,6 +51,10 @@ logging:
   level:
     org.hibernate.SQL: debug
     org.hibernate.type: trace
+    com:
+      amazonaws:
+        util:
+          EC2MetadataUtils: error
 
 jwt:
   secret: dyAeHubOOc8KaOfYB6XEQoEj1QzRlVgtjNL8PYs1A1tymZvvqkcEU7L1imkKHeDa
@@ -71,11 +75,9 @@ springdoc:
   default-consumes-media-type: application/json;charset=UTF-8
   default-produces-media-type: application/json;charset=UTF-8
 
+
 OPENVIDU_URL: http://localhost:4443/
 OPENVIDU_SECRET: MY_SECRET
-
-gameImageUploadPath: src/main/resources/static/gameImages/
-bestcutImageUploadPath: src/main/resources/static/bestcuts/
 
 ---
 spring:
