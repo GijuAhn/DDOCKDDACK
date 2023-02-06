@@ -101,8 +101,8 @@ public class MemberService {
 //        Long findUserId = tokenService.getUid(refreshToken);
 
         //Redis Cache에 저장
-//        Long accessTokenTime = tokenService.getExpiration(accessToken);
-//        Long refreshTokenTime = tokenService.getExpiration(refreshToken);
+        Long accessTokenTime = tokenService.getExpiration(accessToken);
+        Long refreshTokenTime = tokenService.getExpiration(refreshToken);
 //        if (accessTokenTime > 0) {
 //            redisTemplate.opsForValue()
 //                .set(accessToken, "logout", accessTokenTime,

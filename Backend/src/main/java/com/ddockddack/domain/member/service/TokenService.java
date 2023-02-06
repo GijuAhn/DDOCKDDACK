@@ -12,9 +12,9 @@ import javax.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Service;
 //import org.springframework.data.redis.core.RedisTemplate;
 //import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
