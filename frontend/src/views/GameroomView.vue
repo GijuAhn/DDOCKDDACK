@@ -20,7 +20,10 @@
       </div>
       <div id="game-image">
         <span v-if="isStart && !isEnd">
-          <img :src="`${IMAGE_PATH}/${room.gameImages[round - 1].gameImage}`" />
+          <img
+            class="game-image"
+            :src="`${IMAGE_PATH}/${room.gameImages[round - 1].gameImage}`"
+          />
         </span>
       </div>
       <div>
@@ -403,5 +406,8 @@ watch(
 .btn-close:focus {
   transform: rotateZ(90deg);
   background: #ff0000;
+}
+.game-image {
+  transform: scaleX(-1);
 }
 </style>
