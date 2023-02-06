@@ -86,7 +86,7 @@
 
 <script setup>
 import NormalGame from "@/components/GameList/item/NormalGame";
-import PageNav from "@/components/GameList/item/PageNav.vue";
+import PageNav from "@/components/common/PageNav.vue";
 
 let totalPages = ref();
 //페이징 이동

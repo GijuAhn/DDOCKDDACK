@@ -12,7 +12,7 @@ export const memberStore = {
   namespaced: true,
   state: {
     accessToken:
-      "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE2NzU2NDMyNzYsImV4cCI6MTY3NTY1MTkxNn0.sFrMhWdtseTE_nyLF03Ir5-RMiuTAIV05pdqKiRdqRw",
+      "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE2NzU2NTg4MDQsImV4cCI6MTY3NTY2NzQ0NH0.K7e-_1FTR-vCsL4FPYChr0mKmzygJJ4BWk9FVf8GGhQ",
     memberInfo: {
       id: 1,
       nickname: "이종민",

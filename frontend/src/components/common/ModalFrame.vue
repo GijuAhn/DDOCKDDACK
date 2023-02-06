@@ -13,6 +13,14 @@
       class="modalContent"
       v-if="currentModal.name === `reportComplete`"
     />
+    <bestcut-detail-modal
+      class="modalContent"
+      v-if="currentModal.name === `bestcutDetail`"
+    />
+    <bestcut-report-modal
+      class="modalContent"
+      v-if="currentModal.name === `bestcutReport`"
+    />
   </div>
 </template>
 
@@ -20,8 +28,6 @@
 import { useStore } from "vuex";
 
 const store = useStore();
-
-store.dispatch("commonStore/setColorAsync", "variant1");
 
 import { computed } from "vue";
 
@@ -34,6 +40,8 @@ const setCurrentModalAsync = () => {
 import PreviewModal from "@/components/common/modal/PreviewModal";
 import ReportReasonModal from "@/components/common/modal/ReportReasonModal";
 import ReportCompleteModal from "@/components/common/modal/ReportCompleteModal";
+import BestcutDetailModal from "@/components/common/modal/BestcutDetailModal";
+import BestcutReportModal from "@/components/common/modal/BestcutReportModal";
 </script>
 
 <style scoped>
