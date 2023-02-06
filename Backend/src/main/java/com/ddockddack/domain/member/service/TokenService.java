@@ -82,13 +82,13 @@ public class TokenService {
             log.info("claims {}", Jwts.parser()
                 .setSigningKey(secretKey)
                 .parseClaimsJws(token));
-            log.info("token verify {}", redisTemplate.opsForValue().get(token));
-            ValueOperations<String, String> logoutValueOperations = redisTemplate.opsForValue();
+//            log.info("token verify {}", redisTemplate.opsForValue().get(token));
+//            ValueOperations<String, String> logoutValueOperations = redisTemplate.opsForValue();
 
-            if (logoutValueOperations.get(token) != null) {
-                log.info("로그아웃 된 토큰입니다.");
-                return false;
-            }
+//            if (logoutValueOperations.get(token) != null) {
+//                log.info("로그아웃 된 토큰입니다.");
+//                return false;
+//            }
             return claims.getBody()
                 .getExpiration()
                 .after(new Date());

@@ -203,7 +203,6 @@ public class MemberApiController {
         }
     }
 
-
     @Operation(summary = "로그아웃", description = "로그아웃 메소드입니다.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "성공"),
@@ -223,8 +222,34 @@ public class MemberApiController {
         return ResponseEntity.ok("logout 성공!");
     }
 
+    private void checkLogin(String accessToken) {
+        if (accessToken == null) {
+            throw new AccessDeniedException(ErrorCode.LOGIN_REQUIRED); //권한이 없는 데이터 접속
+        }
+    }
 
-    @Operation(summary = "카카오 로그인", description = "카카오 로그인 메소드입니다.")
+    private void unlinkKakao() {
+        //                HttpHeaders tokenHeaders = new HttpHeaders(); //로그아웃하면 accessToken 연결 끊기
+//                tokenHeaders.add("Authorization", "Bearer " + accessToken);
+//                tokenHeaders.add("Content-type", "application/x-www-form-urlencoded");
+//
+//                HttpEntity<MultiValueMap<String, String>> memberUnlinkReq = new HttpEntity<>(tokenHeaders);
+//
+//                RestTemplate rt = new RestTemplate();
+//
+//                ResponseEntity<String> memberUnlinkRes = rt.exchange(
+//                        "https://kapi.kakao.com/v1/member/unlink",
+//                        HttpMethod.POST,
+//                        memSberUnlinkReq,
+//                        String.class
+//                );
+
+//                System.out.println("=============================");
+//                System.out.println("유저 해제" + memberUnlinkRes);
+    }
+
+
+    /*@Operation(summary = "카카오 로그인", description = "카카오 로그인 메소드입니다.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "성공"),
         @ApiResponse(responseCode = "401", description = "인증 실패"),
@@ -307,34 +332,7 @@ public class MemberApiController {
         } catch (Exception e) {
             throw new AccessDeniedException(ErrorCode.NOT_AUTHORIZED);
         }
-    }
-
-
-    private void checkLogin(String accessToken) {
-        if (accessToken == null) {
-            throw new AccessDeniedException(ErrorCode.LOGIN_REQUIRED); //권한이 없는 데이터 접속
-        }
-    }
-
-    private void unlinkKakao() {
-        //                HttpHeaders tokenHeaders = new HttpHeaders(); //로그아웃하면 accessToken 연결 끊기
-//                tokenHeaders.add("Authorization", "Bearer " + accessToken);
-//                tokenHeaders.add("Content-type", "application/x-www-form-urlencoded");
-//
-//                HttpEntity<MultiValueMap<String, String>> memberUnlinkReq = new HttpEntity<>(tokenHeaders);
-//
-//                RestTemplate rt = new RestTemplate();
-//
-//                ResponseEntity<String> memberUnlinkRes = rt.exchange(
-//                        "https://kapi.kakao.com/v1/member/unlink",
-//                        HttpMethod.POST,
-//                        memSberUnlinkReq,
-//                        String.class
-//                );
-
-//                System.out.println("=============================");
-//                System.out.println("유저 해제" + memberUnlinkRes);
-    }
+    }*/
 
 }
 

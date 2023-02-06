@@ -47,7 +47,7 @@ const routes = [
       {
         path: "createGame",
         name: "createGame",
-        beforeEnter: authMember,
+        // beforeEnter: authMember, --> 로그인된 회원만 됨
         component: () => import("@/components/GameMake/CreateGame.vue"),
       },
     ],
