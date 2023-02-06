@@ -4,7 +4,7 @@
       <img
         v-for="image in game.images"
         :key="image"
-        :src="`${GAMEIMAGES_PATH}/${game.gameId}/${image.gameImage}`"
+        :src="`${IMAGE_PATH}/${image.gameImage}`"
         width="120"
         height="120"
       />
@@ -16,7 +16,7 @@
 import { useStore } from "vuex";
 import process from "process";
 
-const GAMEIMAGES_PATH = process.env.VUE_APP_GAMEIMAGES_PATH;
+const IMAGE_PATH = process.env.VUE_APP_IMAGE_PATH;
 
 const store = useStore();
 
