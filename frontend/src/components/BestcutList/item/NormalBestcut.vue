@@ -1,93 +1,51 @@
 <template>
   <div id="content">
-    <div id="top-section">
+    <div id="topSection">
       <img
-        :src="`${BESTCUTS_PATH}/${props.bestcut.bestcutImgUrl}`"
-        alt="베스트컷"
-        @click="bestcutDetail"
+        :src="`${BESTCUTS_PATH}/${props.besctcut.bestcutId}/${props.besctcut.gameImgUrl}`"
+        alt="대표사진"
         class="image"
       />
-      <div class="image-behind2">
-        <img
-          :src="`${GAMEIMAGES_PATH}/${props.bestcut.gameImgUrl}`"
-          alt="원본사진"
-          @click="bestcutDetail"
-          class="image"
-        />
-      </div>
     </div>
-    <div id="bottom-section">
-      <img
-        :src="`https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/340px-Default_pfp.svg.png?20220226140232`"
-        alt="유저프로필사진"
-        class="profile-image"
-      />
-      <div id="nickname">
-        <span>{{ props.bestcut.nickname }}</span>
+    <div id="bottomSection">
+      <div id="gameTitle">
+        <span>{{ props.besctcut.nickname }}</span>
       </div>
-      <div id="bestcut-title">
-        <span>{{ props.bestcut.bestcutImgTitle }}</span>
+      <div id="gameDesc">
+        <span>{{ props.besctcut.bestcutImgTitle }}</span>
       </div>
-      <div id="game-desc">
-        <span>{{ props.bestcut.gameTitle }}</span> |
-        <span>{{ props.bestcut.gameImgDesc }}</span>
+      <div id="gameDesc">
+        <span>{{ props.besctcut.gameTitle }}</span>
+        <span> | </span>
+        <span>{{ props.besctcut.gameImgDesc }}</span>
       </div>
-
-      <div id="etc-section" v-click-outside-element="onClickOutside">
-        <div id="etc-button" @click="open">
+      <div id="etcSection" v-click-outside-element="onClickOutside">
+        <div id="etcButton" @click="open">
           <img
             :src="require(`@/assets/images/etc-button.png`)"
-            alt="기타버튼"
+            alt="대표사진"
             class="etc"
           />
         </div>
         <div id="etc" v-show="state">
-          <div @click="setCurrentModalAsync(`reportReason`)">
-            <span>신고</span>
-          </div>
+          <div><span>삭제</span></div>
         </div>
       </div>
-
-      <button
-        v-if="!props.bestcut.isLiked"
-        @click="bestcutLike(props.bestcut.bestcutId)"
-        class="like-button"
-      >
-        <img
-          :src="require(`@/assets/images/like-button.svg`)"
-          alt="좋아요아이콘"
-          class="like"
-        />
-        <span>{{ props.bestcut.popularity }}</span>
-      </button>
-      <button
-        v-else
-        @click="bestcutDislike(props.bestcut.bestcutId)"
-        class="like-button"
-      >
-        <img
-          :src="require(`@/assets/images/dislike-button.svg`)"
-          alt="좋아요취소아이콘"
-          class="dislike"
-        />
-        <span>{{ props.bestcut.popularity }}</span>
-      </button>
+      <div id="thumbsUp">
+        <span>추천</span>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { defineProps, defineEmits, ref } from "vue";
-import { useStore } from "vuex";
+import { defineProps, ref } from "vue";
 
-const props = defineProps({ bestcut: Object });
-const emit = defineEmits(["bestcutDetail", "bestcutLike", "bestcutDislike"]);
-const GAMEIMAGES_PATH = process.env.VUE_APP_GAMEIMAGES_PATH;
+const props = defineProps(["besctcut"]);
 const BESTCUTS_PATH = process.env.VUE_APP_BESTCUTS_PATH;
-const state = ref(false);
-const store = useStore();
 
 const onClickOutside = () => {
+  // console.log(e);
   state.value = false;
 };
 
@@ -95,37 +53,7 @@ const open = () => {
   state.value = !state.value;
 };
 
-const bestcutDetail = () => {
-  emit("bestcutDetail");
-};
-
-const bestcutLike = (bestcutId) => {
-  emit("bestcutLike", bestcutId);
-};
-
-const bestcutDislike = (bestcutId) => {
-  emit("bestcutDislike", bestcutId);
-};
-
-// const openReportModal = (bestcutId) => {
-//   emit("openReportModal", bestcutId);
-// };
-
-const setCurrentModalAsync = (what) => {
-  if (what === "detail") {
-    store.dispatch("commonStore/setCurrentModalAsync", {
-      name: "detail",
-      data: props.game,
-    });
-  }
-  if (what === "reportReason") {
-    store.dispatch("commonStore/setCurrentModalAsync", {
-      name: "reportReason",
-      data: "",
-    });
-  }
-  open();
-};
+const state = ref(false);
 </script>
 
 <style scoped>
@@ -134,84 +62,54 @@ const setCurrentModalAsync = (what) => {
   width: 325px;
   height: 380px;
 }
-
-#nickname {
+#createRoomButton {
+  margin-top: 10px;
+}
+#gameTitle {
   width: 95%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  display: inline;
-  position: absolute;
-  margin-top: 4px;
-  margin-left: 10px;
 }
-#game-desc {
-  margin-top: 15px;
+#gameDesc {
+  margin-top: 5px;
   width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-#bestcut-title {
-  margin-top: 15px;
+#createRoomButton button {
+  border: 1px solid #da6c6b;
+  background-color: white;
+  font-size: 14px;
+  font-family: "NanumSquareRoundB";
   width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  padding: 10px 0;
+  color: #da6c6b;
 }
-
-#nickname span {
+#createRoomButton button:hover {
+  color: white;
+  background-color: #da6c6b;
+  cursor: pointer;
+  transition: 0.3s;
+}
+#gameTitle span {
   font-size: 22px;
 }
-#bestcut-title span {
+#gameDesc span {
   font-size: 16px;
   color: #656565;
-}
-#game-desc span {
-  font-size: 16px;
-  color: #656565;
-}
-#top-section {
-  position: relative;
 }
 .image {
   width: 325px;
   height: 260px;
   object-fit: cover;
-  display: inline-block;
 }
-
-.profile-image {
-  widows: 30px;
-  height: 30px;
-}
-
-.image:hover ~ .image-behind2 {
-  display: inline-block;
-}
-
-.image-behind {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 325px;
-  height: 260px;
-  background-color: black;
-  opacity: 0.5;
-}
-.image-behind2 {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  color: white;
-  display: none;
-}
-#bottom-section {
+#bottomSection {
   padding: 5px 10px;
   position: relative;
 }
-#etc-button {
+#etcButton {
   position: absolute;
   top: 0px;
   left: 290px;
@@ -220,7 +118,7 @@ const setCurrentModalAsync = (what) => {
   border-radius: 50%;
   text-align: center;
 }
-#etc-button:hover {
+#etcButton:hover {
   background-color: #d9d9d9;
   cursor: pointer;
   transition: 0.3s;
@@ -233,7 +131,10 @@ const setCurrentModalAsync = (what) => {
   left: 50%;
   transform: translate(-50%, -50%);
 }
-
+/* #content:hover {
+  box-shadow: 0 0 20px #8b8b8b;
+  transition: 0.3s;
+} */
 #etc {
   position: absolute;
   top: 30px;
@@ -258,43 +159,9 @@ const setCurrentModalAsync = (what) => {
   background-color: #d9d9d9;
 }
 
-.like-button {
+#thumbsUp {
   position: absolute;
-  background-color: #d9d9d9;
-  border-radius: 30px;
-  border-width: 0;
-  width: 60px;
-  height: 30px;
-  top: 78px;
-  left: 255px;
-}
-.like-button span {
-  position: absolute;
-  top: 30%;
-  left: 50%;
-  margin-left: 8px;
-}
-.like {
-  width: 35%;
-  height: 60%;
-  left: 10px;
-  top: 6px;
-  position: absolute;
-}
-.dislike {
-  width: 35%;
-  height: 60%;
-  left: 10px;
-  top: 6px;
-  position: absolute;
-}
-
-.like-button:hover .like {
-  filter: invert(100%) sepia(0%) saturate(6054%) hue-rotate(358deg)
-    brightness(97%) contrast(113%);
-}
-
-.like-button:hover span {
-  color: #fff;
+  top: 50px;
+  left: 285px;
 }
 </style>
