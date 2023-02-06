@@ -54,10 +54,7 @@ logging:
     org.hibernate.SQL: debug
     org.hibernate.type: trace
 
-<<<<<<< HEAD
 
-=======
->>>>>>> 010389409c6d9b8b1a1aa3c7750743162cce9d9a
 springdoc:
   swagger-ui:
     path: /api-docs
@@ -73,11 +70,11 @@ springdoc:
   default-consumes-media-type: application/json;charset=UTF-8
   default-produces-media-type: application/json;charset=UTF-8
 
-OPENVIDU_URL : http://localhost:4443/
+OPENVIDU_URL: http://localhost:4443/
 OPENVIDU_SECRET: MY_SECRET
 
-gameImageUploadPath : src/main/resources/static/gameImages/
-bestcutImageUploadPath : src/main/resources/static/bestcuts/
+gameImageUploadPath: src/main/resources/static/gameImages/
+bestcutImageUploadPath: src/main/resources/static/bestcuts/
 
 ---
 
@@ -130,7 +127,7 @@ spring:
             user-info-uri: https://kapi.kakao.com/v2/user/me
             user-name-attribute: id
 
-OPENVIDU_URL : { $OPENVIDU_URL }
+OPENVIDU_URL: { $OPENVIDU_URL }
 OPENVIDU_SECRET: MY_SECRET
 
 server:
@@ -149,7 +146,7 @@ jwt:
   token:
     secret-key: { $JWT_TOKEN_SECRET_KEY }
   access-token:
-    expire-length:  8640000 #하루 #10분 300000 #5분
+    expire-length: 8640000 #하루 #10분 300000 #5분
   refresh-token:
     expire-length: 1209600000 #14일
 
