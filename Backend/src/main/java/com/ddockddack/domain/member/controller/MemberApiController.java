@@ -33,7 +33,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-@RestController
+@Controller
 @Slf4j
 @RequiredArgsConstructor
 @Tag(name = "member", description = "member API 입니다.")
@@ -84,15 +84,15 @@ public class MemberApiController {
     @GetMapping("/{memberId}")
     public ResponseEntity<?> getMemberInfo(@PathVariable Long memberId) {
 
-        log.info("sec info {}",
-            SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
-        MemberAccessRes memberAccessRes = (MemberAccessRes) SecurityContextHolder.getContext()
-            .getAuthentication().getPrincipal();
-        if (memberAccessRes.toString().equals("anonymousUser") || memberAccessRes.getId() != memberId) {
-            throw new NotFoundException(ErrorCode.MEMBER_NOT_FOUND);
-        }
+//        log.info("sec info {}",
+//            SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
+//        MemberAccessRes memberAccessRes = (MemberAccessRes) SecurityContextHolder.getContext()
+//            .getAuthentication().getPrincipal();
+//        if (memberAccessRes.toString().equals("anonymousUser") || memberAccessRes.getId() != memberId) {
+//            throw new NotFoundException(ErrorCode.MEMBER_NOT_FOUND);
+//        }
 
-        Optional<Member> member = memberService.getMemberById(memberAccessRes.getId());
+        Optional<Member> member = memberService.getMemberById(memberId);
         log.info("member {}", member.get());
         if (member.isEmpty()) {
             throw new NotFoundException(ErrorCode.MEMBER_NOT_FOUND);
