@@ -78,6 +78,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             Authentication auth = getAuthentication(memberAccessRes);
             SecurityContextHolder.getContext().setAuthentication(auth);
         } else if(!request.getMethod().equals("GET")){ //GET Mapping이 아닌 경우만 ERROR처리 하지만
+            log.info(String.valueOf(ErrorCode.EXPIRED_ACCESSTOKEN));
             throw new AccessDeniedException(ErrorCode.EXPIRED_ACCESSTOKEN);
         }
 

@@ -48,17 +48,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequestMapping("/api/members")
 public class MemberApiController {
 
-    private MemberService memberService;
-    private BestcutService bestcutService;
-    private GameService gameService;
-
-    @Autowired
-    public MemberApiController(MemberService memberService, BestcutService bestcutService,
-        GameService gameService) {
-        this.memberService = memberService;
-        this.bestcutService = bestcutService;
-        this.gameService = gameService;
-    }
+    private final MemberService memberService;
+    private final BestcutService bestcutService;
+    private final GameService gameService;
 
     @Operation(summary = "회원 정보 수정", description = "회원 정보 수정 메소드입니다.")
     @ApiResponses(value = {
