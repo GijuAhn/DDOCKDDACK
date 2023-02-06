@@ -75,19 +75,6 @@ springdoc:
   default-consumes-media-type: application/json;charset=UTF-8
   default-produces-media-type: application/json;charset=UTF-8
 
-# 나중에 env 파일로 옮겨가야함
-cloud:
-  aws:
-    s3:
-      bucket: ddockddack-s3-bucket
-    credentials:
-      access-key: AKIA5NI54G2BG5P3CPQC
-      secret-key: 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
-    region:
-      static: ap-northeast-2
-      auto: false
-    stack:
-      auto: false
 
 OPENVIDU_URL: http://localhost:4443/
 OPENVIDU_SECRET: MY_SECRET
