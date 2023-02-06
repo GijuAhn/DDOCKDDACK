@@ -12,7 +12,7 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
-import org.springframework.data.redis.core.RedisTemplate;
+//import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -32,7 +32,7 @@ public class MemberService {
     private final Environment env;
     private final MemberRepository memberRepository;
     private final TokenService tokenService;
-    private final RedisTemplate redisTemplate;
+//    private final RedisTemplate redisTemplate;
     private RestTemplate rt;
 
 
@@ -102,16 +102,16 @@ public class MemberService {
         //Redis Cache에 저장
         Long accessTokenTime = tokenService.getExpiration(accessToken);
         Long refreshTokenTime = tokenService.getExpiration(refreshToken);
-        if (accessTokenTime > 0) {
-            redisTemplate.opsForValue()
-                .set(accessToken, "logout", accessTokenTime,
-                    TimeUnit.MILLISECONDS);
-        }
-        if(refreshTokenTime > 0) {
-            redisTemplate.opsForValue()
-                .set(refreshToken, "logout", refreshTokenTime,
-                    TimeUnit.MILLISECONDS);
-        }
+//        if (accessTokenTime > 0) {
+//            redisTemplate.opsForValue()
+//                .set(accessToken, "logout", accessTokenTime,
+//                    TimeUnit.MILLISECONDS);
+//        }
+//        if(refreshTokenTime > 0) {
+//            redisTemplate.opsForValue()
+//                .set(refreshToken, "logout", refreshTokenTime,
+//                    TimeUnit.MILLISECONDS);
+//        }
     }
 
     /**

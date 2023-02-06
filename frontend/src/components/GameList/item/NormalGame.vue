@@ -2,7 +2,7 @@
   <div id="content">
     <div id="topSection">
       <img
-        :src="`${IMAGE_PATH}${props.game.thumbnail}`"
+        :src="`${IMAGE_PATH}/${props.game.thumbnail}`"
         alt="대표사진"
         class="image"
       />
