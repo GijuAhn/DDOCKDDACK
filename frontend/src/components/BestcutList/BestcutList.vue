@@ -49,27 +49,18 @@
         @openReportModal="(bestcutId) => openReportModal(bestcutId)"
       ></normal-bestcut>
     </div>
-    <div>
-      <page-nav
-        :totalPages="totalPages"
-        :page="pageConditionReq.page"
-        @changePage="(num) => changePage(num)"
-      ></page-nav>
-    </div>
-
-    <report-modal
-      v-if="reportInfo.status"
-      @report="(reportType) => bestcutReport(reportType)"
-      @cancel="reportInfo.status = false"
-    ></report-modal>
+    <page-nav
+      :totalPageCount="totalPages"
+      :value="pageConditionReq.page"
+      @change="(num) => changePage(num)"
+    ></page-nav>
   </div>
 </template>
 
 <script setup>
-import PageNav from "@/components/BestcutList/item/PageNav.vue";
+import PageNav from "@/components/common/PageNav.vue";
 import NormalBestcut from "@/components/BestcutList/item/NormalBestcut.vue";
-import BestcutDetail from "@/components/BestcutList/item/BestcutDetail.vue";
-import ReportModal from "@/components/BestcutList/item/ReportModal.vue";
+import BestcutDetail from "@/components/common/modal/BestcutDetailModal.vue";
 
 import { apiInstance } from "@/api/index";
 import { ref, computed } from "vue";
@@ -83,7 +74,7 @@ const tabR = ref("off");
 
 let bestcuts = ref();
 let pageConditionReq = ref({
-  order: "RECENT",
+  order: "POPULARITY",
   period: "MONTH",
   search: "GAME",
   keyword: "",
@@ -91,10 +82,6 @@ let pageConditionReq = ref({
 });
 let totalPages = ref();
 let detailBestcut = ref();
-let reportInfo = ref({
-  status: false,
-  bestcutId: null,
-});
 
 const callApi = () => {
   api
@@ -145,11 +132,17 @@ const bestcutLike = (bestcutId) => {
     alert("로그인 후 이용해주세요.");
     return;
   }
-  api.post(`/api/bestcuts/like/${bestcutId}`).then(() => {
-    let bestcut = bestcuts.value.find((e) => e.bestcutId === bestcutId);
-    bestcut.isLiked = true;
-    bestcut.popularity++;
-  });
+  api
+    .post(
+      `/api/bestcuts/like/${bestcutId}`,
+      {},
+      { headers: { "access-token": accessToken.value } }
+    )
+    .then(() => {
+      let bestcut = bestcuts.value.find((e) => e.bestcutId === bestcutId);
+      bestcut.isLiked = true;
+      bestcut.popularity++;
+    });
 };
 
 //베스트컷 좋아요 취소
@@ -158,36 +151,14 @@ const bestcutDislike = (bestcutId) => {
     alert("로그인 후 이용해주세요.");
     return;
   }
-  api.delete(`/api/bestcuts/dislike/${bestcutId}`).then(() => {
-    let bestcut = bestcuts.value.find((e) => e.bestcutId === bestcutId);
-    bestcut.isLiked = false;
-    bestcut.popularity--;
-  });
-};
-
-//신고 모달 열기
-const openReportModal = (bestcutId) => {
-  if (!accessToken.value) {
-    alert("로그인 후 이용해주세요.");
-    return;
-  }
-  reportInfo.value.status = true;
-  reportInfo.value.bestcutId = bestcutId;
-};
-
-//베스트컷 신고
-const bestcutReport = (reportType) => {
   api
-    .post(`/api/bestcuts/report/${reportInfo.value.bestcutId}`, {
-      reportType: reportType,
+    .delete(`/api/bestcuts/dislike/${bestcutId}`, {
+      headers: { "access-token": accessToken.value },
     })
     .then(() => {
-      alert("신고가 완료되었습니다.");
-    })
-    .catch((error) => {
-      if (error.response.status === 400) {
-        alert("이미 신고한 베스트컷입니다.");
-      }
+      let bestcut = bestcuts.value.find((e) => e.bestcutId === bestcutId);
+      bestcut.isLiked = false;
+      bestcut.popularity--;
     });
 };
 </script>

@@ -4,11 +4,11 @@
       <div class="top-section">
         <div>
           <div id="bestcut-title">
-            <span>{{ props.bestcut.bestcutImgTitle }}</span>
+            <span>{{ currentModal.data.bestcutImgTitle }}</span>
           </div>
           <button
-            v-if="!props.bestcut.isLiked"
-            @click="bestcutLike(props.bestcut.bestcutId)"
+            v-if="!currentModal.data.isLiked"
+            @click="bestcutLike(currentModal.data.bestcutId)"
             class="like-button"
           >
             <img
@@ -16,11 +16,11 @@
               alt="좋아요아이콘"
               class="like"
             />
-            <span>{{ props.bestcut.popularity }}</span>
+            <span>{{ currentModal.data.popularity }}</span>
           </button>
           <button
             v-else
-            @click="bestcutDislike(props.bestcut.bestcutId)"
+            @click="bestcutDislike(currentModal.data.bestcutId)"
             class="like-button"
           >
             <img
@@ -28,22 +28,8 @@
               alt="좋아요취소아이콘"
               class="dislike"
             />
-            <span>{{ props.bestcut.popularity }}</span>
+            <span>{{ currentModal.data.popularity }}</span>
           </button>
-          <div id="etc-section" v-click-outside-element="onClickOutside">
-            <div id="etc-button" @click="open">
-              <img
-                :src="require(`@/assets/images/etc-button.png`)"
-                alt="기타버튼"
-                class="etc"
-              />
-            </div>
-            <div id="etc" v-show="state">
-              <div @click="setCurrentModalAsync(`reportReason`)">
-                <span>신고</span>
-              </div>
-            </div>
-          </div>
         </div>
         <div>
           <img
@@ -52,7 +38,7 @@
             class="profile-image"
           />
           <div id="nickname">
-            <span>{{ props.bestcut.nickname }} | {{ date }}</span>
+            <span>{{ currentModal.data.nickname }} | {{ date }}</span>
           </div>
         </div>
       </div>
@@ -60,13 +46,13 @@
       <hr />
       <div class="img-section">
         <img
-          :src="`${GAMEIMAGES_PATH}/${props.bestcut.gameImgUrl}`"
+          :src="`${IMAGE_PATH}/${currentModal.data.gameImgUrl}`"
           alt="원본사진"
           @click="bestcutDetail"
           class="image"
         />
         <img
-          :src="`${BESTCUTS_PATH}/${props.bestcut.bestcutImgUrl}`"
+          :src="`${IMAGE_PATH}/${currentModal.data.bestcutImgUrl}`"
           alt="베스트컷"
           @click="bestcutDetail"
           class="image"
@@ -77,8 +63,8 @@
       <div class="bottom-section">
         <div id="game-info">
           <span>
-            {{ props.bestcut.gameTitle }} |
-            {{ props.bestcut.gameImgDesc }}
+            {{ currentModal.data.gameTitle }} |
+            {{ currentModal.data.gameImgDesc }}
           </span>
         </div>
       </div>
@@ -87,36 +73,49 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits, ref, computed } from "vue";
+import { apiInstance } from "@/api/index";
+import { computed } from "vue";
 import { useStore } from "vuex";
 
-const props = defineProps({ bestcut: Object });
-const GAMEIMAGES_PATH = process.env.VUE_APP_GAMEIMAGES_PATH;
-const BESTCUTS_PATH = process.env.VUE_APP_BESTCUTS_PATH;
-const state = ref(false);
+const IMAGE_PATH = process.env.VUE_APP_IMAGE_PATH;
 const store = useStore();
-const date = computed(() => props.bestcut.createdDate.substr(0, 10));
-const onClickOutside = () => {
-  state.value = false;
-};
-const emit = defineEmits(["bestcutDetail", "bestcutLike", "bestcutDislike"]);
+const currentModal = computed(() => store.state.commonStore.currentModal);
+const accessToken = computed(() => store.state.memberStore.accessToken);
+const date = computed(() => currentModal.value.data.createdDate.substr(0, 10));
+const api = apiInstance();
 
-const bestcutLike = (bestcutId) => {
-  emit("bestcutLike", bestcutId);
-};
-
-const bestcutDislike = (bestcutId) => {
-  emit("bestcutDislike", bestcutId);
-};
-
-const setCurrentModalAsync = (what) => {
-  if (what === "reportReason") {
-    store.dispatch("commonStore/setCurrentModalAsync", {
-      name: "reportReason",
-      data: "",
-    });
+//베스트컷 좋아요
+const bestcutLike = () => {
+  if (!accessToken.value) {
+    alert("로그인 후 이용해주세요.");
+    return;
   }
-  open();
+  api
+    .post(
+      `/api/bestcuts/like/${currentModal.value.data.bestcutId}`,
+      {},
+      { headers: { "access-token": accessToken.value } }
+    )
+    .then(() => {
+      currentModal.value.data.isLiked = true;
+      currentModal.value.data.popularity++;
+    });
+};
+
+//베스트컷 좋아요 취소
+const bestcutDislike = () => {
+  if (!accessToken.value) {
+    alert("로그인 후 이용해주세요.");
+    return;
+  }
+  api
+    .delete(`/api/bestcuts/dislike/${currentModal.value.data.bestcutId}`, {
+      headers: { "access-token": accessToken.value },
+    })
+    .then(() => {
+      currentModal.value.data.isLiked = false;
+      currentModal.value.data.popularity--;
+    });
 };
 </script>
 
