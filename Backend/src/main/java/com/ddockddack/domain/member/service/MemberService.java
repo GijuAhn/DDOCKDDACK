@@ -217,7 +217,7 @@ public class MemberService {
         HttpHeaders headers = new HttpHeaders();
 
         System.out.println(accessToken);
-        headers.add("authorization", "Bearer " + accessToken);
+        headers.add("Authorization", "Bearer " + accessToken);
 
         HttpEntity memberInfoRequest = new HttpEntity<>(headers);
 
