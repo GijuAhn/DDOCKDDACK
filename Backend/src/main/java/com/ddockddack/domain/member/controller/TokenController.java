@@ -13,7 +13,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.RedisTemplate;
+//import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -27,7 +27,7 @@ public class TokenController {
     private final MemberRepository memberRepository;
 
     private final TokenService tokenService;
-    private final RedisTemplate redisTemplate;
+//    private final RedisTemplate redisTemplate;
 
     //  Access token expire endpoint
     @GetMapping("/token/expired")
@@ -48,9 +48,9 @@ public class TokenController {
         log.info("refresh 진입");
 
         if (refreshToken != null && tokenService.verifyToken(refreshToken)) {
-            if (redisTemplate.opsForValue().get(refreshToken) == null) {
-                throw new NotFoundException(ErrorCode.MEMBER_NOT_FOUND);
-            }
+//            if (redisTemplate.opsForValue().get(refreshToken) == null) {
+//                throw new NotFoundException(ErrorCode.MEMBER_NOT_FOUND);
+//            }
 
             Long id = tokenService.getUid(refreshToken);
             Token token = tokenService.generateToken(id, "ROLE_USER");
