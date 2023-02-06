@@ -10,6 +10,7 @@ public enum ErrorCode {
     INVALID_INPUT_VALUE(400, "valid check."),
     LOGIN_REQUIRED(401, "login required"),
     NOT_AUTHORIZED(401, "not authorized"),
+    EXPIRED_ACCESSTOKEN(401, "expired access-token"),
     ALREADY_STARTED_GAME(401, "already started game."),
     MEMBER_NOT_FOUND(404, "member not found"),
     GAME_NOT_FOUND(404, "game not found"),

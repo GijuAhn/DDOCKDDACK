@@ -6,6 +6,7 @@ export const commonStore = {
       admin: ["", ""],
       member: ["", "", "", ""],
     },
+    currentModal: "",
   },
   getters: {},
   mutations: {
@@ -24,6 +25,9 @@ export const commonStore = {
       }
       state.tab.admin[value] = "on";
     },
+    setCurrentModal(state, value) {
+      state.currentModal = value;
+    },
   },
   actions: {
     setColorAsync({ commit }, value) {
@@ -34,6 +38,9 @@ export const commonStore = {
     },
     setAdminTabAsync({ commit }, value) {
       commit("setAdminTab", value);
+    },
+    setCurrentModalAsync({ commit }, value) {
+      commit("setCurrentModal", value);
     },
   },
 };

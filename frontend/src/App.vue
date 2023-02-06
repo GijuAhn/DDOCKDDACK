@@ -38,6 +38,7 @@ import NavigationBar from "@/components/common/NavigationBar";
 
 body {
   min-width: calc(1920px - 100px);
+  overflow-y: scroll;
 }
 
 /* nav {

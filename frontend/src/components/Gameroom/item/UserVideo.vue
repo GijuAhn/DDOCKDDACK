@@ -33,7 +33,7 @@
             placeholder="제목을 입력하세요"
           />
           <img
-            :src="`${GAMEIMAGES_PATH}/${props.room.gameId}/${props.room.gameImages[index].gameImage}`"
+            :src="`${IMAGE_PATH}/${props.room.gameImages[index].gameImage}`"
           />
           <img :src="image" id="bestcutImg" /> <br />
         </div>
@@ -49,7 +49,9 @@ import OvVideo from "./OvVideo";
 import html2canvas from "html2canvas";
 import { apiInstance } from "@/api/index";
 import { computed, defineProps, watch, ref, onMounted } from "vue";
+import process from "process";
 
+const IMAGE_PATH = process.env.VUE_APP_IMAGE_PATH;
 const api = apiInstance();
 const props = defineProps({
   streamManager: Object,
