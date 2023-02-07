@@ -112,7 +112,7 @@ public class AdminApiController {
             @ApiResponse(description = "존재하지 않는 멤버", responseCode = "404"),
     })
     public ResponseEntity reportedBestCutDelete(@PathVariable Long bestcutId,
-                                        @RequestHeader(value = "access-token", required = false) String accessToken) {
+                                        @RequestHeader(value = "access-token", required = true) String accessToken) {
         Long adminId = tokenService.getUid(accessToken);
 
         // admin 확인
