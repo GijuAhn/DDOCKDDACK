@@ -1,45 +1,45 @@
 <template>
   <div>
-    <div v-if="props.streamManager">
+    <div v-if="props.streamManager" style="width: 100%; height: 100%">
       <ov-video
         class="child1"
         :class="{ blinking: resultMode }"
         :stream-manager="props.streamManager"
       />
 
-      <div>
+      <div v-if="false">
         <p>{{ clientData }}</p>
       </div>
     </div>
-    <br />
-    <br />
-    <div v-if="props.isEnd">
-      <button @click="getMyImages">결과보기</button>
-    </div>
-
-    <div v-if="isShow">
-      <div v-for="(image, index) in resultImages" :key="index">
-        <div>
-          <input
-            type="checkbox"
-            :value="index"
-            @change="check(index)"
-          />체크박스
-          <br />
-          <input
-            id="bestcutTitle"
-            type="text"
-            v-model="inputs[index]"
-            placeholder="제목을 입력하세요"
-          />
-          <img
-            :src="`${IMAGE_PATH}/${props.room.gameImages[index].gameImage}`"
-          />
-          <img :src="image" id="bestcutImg" /> <br />
-        </div>
+    <div v-if="props.who === `me`">
+      <div v-if="props.isEnd">
+        <button @click="getMyImages">결과보기</button>
       </div>
 
-      <button @click="upload">베스트 컷 게시</button>
+      <div v-if="isShow">
+        <div v-for="(image, index) in resultImages" :key="index">
+          <div>
+            <input
+              type="checkbox"
+              :value="index"
+              @change="check(index)"
+            />체크박스
+            <br />
+            <input
+              id="bestcutTitle"
+              type="text"
+              v-model="inputs[index]"
+              placeholder="제목을 입력하세요"
+            />
+            <img
+              :src="`${IMAGE_PATH}/${props.room.gameImages[index].gameImage}`"
+            />
+            <img :src="image" id="bestcutImg" /> <br />
+          </div>
+        </div>
+
+        <button @click="upload">베스트 컷 게시</button>
+      </div>
     </div>
   </div>
 </template>
@@ -61,6 +61,7 @@ const props = defineProps({
   round: Number,
   room: Object,
   resultMode: Boolean,
+  who: String,
 });
 
 const resultImages = ref([]);

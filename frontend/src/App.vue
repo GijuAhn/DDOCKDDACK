@@ -1,10 +1,13 @@
 <template>
-  <navigation-bar />
+  <navigation-bar v-if="route.name !== `gameroom`" />
   <router-view />
 </template>
 
 <script setup>
 import NavigationBar from "@/components/common/NavigationBar";
+import { useRoute } from "vue-router";
+
+const route = useRoute();
 </script>
 
 <style>

@@ -1,46 +1,61 @@
 <template>
   <div id="session">
-    <div id="main-container" class="container">
-      <div id="session-header">
-        <h3 id="session-title">
-          핀번호 : {{ room.pinNumber }} 인원 :
-          {{ openviduInfo.subscribers.length + 1 }}
-          <span v-show="!isEnd">/ 게임 라운드 : {{ round }}</span>
-          <button @click="linkShare">
+    <div id="session-header">
+      <span id="session-title">
+        {{ room.gameTitle }} [방 코드 - {{ room.pinNumber }}] 참가자 :
+        {{ openviduInfo.subscribers.length + 1 }}명
+
+        <button @click="linkShare" v-if="false">
+          <img
+            src="https://developers.kakao.com/assets/img/about/logos/kakaotalksharing/kakaotalk_sharing_btn_medium.png"
+            alt="카카오톡 공유 보내기 버튼"
+          />
+        </button>
+      </span>
+    </div>
+
+    <div id="main-container">
+      <div id="left-section">
+        <div id="game-image">
+          <span v-if="isStart && !isEnd">
             <img
-              src="https://developers.kakao.com/assets/img/about/logos/kakaotalksharing/kakaotalk_sharing_btn_medium.png"
-              alt="카카오톡 공유 보내기 버튼"
+              :src="`${IMAGE_PATH}/${room.gameImages[round - 1].gameImage}`"
             />
-          </button>
-        </h3>
-        <h3 v-show="!isEnd">
-          남은 시간 : {{ timerCount }}
-          <button v-if="isHost" v-show="!isStart" @click="play">play</button>
-        </h3>
+          </span>
+          <span v-else>대기중 </span>
+          <div v-if="true">
+            <span v-show="!isEnd">/ 게임 라운드 : {{ round }}</span>
+            <span v-show="!isEnd">
+              남은 시간 : {{ timerCount }}
+              <button v-if="isHost" v-show="!isStart" @click="play">
+                play
+              </button>
+            </span>
+          </div>
+        </div>
+
+        <div id="my-video">
+          <user-video
+            id="main-video"
+            :stream-manager="openviduInfo.publisher"
+            :timerCount="timerCount"
+            :isEnd="isEnd"
+            :isStart="isStart"
+            :round="round"
+            :room="room"
+            :resultMode="resultMode"
+            :who="`me`"
+          />
+        </div>
       </div>
-      <div id="game-image">
-        <span v-if="isStart && !isEnd">
-          <img :src="`${IMAGE_PATH}/${room.gameImages[round - 1].gameImage}`" />
-        </span>
-      </div>
-      <div>
-        <user-video
-          id="main-video"
-          :stream-manager="openviduInfo.publisher"
-          :timerCount="timerCount"
-          :isEnd="isEnd"
-          :isStart="isStart"
-          :round="round"
-          :room="room"
-          :resultMode="resultMode"
-        />
-      </div>
-      <div id="video-container">
-        <div
-          v-for="sub in openviduInfo.subscribers"
-          :key="sub.stream.connection.connectionId"
-        >
-          <user-video :stream-manager="sub" />
+      <div id="right-section">
+        <div id="video-container">
+          <user-video
+            v-for="sub in openviduInfo.subscribers"
+            :key="sub.stream.connection.connectionId"
+            :stream-manager="sub"
+            :who="`you`"
+          />
         </div>
       </div>
     </div>
@@ -348,6 +363,52 @@ watch(
 #session {
   background-color: black;
   color: #ffffff;
+  height: 100vh;
+}
+#session-header {
+  height: 30px;
+  background-color: rgb(255, 150, 150);
+}
+#session-header span {
+  font-size: 20px;
+}
+#main-container {
+  /* border: 1px solid red; */
+  height: calc(100vh - 100px);
+  display: flex;
+}
+#left-section {
+  width: 50%;
+}
+#game-image {
+  background-color: rgb(104, 104, 0);
+  height: 50%;
+  flex-direction: column;
+}
+#my-video {
+  background-color: rgb(104, 0, 87);
+  height: 50%;
+  flex-direction: column;
+}
+#my-video > * {
+  height: 100%;
+}
+#right-section {
+  width: 50%;
+  background-color: rgb(0, 0, 99);
+}
+#video-container {
+  height: 100%;
+  display: grid;
+  grid-template-rows: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
+}
+#video-container > * {
+  height: 100%;
+}
+#button-container {
+  height: 70px;
+  background-color: rgb(150, 216, 255);
 }
 
 .btn-video-control {
