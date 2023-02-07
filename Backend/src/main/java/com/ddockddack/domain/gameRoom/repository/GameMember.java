@@ -40,9 +40,4 @@ public class GameMember extends Observable {
         notifyObservers();
     }
 
-    public void setCumulativeScore(int roundScore){
-        this.totalScore += roundScore;
-        changeScore(roundScore);
-    }
-
 }

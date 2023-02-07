@@ -155,6 +155,7 @@ public class GameRoomService {
         long start = System.currentTimeMillis();
         Optional.ofNullable(gameRoomRepository.findById(pinNumber).orElseThrow(() ->
                 new NotFoundException(ErrorCode.GAME_ROOM_NOT_FOUND)));
+        
         byte[] byteGameImage = awsS3Service.getObject(param.get("gameImage"));
         byte[] byteImage = Base64.decodeBase64(param.get("memberGameImage"));
 

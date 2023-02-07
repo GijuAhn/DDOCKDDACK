@@ -125,6 +125,7 @@ public class GameRoomRepository {
         gameMember.getImages().add(byteImage);
         gameMember.setRoundScore(score);
         gameMember.setTotalScore(gameMember.getTotalScore()+score);
+        gameMember.changeScore(score);
     }
 
     public byte[] findByImageIndex(String pinNumber, String sessionId, int index) {
