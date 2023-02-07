@@ -103,13 +103,13 @@ const routes = [
       {
         path: "game",
         name: "game",
-        beforeEnter: authMember,
+        // beforeEnter: authMember,
         component: () => import("@/components/Admin/GameList.vue"),
       },
       {
         path: "bestcut",
         name: "bestcut",
-        beforeEnter: authMember,
+        // beforeEnter: authMember,
         component: () => import("@/components/Admin/BestcutList.vue"),
       },
     ],
