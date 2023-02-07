@@ -32,12 +32,11 @@
 
 <script setup>
 import { useStore } from "vuex";
-import { apiInstance } from "@/api/index";
-const api = apiInstance();
+
 const store = useStore();
+
 const kakaoLogin = () => {
-  api.get("/oauth2/authorization/kakao").then(() => {});
-  // window.location.replace("http://localhost:9999/oauth2/authorization/kakao");
+  window.location.replace("http://localhost:9999/oauth2/authorization/kakao");
 };
 const googleLogin = () => {
   window.location.replace("http://localhost:9999/oauth2/authorization/google");
