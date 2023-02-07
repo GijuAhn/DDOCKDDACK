@@ -1,4 +1,5 @@
 import axios from "axios";
+// import { memberStore } from "@/store/modules/memberStore";
 
 // local vue api axios instance
 function apiInstance() {

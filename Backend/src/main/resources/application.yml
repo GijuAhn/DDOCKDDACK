@@ -127,7 +127,7 @@ spring:
             user-name-attribute: id
 
 OPENVIDU_URL : ${OPENVIDU_URL}
-OPENVIDU_SECRET: MY_SECRET
+OPENVIDU_SECRET: ${OPENVIDU_SECRET}
 
 server:
   port: 8080
