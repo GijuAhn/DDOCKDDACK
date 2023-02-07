@@ -2,9 +2,6 @@
   <div id="session">
     <div id="main-container" class="container">
       <div id="session-header">
-        <button id="buttonLeaveSession" @click="leaveSession">
-          Leave Session
-        </button>
         <h3 id="session-title">
           핀번호 : {{ room.pinNumber }} 인원 :
           {{ openviduInfo.subscribers.length + 1 }}
@@ -21,8 +18,14 @@
           <button v-if="isHost" v-show="!isStart" @click="play">play</button>
         </h3>
       </div>
-      <div id="main-video" class="col-md-6">
+      <div id="game-image">
+        <span v-if="isStart && !isEnd">
+          <img :src="`${IMAGE_PATH}/${room.gameImages[round - 1].gameImage}`" />
+        </span>
+      </div>
+      <div>
         <user-video
+          id="main-video"
           :stream-manager="openviduInfo.publisher"
           :timerCount="timerCount"
           :isEnd="isEnd"
@@ -32,7 +35,7 @@
           :resultMode="resultMode"
         />
       </div>
-      <div id="video-container" class="col-md-6">
+      <div id="video-container">
         <div
           v-for="sub in openviduInfo.subscribers"
           :key="sub.stream.connection.connectionId"
@@ -40,6 +43,18 @@
           <user-video :stream-manager="sub" />
         </div>
       </div>
+    </div>
+
+    <div id="button-container">
+      <button class="btn-video-control">
+        <svg-icon type="mdi" :path="path[0]" /> 음소거
+      </button>
+      <button class="btn-video-control">
+        <svg-icon type="mdi" :path="path[2]" /> 화면 중지
+      </button>
+      <button type="button" class="btn-close" @click="leaveSession">
+        <span class="icon-cross"></span>
+      </button>
     </div>
   </div>
 </template>
@@ -58,7 +73,16 @@ import { OpenVidu } from "openvidu-browser";
 import UserVideo from "@/components/Gameroom/item/UserVideo.vue";
 import { useStore } from "vuex";
 import router from "@/router/index.js";
+import process from "process";
+import SvgIcon from "@jamescoyle/vue-icon";
+import {
+  mdiMicrophone,
+  mdiMicrophoneOff,
+  mdiVideo,
+  mdiVideoOff,
+} from "@mdi/js";
 
+const IMAGE_PATH = process.env.VUE_APP_IMAGE_PATH;
 const api = apiInstance();
 const route = useRoute();
 const store = useStore();
@@ -89,6 +113,7 @@ const round = ref(1);
 const isHost = ref(false);
 const isEnd = ref(false);
 const resultMode = ref(false);
+const path = ref([mdiMicrophone, mdiMicrophoneOff, mdiVideo, mdiVideoOff]);
 
 onBeforeMount(() => {
   api
@@ -106,7 +131,6 @@ onBeforeMount(() => {
 
       openviduInfo.value.OV = new OpenVidu();
       openviduInfo.value.session = openviduInfo.value.OV.initSession();
-
       // On every new Stream received...
       openviduInfo.value.session.on("streamCreated", ({ stream }) => {
         const subscriber = openviduInfo.value.session.subscribe(stream);
@@ -321,61 +345,63 @@ watch(
 </script>
 
 <style>
-#video-container video {
-  position: relative;
-  float: left;
-  width: 50%;
+#session {
+  background-color: black;
+  color: #ffffff;
+}
+
+.btn-video-control {
+  border-color: #ffffff;
+  color: white;
+  background-color: rgba(0, 0, 0, 0);
+  border-radius: 50px;
+  width: 150px;
+  font-size: 21px;
+}
+
+.btn-close {
+  border: 0;
+  background: #ff0000;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: inline;
+  flex-flow: column nowrap;
+  justify-content: center;
+  align-items: center;
   cursor: pointer;
+  transition: all 150ms;
 }
-
-#video-container video + div {
-  float: left;
-  width: 50%;
-  position: relative;
-  margin-left: -50%;
-}
-
-#video-container p {
-  display: inline-block;
-  background: #f8f8f8;
-  padding-left: 5px;
-  padding-right: 5px;
-  color: #777777;
-  font-weight: bold;
-  border-bottom-right-radius: 4px;
-}
-
-#main-video p {
+.btn-close .icon-cross {
+  border: 0;
+  background: none;
   position: absolute;
-  display: inline-block;
-  background: #f8f8f8;
-  padding-left: 5px;
-  padding-right: 5px;
-  font-size: 22px;
-  color: #777777;
-  font-weight: bold;
-  border-bottom-right-radius: 4px;
+  width: 10px;
+  height: 10px;
 }
-
-#session img {
-  width: 100%;
-  height: auto;
-  display: inline-block;
-  object-fit: contain;
-  vertical-align: baseline;
+.btn-close .icon-cross:before,
+.btn-close .icon-cross:after {
+  content: "";
+  position: absolute;
+  top: 15px;
+  left: -10px;
+  right: 0;
+  height: 6px;
+  background: #fff;
+  border-radius: 6px;
 }
-
-video {
-  width: 100%;
-  height: auto;
+.btn-close .icon-cross:before {
+  transform: rotate(45deg);
 }
-
-#session #video-container img {
-  position: relative;
-  float: left;
-  width: 50%;
-  cursor: pointer;
-  object-fit: cover;
-  height: 180px;
+.btn-close .icon-cross:after {
+  transform: rotate(-45deg);
+}
+.btn-close .icon-cross span {
+  display: block;
+}
+.btn-close:hover,
+.btn-close:focus {
+  transform: rotateZ(90deg);
+  background: #ff0000;
 }
 </style>

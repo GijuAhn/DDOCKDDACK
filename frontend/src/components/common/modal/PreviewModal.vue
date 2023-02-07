@@ -1,15 +1,14 @@
 <template>
   <div v-if="game">
-    <img
-      v-for="image in game.images"
-      :key="image"
-      :src="`${GAMEIMAGES_PATH}/${game.gameId}/${image.gameImage}`"
-      width="120"
-      height="120"
-    />
-    {{ game.gameId }}
-    {{ game.images }}
-    <!-- <div v-for="image in game.images" :key="image">{{ image }}</div> -->
+    <div id="previewImages">
+      <img
+        v-for="image in game.images"
+        :key="image"
+        :src="`${IMAGE_PATH}/${image.gameImage}`"
+        width="120"
+        height="120"
+      />
+    </div>
   </div>
 </template>
 
@@ -17,7 +16,7 @@
 import { useStore } from "vuex";
 import process from "process";
 
-const GAMEIMAGES_PATH = process.env.VUE_APP_GAMEIMAGES_PATH;
+const IMAGE_PATH = process.env.VUE_APP_IMAGE_PATH;
 
 const store = useStore();
 
@@ -42,4 +41,15 @@ api
   });
 </script>
 
-<style scoped></style>
+<style scoped>
+#previewImages {
+  background-color: white;
+  display: grid;
+  grid-template-rows: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
+  padding: 5px;
+}
+img {
+  margin: 2px;
+}
+</style>

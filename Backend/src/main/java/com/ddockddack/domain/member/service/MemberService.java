@@ -1,12 +1,18 @@
 package com.ddockddack.domain.member.service;
 
 import com.ddockddack.domain.member.entity.Member;
+import com.ddockddack.domain.member.entity.Role;
 import com.ddockddack.domain.member.repository.MemberRepository;
 import com.ddockddack.domain.member.request.MemberModifyReq;
+import com.ddockddack.global.error.ErrorCode;
+import com.ddockddack.global.error.exception.NotFoundException;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
+import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
+//import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -20,19 +26,15 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 @Service
 @Transactional(readOnly = true)
-//@RequiredArgsConstructor
-public class MemberService { //ServiceImpl을 따로 만들어야 하나?
+@RequiredArgsConstructor
+public class MemberService {
+
     private final Environment env;
     private final MemberRepository memberRepository;
-
+    private final TokenService tokenService;
+//    private final RedisTemplate redisTemplate;
     private RestTemplate rt;
-    private HttpHeaders headers;
 
-    @Autowired
-    public MemberService(MemberRepository memberRepository, Environment env) {
-        this.memberRepository = memberRepository;
-        this.env = env;
-    }
 
     @Transactional
     public Long joinMember(Member member) {
@@ -61,8 +63,8 @@ public class MemberService { //ServiceImpl을 따로 만들어야 하나?
      * @param memberId
      * @return member 정보
      */
-    public Member getMemberById(Long memberId) {
-        return memberRepository.findById(memberId).get();
+    public Optional<Member> getMemberById(Long memberId) {
+        return memberRepository.findById(memberId);
     }
 
     public Member getMemberByEmail(String email) {
@@ -86,6 +88,32 @@ public class MemberService { //ServiceImpl을 따로 만들어야 하나?
 //        return memberRepository.findOne(Member);
 //    }
 
+
+    public boolean isAdmin(Long reportId) {
+        Member member = memberRepository.findById(reportId)
+            .orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
+        return member.getRole() == Role.ADMIN;
+    }
+
+    @Transactional
+    public void logout(String accessToken, String refreshToken) {
+//        Long findUserId = tokenService.getUid(refreshToken);
+
+        //Redis Cache에 저장
+        Long accessTokenTime = tokenService.getExpiration(accessToken);
+        Long refreshTokenTime = tokenService.getExpiration(refreshToken);
+//        if (accessTokenTime > 0) {
+//            redisTemplate.opsForValue()
+//                .set(accessToken, "logout", accessTokenTime,
+//                    TimeUnit.MILLISECONDS);
+//        }
+//        if(refreshTokenTime > 0) {
+//            redisTemplate.opsForValue()
+//                .set(refreshToken, "logout", refreshTokenTime,
+//                    TimeUnit.MILLISECONDS);
+//        }
+    }
+
     /**
      * @param code
      * @return Access 토큰
@@ -102,23 +130,24 @@ public class MemberService { //ServiceImpl을 따로 만들어야 하나?
         HttpHeaders headers = new HttpHeaders();
 
         System.out.println("인가 코드 확인 :" + code);
-        System.out.println(env.getProperty("login.kakao.api_key"));
-        System.out.println(env.getProperty("login.kakao.redirect_uri"));
+        System.out.println(env.getProperty("kakao.api_key"));
+        System.out.println(env.getProperty("kakao.login.redirect_uri"));
 
         //HttpBody 오브젝트 생성
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("grant_type", "authorization_code");
-        params.add("client_id", env.getProperty("login.kakao.api_key"));
-        params.add("redirect_uri", env.getProperty("login.kakao.redirect_uri"));
+        params.add("client_id", env.getProperty("kakao.api_key"));
+        params.add("client_secret", env.getProperty("kakao.client-secret"));
+        params.add("redirect_uri", env.getProperty("kakao.login.redirect_uri"));
         params.add("code", code);
         //HttpHeader와 HttpBody를 HttpEntity에 담기
         HttpEntity<MultiValueMap<String, String>> kakaoRequest = new HttpEntity<>(params, headers);
         //카카오 서버에 HTTP 요청 - POST
         ResponseEntity<String> response = rt.exchange(
-                "https://kauth.kakao.com/oauth/token",
-                HttpMethod.POST,
-                kakaoRequest,
-                String.class
+            "https://kauth.kakao.com/oauth/token",
+            HttpMethod.POST,
+            kakaoRequest,
+            String.class
         );
 
         System.out.println("response" + response);
@@ -126,7 +155,6 @@ public class MemberService { //ServiceImpl을 따로 만들어야 하나?
         JsonParser jp = new JsonParser();
         JsonObject jo = jp.parse(response.getBody()).getAsJsonObject();
         String accessToken = jo.get("access_token").getAsString();
-
 
         return accessToken;
     }
@@ -147,10 +175,10 @@ public class MemberService { //ServiceImpl을 따로 만들어야 하나?
         RestTemplate rt = new RestTemplate();
 
         ResponseEntity<String> memberInfoResponse = rt.exchange(
-                "https://kapi.kakao.com/v2/user/me",
-                HttpMethod.POST,
-                memberInfoRequest,
-                String.class
+            "https://kapi.kakao.com/v2/user/me",
+            HttpMethod.POST,
+            memberInfoRequest,
+            String.class
         );
 
         System.out.println("userinfo " + memberInfoResponse);
@@ -161,20 +189,21 @@ public class MemberService { //ServiceImpl을 따로 만들어야 하나?
     public String getGoogleAccessToken(String code) {
         RestTemplate rt = new RestTemplate();
 
-        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl("https://www.googleapis.com/oauth2/v4/token")
-                .queryParam("code", code)
-                .queryParam("client_id", env.getProperty("login.google.client_id"))
-                .queryParam("client_secret", env.getProperty("login.google.client_secret"))
-                .queryParam("redirect_uri", env.getProperty("login.google.redirect_uri"))
-                .queryParam("grant_type", "authorization_code");
+        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(
+                "https://www.googleapis.com/oauth2/v4/token")
+            .queryParam("code", code)
+            .queryParam("client_id", env.getProperty("login.google.client_id"))
+            .queryParam("client_secret", env.getProperty("login.google.client_secret"))
+            .queryParam("redirect_uri", env.getProperty("login.google.redirect_uri"))
+            .queryParam("grant_type", "authorization_code");
 
         HttpEntity request = new HttpEntity<>(new HttpHeaders());
 
         ResponseEntity<String> response = rt.exchange(
-                uriBuilder.toUriString(),
-                HttpMethod.POST,
-                request,
-                String.class
+            uriBuilder.toUriString(),
+            HttpMethod.POST,
+            request,
+            String.class
         );
         JsonParser jp = new JsonParser();
         JsonObject jo = jp.parse(response.getBody()).getAsJsonObject();
@@ -192,13 +221,12 @@ public class MemberService { //ServiceImpl을 따로 만들어야 하나?
         HttpEntity memberInfoRequest = new HttpEntity<>(headers);
 
         ResponseEntity<String> responsememberInfo = rt.exchange(UriComponentsBuilder
-                        .fromHttpUrl("https://www.googleapis.com/oauth2/v2/userinfo")
-                        .toUriString(),
-                HttpMethod.GET,
-                memberInfoRequest,
-                String.class);
+                .fromHttpUrl("https://www.googleapis.com/oauth2/v2/userinfo")
+                .toUriString(),
+            HttpMethod.GET,
+            memberInfoRequest,
+            String.class);
 
         return responsememberInfo;
     }
-
 }

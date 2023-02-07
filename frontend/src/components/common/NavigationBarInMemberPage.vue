@@ -1,6 +1,8 @@
 <template>
   <div id="navbar">
-    <my-profile />
+    <div id="profile">
+      <my-profile />
+    </div>
     <div class="tab-info">
       <span :class="tab1">
         <router-link to="/member/recentGame">최근 플레이</router-link></span
@@ -52,7 +54,7 @@ a {
   border-top: 1px solid #c9c9c9;
   border-left: 1px solid #c9c9c9;
   border-right: 1px solid #c9c9c9;
-  border-bottom: 1px solid white;
+  border-bottom: 3px solid white;
 }
 .off {
   background-color: #fdf8ec;
@@ -64,5 +66,8 @@ a {
 }
 .tab-info span {
   margin: 0 20px;
+}
+#profile {
+  margin-left: 20%;
 }
 </style>

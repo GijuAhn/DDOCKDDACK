@@ -2,14 +2,24 @@
   <div id="modal">
     <div id="modalBackground" @click="setCurrentModalAsync"></div>
     <preview-modal
-      id="previewModal"
       class="modalContent"
       v-if="currentModal.name === `preview`"
     />
     <report-reason-modal
-      id="reportReasonModal"
       class="modalContent"
       v-if="currentModal.name === `reportReason`"
+    />
+    <report-complete-modal
+      class="modalContent"
+      v-if="currentModal.name === `reportComplete`"
+    />
+    <bestcut-detail-modal
+      class="modalContent"
+      v-if="currentModal.name === `bestcutDetail`"
+    />
+    <bestcut-report-modal
+      class="modalContent"
+      v-if="currentModal.name === `bestcutReport`"
     />
   </div>
 </template>
@@ -18,8 +28,6 @@
 import { useStore } from "vuex";
 
 const store = useStore();
-
-store.dispatch("commonStore/setColorAsync", "variant1");
 
 import { computed } from "vue";
 
@@ -31,6 +39,9 @@ const setCurrentModalAsync = () => {
 
 import PreviewModal from "@/components/common/modal/PreviewModal";
 import ReportReasonModal from "@/components/common/modal/ReportReasonModal";
+import ReportCompleteModal from "@/components/common/modal/ReportCompleteModal";
+import BestcutDetailModal from "@/components/common/modal/BestcutDetailModal";
+import BestcutReportModal from "@/components/common/modal/BestcutReportModal";
 </script>
 
 <style scoped>
@@ -50,19 +61,9 @@ import ReportReasonModal from "@/components/common/modal/ReportReasonModal";
   opacity: 0.5;
 }
 .modalContent {
-  background-color: white;
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-}
-
-#previewModal {
-  width: 650px;
-  height: 525px;
-}
-#reportReasonModal {
-  width: 235px;
-  height: 225px;
 }
 </style>

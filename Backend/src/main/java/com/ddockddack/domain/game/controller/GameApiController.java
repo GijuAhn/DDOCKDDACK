@@ -4,6 +4,7 @@ import com.ddockddack.domain.game.request.GameModifyReq;
 import com.ddockddack.domain.game.request.GameSaveReq;
 import com.ddockddack.domain.game.response.GameDetailRes;
 import com.ddockddack.domain.game.response.GameRes;
+import com.ddockddack.domain.game.response.StarredGameRes;
 import com.ddockddack.domain.game.service.GameService;
 import com.ddockddack.domain.report.entity.ReportType;
 import com.ddockddack.global.util.PageConditionReq;
