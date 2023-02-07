@@ -5,8 +5,8 @@ import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.CannedAccessControlList;
-import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.*;
+import com.amazonaws.util.IOUtils;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -48,7 +48,9 @@ public class AwsS3Service {
     public String multipartFileUpload(MultipartFile uploadFile) {
         String fileName = UUID.randomUUID().toString() + ".jpg";
         try {
-            s3Client.putObject(new PutObjectRequest(bucket, fileName, uploadFile.getInputStream(), null).withCannedAcl(CannedAccessControlList.PublicRead));
+            ObjectMetadata om = new ObjectMetadata();
+            om.setContentType("image/jpg");
+            s3Client.putObject(new PutObjectRequest(bucket, fileName, uploadFile.getInputStream(), om).withCannedAcl(CannedAccessControlList.PublicRead));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -56,10 +58,23 @@ public class AwsS3Service {
     }
 
     public String InputStreamUpload(byte[] byteImages) {
+        ObjectMetadata om = new ObjectMetadata();
+        om.setContentType("image/jpg");
         String fileName = UUID.randomUUID().toString() + ".jpg";
-        s3Client.putObject(new PutObjectRequest(bucket, fileName, new ByteArrayInputStream(byteImages), null).withCannedAcl(CannedAccessControlList.PublicRead));
-
+        s3Client.putObject(new PutObjectRequest(bucket, fileName, new ByteArrayInputStream(byteImages), om).withCannedAcl(CannedAccessControlList.PublicRead));
         return fileName;
+    }
+
+    public byte[] getObject(String fileName) {
+        S3Object object = s3Client.getObject(new GetObjectRequest(bucket, fileName));
+        S3ObjectInputStream objectContent = object.getObjectContent();
+        byte[] bytes = new byte[0];
+        try {
+            bytes = IOUtils.toByteArray(objectContent);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return bytes;
     }
 
 

@@ -10,7 +10,7 @@ public class EnsembleModel {
 //    InputStream once ended, cannot reuse.
 //    Image data input format from frontend: ByteArray
 //    public static double CalculateSimilarity(InputStream inputStream1, InputStream inputStream2) throws Exception {
-    public static double CalculateSimilarity(byte[] byteArray1, byte[] byteArray2) throws Exception {
+    public static int CalculateSimilarity(byte[] byteArray1, byte[] byteArray2) throws Exception {
 
         final PerceptualHash perceptualHash = new PerceptualHash();
         final FeatureDetectorDescriptor featureDetectorDescriptor = new FeatureDetectorDescriptor();

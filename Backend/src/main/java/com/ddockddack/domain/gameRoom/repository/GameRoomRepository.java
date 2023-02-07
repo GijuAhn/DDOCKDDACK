@@ -34,6 +34,7 @@ public class GameRoomRepository {
     private Map<String, GameRoom> gameRooms = new ConcurrentHashMap<>();
     private OpenVidu openvidu;
 
+
     @PostConstruct
     public void init() {
         this.openvidu = new OpenVidu(OPENVIDU_URL, OPENVIDU_SECRET);
@@ -53,25 +54,24 @@ public class GameRoomRepository {
         SessionProperties properties = SessionProperties.fromJson(paramMap).build();
         openvidu.createSession(properties);
 
-
         //방 객체 생성 후 map에 저장
         GameRoom gameRoom = GameRoom.builder()
-            .gameId(game.getId())
-            .gameTitle(game.getTitle())
-            .gameDescription(game.getDescription())
-            .gameImages(gameImages)
-            .pinNumber(pinNumber)
-            .build();
+                .gameId(game.getId())
+                .gameTitle(game.getTitle())
+                .gameDescription(game.getDescription())
+                .gameImages(gameImages)
+                .pinNumber(pinNumber)
+                .build();
         gameRooms.put(pinNumber, gameRoom);
 
         return pinNumber;
     }
 
     public String join(String pinNumber, Member member, String nickname)
-        throws OpenViduJavaClientException, OpenViduHttpException {
+            throws OpenViduJavaClientException, OpenViduHttpException {
         //존재하는 pin인지 확인
         Session session = findSessionByPinNumber(pinNumber).orElseThrow(
-            () -> new NotFoundException(ErrorCode.GAME_ROOM_NOT_FOUND));
+                () -> new NotFoundException(ErrorCode.GAME_ROOM_NOT_FOUND));
 
         //openvidu에 connection 요청
         ConnectionProperties properties = ConnectionProperties.fromJson(new HashMap<>()).build();
@@ -119,16 +119,21 @@ public class GameRoomRepository {
         this.gameRooms.put(pinNumber,gameRoom);
     }
 
-    public void saveMemberImageUrl(String pinNumber, String sessionId, byte[] byteImage) {
+    public void saveScore(String pinNumber, String sessionId, byte[] byteImage, int score) {
         GameRoom gameRoom = this.gameRooms.get(pinNumber);
         GameMember gameMember = gameRoom.getMembers().get(sessionId);
         gameMember.getImages().add(byteImage);
-        this.gameRooms.put(pinNumber, gameRoom);
+        gameMember.setRoundScore(score);
+        gameMember.setTotalScore(gameMember.getTotalScore()+score);
     }
 
     public byte[] findByImageIndex(String pinNumber, String sessionId, int index) {
         GameMember gameMember = gameRooms.get(pinNumber).getMembers().get(sessionId);
         return gameMember.getImages().get(index);
+    }
+
+    public Map<String, GameMember> findGameMembers(String pinNumber) {
+        return gameRooms.get(pinNumber).getMembers();
     }
 
 }

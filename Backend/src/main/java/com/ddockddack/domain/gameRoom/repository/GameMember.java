@@ -18,7 +18,8 @@ public class GameMember {
     private String socketId;
     private Member member;
     private String nickname;
-    private Integer score = 0;
+    private Integer roundScore = 0;
+    private Integer totalScore = 0;
     private List<byte[]> images = new ArrayList<>();
 
     public GameMember(String socketId, Member member, String nickname) {
