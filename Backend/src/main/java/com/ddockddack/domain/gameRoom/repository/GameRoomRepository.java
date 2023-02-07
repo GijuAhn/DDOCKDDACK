@@ -9,6 +9,7 @@ import io.openvidu.java.client.*;
 import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
@@ -20,6 +21,7 @@ import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Repository
+@Slf4j
 @RequiredArgsConstructor
 public class GameRoomRepository {
 
@@ -35,6 +37,7 @@ public class GameRoomRepository {
     @PostConstruct
     public void init() {
         this.openvidu = new OpenVidu(OPENVIDU_URL, OPENVIDU_SECRET);
+        log.info("OPENVIDU_URL" + OPENVIDU_URL);
     }
 
     public String create(Game game) throws OpenViduJavaClientException, OpenViduHttpException {
