@@ -348,7 +348,7 @@ public class GameService {
 
 
     /**
-     * 게임 이미지 수정 실패 시 업로드 됬던 이미지 개별 삭제
+     * 게임 이미지 수정 실패 시 업로드 되었던 이미지 개별 삭제
      *
      * @param path
      * @param list

@@ -9,16 +9,20 @@ import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Observable;
 
+// Subject class
 @Getter @Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class GameMember {
+public class GameMember extends Observable {
     private String socketId;
     private Member member;
     private String nickname;
-    private Integer score = 0;
+    private Integer totalScore = 0;
+
+    private Integer roundScore = 0;
     private List<byte[]> images = new ArrayList<>();
 
     public GameMember(String socketId, Member member, String nickname) {
@@ -26,4 +30,20 @@ public class GameMember {
         this.member = member;
         this.nickname = nickname;
     }
+
+    public void changeScore(int roundScore){
+        setChanged();
+        notifyObservers(roundScore);
+    }
+
+    public void changeScore(){
+        setChanged();
+        notifyObservers();
+    }
+
+    public void setCumulativeScore(int roundScore){
+        this.totalScore += roundScore;
+        changeScore(roundScore);
+    }
+
 }
