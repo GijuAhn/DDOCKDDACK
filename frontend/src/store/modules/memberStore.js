@@ -9,7 +9,6 @@ import {
 export const memberStore = {
   namespaced: true,
   state: {
-    accessToken: undefined,
     memberInfo: {
       memberId: "",
       email: "",
@@ -17,6 +16,7 @@ export const memberStore = {
       profile: "",
       role: "",
     },
+    accessToken: undefined,
   },
   getters: {
     getAccessToken(state) {
@@ -34,10 +34,6 @@ export const memberStore = {
   actions: {
     setTokensAsync({ commit }, accessToken) {
       commit("setToken", accessToken);
-    },
-    setMemberInfo({ commit }, memberInfo) {
-      console.log("setMemberInfo: ", memberInfo);
-      commit("setMemberInfo", memberInfo);
     },
     async userConfirm({ commit }, user) {
       // console.log(user,"^^");
@@ -67,7 +63,6 @@ export const memberStore = {
         }
       );
     },
-
     async getMemberInfo({ commit, dispatch, state }) {
       let accessToken = state.accessToken;
       console.log("get member", accessToken);
@@ -75,8 +70,8 @@ export const memberStore = {
         accessToken,
         ({ data }) => {
           console.log(data);
-          if (data.message === "success") {
-            // console.log("getMemberInfo data >> ", data);
+          if (data.email !== "") {
+            console.log("getMemberInfo data >> ", data);
             commit("setMemberInfo", data);
           } else {
             console.log("유저 정보 없음!!!!");

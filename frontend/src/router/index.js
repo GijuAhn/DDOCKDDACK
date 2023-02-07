@@ -6,46 +6,46 @@ import MainView from "@/views/MainView.vue";
 
 const authMember = async (to, from, next) => {
   let accessToken = computed(() => store.state.memberStore.accessToken).value;
-  console.log("로그인 처리 전", accessToken);
+  let memberInfo = computed(() => store.state.memberStore.memberInfo).value;
+  console.log("로그인 처리 전", accessToken, " ", memberInfo);
 
-  if (!accessToken) {
+  if (accessToken === "undefined" || memberInfo.memberId === "") {
     await store.dispatch("memberStore/accesstokenReissue", true);
-    // alert("로그인이 필요한 페이지입니다..");
   }
   accessToken = computed(() => store.state.memberStore.accessToken).value;
-  console.log(accessToken);
   next();
 };
 
-const isLogin = async () => {
-  let accessToken = computed(() => store.state.memberStore.accessToken).value;
-  console.log("로그인 처리 전", accessToken);
+// const isLogin = async () => {
+//   let accessToken = computed(() => store.state.memberStore.accessToken).value;
+//   let memberInfo = computed(() => store.state.memberStore.memberInfo).value;
+//   console.log("로그인 처리 전2", accessToken, " ", memberInfo.memberId);
 
-  if (!accessToken) {
-    console.log("login!@!@");
-    await store.dispatch("memberStore/accesstokenReissue", false);
-  }
-  accessToken = computed(() => store.state.memberStore.accessToken).value;
-  console.log("access 재발급? ", accessToken);
-};
+//   if (accessToken === "undefined" || memberInfo.memberId === "") {
+//     await store.dispatch("memberStore/accesstokenReissue", false);
+//     console.log("access 재발급? ", accessToken);
+//   }
+//   accessToken = computed(() => store.state.memberStore.accessToken).value;
+//   console.log("로그인 처리 전2", accessToken, " ", memberInfo.memberId);
+// };
 
 const routes = [
   {
     path: "/",
     name: "main",
     component: MainView,
-    beforeEnter: isLogin,
+    // beforeEnter: isLogin,
   },
   {
     path: "/gameList",
     name: "gameList",
-    beforeEnter: isLogin,
+    // beforeEnter: isLogin,
     component: () => import("@/views/GameListView.vue"),
   },
   {
     path: "/gameMake",
     name: "gameMake",
-    beforeEnter: isLogin,
+    // beforeEnter: isLogin,
     component: () => import("@/views/GameMakeView.vue"),
     redirect: "/gameMake/createGame",
     children: [
@@ -60,43 +60,44 @@ const routes = [
   {
     path: "/bestcut",
     name: "bestcutList", //bestcut 중복 체크
-    beforeEnter: isLogin,
+    // beforeEnter: isLogin,
     component: () => import("@/views/BestcutView.vue"),
   },
   {
     path: "/gameroom/:pinNumber",
     name: "gameroom",
-    beforeEnter: isLogin,
+    // beforeEnter: isLogin,
     component: () => import("@/views/GameroomView.vue"),
   },
   {
     path: "/member",
     name: "member",
+    // beforeEnter: authMember,
     component: () => import("@/views/MemberView.vue"),
     redirect: "/member/myBestcut", // /member/recentGame 기본
     children: [
       {
         path: "recentGame",
         name: "recentGame",
-        beforeEnter: authMember,
+        // beforeEnter: authMember,
         component: () => import("@/components/Member/RecentGameList.vue"),
       },
       {
         path: "starGame",
         name: "starGame",
-        beforeEnter: authMember,
+        // beforeEnter: authMember,
         component: () => import("@/components/Member/StarGameList.vue"),
       },
       {
         path: "myGame",
         name: "myGame",
-        beforeEnter: authMember,
+        // beforeEnter: authMember
         component: () => import("@/components/Member/MyGameList.vue"),
       },
       {
         path: "myBestcut",
         name: "myBestcut",
-        beforeEnter: authMember,
+        // beforeEnter: authMember,
         component: () => import("@/components/Member/MyBestcutList.vue"),
       },
     ],
