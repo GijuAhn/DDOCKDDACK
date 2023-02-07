@@ -1,11 +1,10 @@
 package com.ddockddack.domain.admin.controller;
 
 import com.ddockddack.domain.admin.service.AdminService;
-import com.ddockddack.domain.bestcut.response.BestcutRes;
 import com.ddockddack.domain.bestcut.service.BestcutService;
 import com.ddockddack.domain.game.response.ReportedGameRes;
 import com.ddockddack.domain.game.service.GameService;
-import com.ddockddack.domain.member.controller.TokenController;
+import com.ddockddack.domain.member.request.MemberModifyReq;
 import com.ddockddack.domain.member.service.MemberService;
 import com.ddockddack.domain.member.service.TokenService;
 import com.ddockddack.domain.report.entity.ReportedBestcut;
@@ -30,6 +29,7 @@ public class AdminApiController {
     private final GameService gameService;
     private final AdminService adminService;
     private final TokenService tokenService;
+    private final MemberService memberService;
 
     @GetMapping("/reported/games")
     @Operation(summary = "신고된 게임 목록 조회")
@@ -123,5 +123,33 @@ public class AdminApiController {
         bestcutService.removeBestcut(bestcutId, adminId);
 
         return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "회원 정지", description = "회원 정지 메소드입니다.")
+    @PutMapping("/ban/{memberId}")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "이력 조회 성공"),
+            @ApiResponse(responseCode = "403", description = "허가되지 않은 사용자"),
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 유저"),
+            @ApiResponse(responseCode = "500", description = "서버 오류")
+    })
+    public ResponseEntity<?> modifyMember(@PathVariable Long memberId,
+                                          @PathVariable java.sql.Date releaseDate,
+                                          @RequestBody MemberModifyReq modifyMemberReq,
+                                          @RequestHeader(value = "access-token", required = true) String accessToken) {
+
+        Long adminId = tokenService.getUid(accessToken);
+
+        // admin 확인
+        if(!adminService.isAdminByAccessToken(adminId)){
+            return ResponseEntity.status(403).body(null);
+        }
+
+        try {
+            memberService.banMember(memberId, releaseDate);
+            return ResponseEntity.ok(memberService.modifyMember(memberId, modifyMemberReq));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(e.getMessage());
+        }
     }
 }
