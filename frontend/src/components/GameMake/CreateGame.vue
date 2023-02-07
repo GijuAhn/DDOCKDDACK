@@ -32,18 +32,40 @@
           <div class="label">
             <label class="input-name">이미지 업로드</label>
           </div>
-          <div>
-            <input type="file" @change="storeImage" accept="image/*" multiple />
-          </div>
-          <div id="previewSection">
-            <img
-              v-for="item in gameSaveReq.images"
-              :key="item"
-              :src="convertFile(item.gameImage)"
-              alt="이미지 미리보기..."
-              width="180"
-              height="180"
-            />
+          <input
+            type="file"
+            @change="storeImage"
+            accept=".jpg,.jpeg"
+            multiple
+            id="fileInput"
+            style="display: none"
+          />
+
+          <div id="uploadSection">
+            <div id="uploadDescSection">
+              <label
+                for="fileInput"
+                class="file-label"
+                @dragover="dragover"
+                @dragleave="dragleave"
+                @drop="drop"
+              >
+                <span v-if="gameSaveReq.images.length === 0"
+                  >이곳을 클릭하거나 파일을 드래그하여 업로드 하세요.</span
+                >
+                <span v-else> </span
+              ></label>
+            </div>
+            <div id="previewSection">
+              <img
+                v-for="item in gameSaveReq.images"
+                :key="item"
+                :src="convertFile(item.gameImage)"
+                alt="이미지 미리보기..."
+                width="180"
+                height="180"
+              />
+            </div>
           </div>
         </div>
       </form>
@@ -96,6 +118,7 @@ const router = useRouter();
 const api = apiInstance();
 
 const step = ref(0); // 0 : 이전, 1: 다음
+const isDragging = ref(false);
 
 const changeStep = () => {
   //이전<->다음
@@ -198,6 +221,27 @@ const createGame = () => {
       console.log(error);
     });
 };
+const dragover = (e) => {
+  e.preventDefault();
+  isDragging.value = true;
+};
+const dragleave = () => {
+  isDragging.value = false;
+};
+const drop = (e) => {
+  e.preventDefault();
+  // console.log(e.dataTransfer.files);
+  if (e.dataTransfer.files) {
+    const files = Array.from(e.dataTransfer.files);
+    files.forEach((file) => {
+      gameSaveReq.value.images.push({
+        gameImage: file,
+        gameImageDesc: "",
+      });
+    });
+  }
+  isDragging.value = false;
+};
 </script>
 
 <style scoped>
@@ -240,19 +284,45 @@ label {
   height: 44px;
   width: 680px;
 }
-#previewSection {
+#uploadSection {
   border-radius: 5px;
   border: 2px solid black;
   width: 100%;
   height: 820px;
+  position: relative;
+}
+#uploadDescSection {
+  /* border: 1px solid red; */
+  width: 100%;
+  height: 100%;
+  position: absolute;
+}
+#uploadDescSection label:hover {
+  cursor: pointer;
+}
+#uploadDescSection label {
+  /* border: 1px solid blue; */
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  font-size: 36px;
+}
+#uploadDescSection label span {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 780px;
+}
+#previewSection {
+  width: 100%;
+  height: 100%;
   display: grid;
   grid-template-rows: repeat(4, 1fr);
   grid-template-columns: repeat(5, 1fr);
   place-items: center;
 }
-#previewSection:hover {
-  cursor: pointer;
-}
+
 #descSection {
   border-radius: 5px;
   border: 2px solid black;
@@ -265,10 +335,9 @@ label {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin: 20px 0;
+  margin: 0 0 40px 0;
 }
 
-#descSection > div:first-child,
 #descSection > div:last-child {
   margin: 0 !important;
 }
