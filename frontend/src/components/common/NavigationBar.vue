@@ -9,8 +9,11 @@
       <router-link to="/bestcut">베스트 컷</router-link>
     </span>
     <span class="right">
-      <span @click="setCurrentModalAsync(`login`)">로그인</span>
-      <router-link to="/member">마이 페이지</router-link>
+      <span v-if="!accessToken" @click="setCurrentModalAsync(`login`)"
+        >로그인</span
+      >
+      <router-link v-if="accessToken" to="/member">마이 페이지</router-link>
+      <span v-if="accessToken" @click="logout">로그아웃</span>
       <router-link to="/admin">관리자 페이지</router-link>
     </span>
   </div>
@@ -23,12 +26,17 @@ import { useStore } from "vuex";
 const store = useStore();
 
 const view = computed(() => store.state.commonStore.view);
+const accessToken = computed(() => store.state.memberStore.accessToken);
 
 const setCurrentModalAsync = (what) => {
   store.dispatch("commonStore/setCurrentModalAsync", {
     name: what,
     data: "",
   });
+};
+
+const logout = () => {
+  localStorage.removeItem("access-token");
 };
 </script>
 
