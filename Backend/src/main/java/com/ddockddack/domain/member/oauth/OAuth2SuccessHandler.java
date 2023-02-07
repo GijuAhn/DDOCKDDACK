@@ -84,5 +84,6 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         response.setStatus(HttpStatus.OK.value());
         response.getWriter().write(json);
         response.flushBuffer();
+        response.sendRedirect("localhost:8080//");
     }
 }

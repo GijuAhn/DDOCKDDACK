@@ -1,11 +1,13 @@
 <template>
   <div>
     <div id="login-modal">
-      <div id="close-button" @click="setCurrentModalAsync">
+      <div id="close-button">
         <img
           :src="require(`@/assets/images/close-button.svg`)"
           width="18"
           height="18"
+          id="close-icon"
+          @click="setCurrentModalAsync"
         />
       </div>
 
@@ -13,8 +15,16 @@
         <span>똑딱</span>
       </div>
       <div id="login-button">
-        <img :src="require(`@/assets/images/kakao-login-btn.png`)" />
-        <img :src="require(`@/assets/images/google-login-btn.png`)" />
+        <img
+          class="kakao-btn"
+          :src="require(`@/assets/images/kakao-login-btn.png`)"
+          @click="kakaoLogin"
+        />
+        <img
+          class="google-btn"
+          :src="require(`@/assets/images/google-login-btn.png`)"
+          @click="googleLogin"
+        />
       </div>
     </div>
   </div>
@@ -22,8 +32,16 @@
 
 <script setup>
 import { useStore } from "vuex";
-
+import { apiInstance } from "@/api/index";
+const api = apiInstance();
 const store = useStore();
+const kakaoLogin = () => {
+  api.get("/oauth2/authorization/kakao").then(() => {});
+  // window.location.replace("http://localhost:9999/oauth2/authorization/kakao");
+};
+const googleLogin = () => {
+  window.location.replace("http://localhost:9999/oauth2/authorization/google");
+};
 
 const setCurrentModalAsync = (value) => {
   if (value === "then") {
@@ -54,5 +72,26 @@ const setCurrentModalAsync = (value) => {
 #close-button {
   text-align: right;
   margin-right: 13px;
+  margin-top: 50px;
+}
+
+#game-title {
+  margin-top: 45px;
+}
+
+#close-icon {
+  margin-top: 15px;
+}
+
+.kakao-btn {
+  margin-top: 75px;
+}
+
+.google-btn {
+  margin-top: 10px;
+}
+
+img:hover {
+  cursor: pointer;
 }
 </style>
