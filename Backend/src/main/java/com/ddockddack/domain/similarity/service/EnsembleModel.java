@@ -10,7 +10,7 @@ public class EnsembleModel {
 //    InputStream once ended, cannot reuse.
 //    Image data input format from frontend: ByteArray
 //    public static double CalculateSimilarity(InputStream inputStream1, InputStream inputStream2) throws Exception {
-    public static int CalculateSimilarity(byte[] byteArray1, byte[] byteArray2) throws Exception {
+    public static Integer CalculateSimilarity(byte[] byteArray1, byte[] byteArray2) throws Exception {
 
         final PerceptualHash perceptualHash = new PerceptualHash();
         final FeatureDetectorDescriptor featureDetectorDescriptor = new FeatureDetectorDescriptor();
@@ -62,10 +62,10 @@ public class EnsembleModel {
             histogramDiff = 16.0;
         }
 
-        System.out.println("[+] featureScore * 8192: " + (8192 * featureScore));
-        System.out.println("[+] structureScore * 512: " + (512 * structureScore));
-        System.out.println("[-] hashDistance * 2: " + (2 * hashDistance));
-        System.out.println("[-] histogramDiff * 2: " + (2 * histogramDiff));
+//        System.out.println("[+] featureScore * 8192: " + (8192 * featureScore));
+//        System.out.println("[+] structureScore * 512: " + (512 * structureScore));
+//        System.out.println("[-] hashDistance * 2: " + (2 * hashDistance));
+//        System.out.println("[-] histogramDiff * 2: " + (2 * histogramDiff));
 
         result = (int) Math.round((8192 * featureScore) + (512 * structureScore) - (2 * hashDistance) - (2 * histogramDiff));
 

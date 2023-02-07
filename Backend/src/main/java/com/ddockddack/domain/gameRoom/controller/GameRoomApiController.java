@@ -1,5 +1,6 @@
 package com.ddockddack.domain.gameRoom.controller;
 
+import com.ddockddack.domain.gameRoom.response.GameMemberRes;
 import com.ddockddack.domain.gameRoom.response.GameRoomRes;
 import com.ddockddack.domain.gameRoom.service.GameRoomService;
 import com.ddockddack.global.service.AwsS3Service;
@@ -134,11 +135,11 @@ public class GameRoomApiController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "라운드 결과 반환 성공")
     })
-    public ResponseEntity getResult(@PathVariable("pinNumber") String pinNumber,
-                                    @PathVariable("round") int round) {
+    public ResponseEntity<List<GameMemberRes>> getResult(@PathVariable("pinNumber") String pinNumber,
+                                                         @PathVariable("round") int round) {
 
-        gameRoomService.findRoundResult(pinNumber, round);
-        return ResponseEntity.ok().build();
+
+        return ResponseEntity.ok(gameRoomService.findRoundResult(pinNumber, round));
     }
 
 }

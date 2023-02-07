@@ -9,12 +9,13 @@ import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Observable;
 
 @Getter @Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class GameMember {
+public class GameMember extends Observable {
     private String socketId;
     private Member member;
     private String nickname;

@@ -5,6 +5,7 @@ import com.ddockddack.domain.game.repository.GameRepository;
 import com.ddockddack.domain.gameRoom.repository.GameMember;
 import com.ddockddack.domain.gameRoom.repository.GameRoom;
 import com.ddockddack.domain.gameRoom.repository.GameRoomRepository;
+import com.ddockddack.domain.gameRoom.response.GameMemberRes;
 import com.ddockddack.domain.gameRoom.response.GameRoomRes;
 import com.ddockddack.domain.member.entity.Member;
 import com.ddockddack.domain.member.repository.MemberRepository;
@@ -17,7 +18,6 @@ import io.openvidu.java.client.OpenViduHttpException;
 import io.openvidu.java.client.OpenViduJavaClientException;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.codec.binary.Base64;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -144,11 +144,12 @@ public class GameRoomService {
 
     /**
      * 게임 멤버 이미지 저장
+     *
      * @param pinNumber
      * @param sessionId
      * @param param
      */
-    @Async
+//    @Async
     public void scoringImage(String pinNumber, String sessionId, Map<String, String> param) throws Exception {
         long start = System.currentTimeMillis();
         Optional.ofNullable(gameRoomRepository.findById(pinNumber).orElseThrow(() ->
@@ -157,21 +158,30 @@ public class GameRoomService {
         byte[] byteImage = Base64.decodeBase64(param.get("memberGameImage"));
 
         int score = EnsembleModel.CalculateSimilarity(byteGameImage, byteImage);
-        System.out.println("점수 : "+ score);
+        System.out.println("점수 : " + score);
         long end = System.currentTimeMillis();
-        System.out.println("걸린 시간 : " + (end - start)/1000.0);
+        System.out.println("걸린 시간 : " + (end - start) / 1000.0);
         gameRoomRepository.saveScore(pinNumber, sessionId, byteImage, score);
     }
 
-    public List<GameRoomRes> findRoundResult(String pinNumber, int round) {
+    public List<GameMemberRes> findRoundResult(String pinNumber, int round) {
         Map<String, GameMember> gameMembers = gameRoomRepository.findGameMembers(pinNumber);
         List<GameMember> members = new ArrayList<>(gameMembers.values());
         PriorityQueue<GameMember> pq = new PriorityQueue<>((a, b) -> b.getRoundScore() - a.getRoundScore());
         pq.addAll(members);
-        System.out.println(pq);
-        return null;
+        List<GameMemberRes> result = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            if (pq.isEmpty()) break;
+            result.add(GameMemberRes.from(pq.poll(), round));
+        }
+        for (GameMemberRes gm : result) {
+            System.out.println("======================");
+            System.out.println(gm.getSocketId());
+            System.out.println(gm.getRoundScore());
+            System.out.println("======================");
+        }
+        return result;
     }
-
 
 
 }
