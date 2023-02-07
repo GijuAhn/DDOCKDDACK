@@ -1,6 +1,5 @@
 <template>
   <navigation-bar />
-
   <router-view />
   <modal-frame v-if="currentModal.length !== 0" />
 </template>
@@ -10,6 +9,7 @@ import NavigationBar from "@/components/common/NavigationBar";
 import ModalFrame from "@/components/common/ModalFrame";
 import { computed } from "vue";
 import { useStore } from "vuex";
+
 const store = useStore();
 
 const currentModal = computed(() => store.state.commonStore.currentModal);
