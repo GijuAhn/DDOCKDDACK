@@ -39,14 +39,14 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         String accessToken = (request).getHeader("access-token");
         String refreshToken = null;
 
-//        Cookie[] cookies = request.getCookies();
-//        for(Cookie cookie:cookies) {
-//            if(cookie.getName().equals("refreshToken")) {
-//                logger.info(cookie.getValue());
-//                refreshToken = cookie.getValue();
-//                break;
-//            }
-//        }
+        Cookie[] cookies = request.getCookies();
+        for(Cookie cookie:cookies) {
+            if(cookie.getName().equals("refresh-token")) {
+                logger.info(cookie.getValue());
+                refreshToken = cookie.getValue();
+                break;
+            }
+        }
 
         log.info("accessToken {} ", accessToken);
         log.info("refreshToken {} ", refreshToken);

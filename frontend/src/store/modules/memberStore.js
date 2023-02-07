@@ -2,61 +2,42 @@ import router from "@/router";
 import {
   login,
   findByAccessToken,
-  tokenRegeneration,
+  accesstokenRegeneration,
   logout,
 } from "@/api/member";
 
 export const memberStore = {
   namespaced: true,
   state: {
-    accessToken:
-      "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE2NzU2ODcxNzUsImV4cCI6MTY3NTY5NTgxNX0.3Ac6K1jvSLEymrU-u4B2E82vKKZ-DylRuP7hM7fC4Pw",
+    accessToken: undefined,
     memberInfo: {
-      id: 1,
-      nickname: "이종민",
-      email: "l6778@naver.com",
-      profile: "abc2.jpg",
-      Role: "MEMBER",
+      memberId: "",
+      email: "",
+      profile: "",
+      role: "",
     },
-    isLogin: false,
-    isValidToken: false,
   },
   getters: {
     getAccessToken(state) {
       return state.accessToken;
     },
-    checkToken(state) {
-      return state.isValidToken;
-    },
-    checkMemberInfo(state) {
-      return state.memberInfo;
-    },
-    getMemberInfo(state) {
-      return state.memberInfo;
-    },
   },
   mutations: {
-    setToken(state, value) {
-      state.accessToken = value;
+    setToken(state, accessToken) {
+      state.accessToken = accessToken;
     },
     setMemberInfo(state, memberInfo) {
       state.memberInfo = memberInfo;
     },
-    setIsLogin(state, isLogin) {
-      state.isLogin = isLogin;
-    },
-    setIsValidToken(state, isValidToken) {
-      state.isValidToken = isValidToken;
-    },
   },
   actions: {
-    setTokensAsync({ commit }, value) {
-      commit("setToken", value);
+    setTokensAsync({ commit }, accessToken) {
+      commit("setToken", accessToken);
     },
-    // setMemberInfo({ commit }, value) {
-    //   console.log("setMemberInfo: ", value);
-    //   commit("setMemberInfo", value);
-    // },
+    setMemberInfo({ commit }, memberInfo) {
+      console.log("setMemberInfo: ", memberInfo);
+      commit("setMemberInfo", memberInfo);
+    },
     async userConfirm({ commit }, user) {
       // console.log(user,"^^");
       await login(
@@ -86,14 +67,14 @@ export const memberStore = {
       );
     },
 
-    async getMemberInfo({ commit, dispatch, state }, id) {
+    async getMemberInfo({ commit, dispatch, state }) {
       let accessToken = state.accessToken;
+      console.log("get member", accessToken);
       await findByAccessToken(
-        id,
         accessToken,
         ({ data }) => {
           console.log(data);
-          if (data) {
+          if (data.message === "success") {
             // console.log("getMemberInfo data >> ", data);
             commit("setMemberInfo", data);
           } else {
@@ -110,20 +91,22 @@ export const memberStore = {
         }
       );
     },
-    async accesstokenReissue({ commit, state }) {
-      await tokenRegeneration(
-        JSON.stringify(state.memberInfo),
+
+    async accesstokenReissue({ commit, state }, isAuthPage) {
+      console.log("REISSUE");
+      await accesstokenRegeneration(
         ({ data }) => {
-          if (data.status === 200) {
-            let accessToken = data.accessToken;
+          console.log("!@#@#@#", data);
+          if (data) {
+            let accessToken = data;
             console.log("재발급 완료 >> 새로운 토큰 : {}", accessToken);
-            commit("SET_ACCESSTOKEN", data.memberInfo);
-            commit("SET_IS_VALID_TOKEN", true);
+            commit("setToken", accessToken);
           }
         },
         async (error) => {
           //AccessToken 갱신 실패시 refreshToken이 문제임 >> 다시 로그인해야함
-          if (error.reembersponse.status === 401) {
+          console.log("갱신 실패");
+          if (error.reembersponse.status === 401 && isAuthPage) {
             console.log("갱신 실패");
             await logout(
               state.memberInfo.id,
@@ -134,15 +117,10 @@ export const memberStore = {
                   console.log("리프레시 토큰 제거 실패");
                 }
                 alert("RefreshToken 기간 만료!!! 다시 로그인해 주세요.");
-                commit("SET_IS_LOGIN", false);
-                commit("SET_MEMBER_INFO", null);
-                commit("SET_IS_VALID_TOKEN", false);
                 router.push({ name: "login" });
               },
               (error) => {
                 console.log(error);
-                commit("SET_IS_LOGIN", false);
-                commit("SET_MEMBER_INFO", null);
               }
             );
           }
@@ -151,9 +129,9 @@ export const memberStore = {
     },
   },
 
-  async userLogout({ commit }, id) {
+  async userLogout({ commit }, accessToken) {
     await logout(
-      id,
+      accessToken,
       ({ data }) => {
         if (data.status === 200) {
           commit("SET_IS_LOGIN", false);

@@ -53,7 +53,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         Token token = tokenService.generateToken(member.getId(), "USER");
         log.info("JwT : {}", token);
 
-        Cookie cookie = new Cookie("refreshToken", token.getRefreshToken());
+        Cookie cookie = new Cookie("refresh-token", token.getRefreshToken());
         // expires in 7 days
         cookie.setMaxAge(-1);
 
