@@ -61,31 +61,6 @@ const callApi = () => {
 
 callApi();
 
-//공통 메서드로 만들기 mixin??
-// const getAccessTokenByRefreshToken = () => {
-//   //AccessToken 만료되면 refresh로
-//   api
-//     .get(`/token/refresh`, {
-//       headers: {
-//         "refresh-token":
-//           "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE2NzUzMjI2OTgsImV4cCI6MTY3NTMyMzI5OH0.MyEjlj58rLiAWm7Ky8gxkI1ZA_zBR8i67JHjm71JQbU",
-//       },
-//     })
-//     .then((response) => {
-//       console.log("refresh-MyBestcut: " + response);
-//       myBestcuts.value = response.data.content;
-//     })
-//     .catch((error) => {
-//       console.log(error);
-//       moveLoginPage();
-//     });
-// };
-
-// const moveLoginPage = () => {
-//   //refreshToken도 만료되면 로그아웃
-//   console.log("move Page");
-// };
-
 store.dispatch("commonStore/setMemberTabAsync", 3);
 </script>
 

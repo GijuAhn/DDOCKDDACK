@@ -128,10 +128,6 @@ const changePage = (page) => {
 
 //베스트컷 좋아요
 const bestcutLike = (bestcutId) => {
-  if (!accessToken.value) {
-    alert("로그인 후 이용해주세요.");
-    return;
-  }
   api
     .post(
       `/api/bestcuts/like/${bestcutId}`,
@@ -142,6 +138,11 @@ const bestcutLike = (bestcutId) => {
       let bestcut = bestcuts.value.find((e) => e.bestcutId === bestcutId);
       bestcut.isLiked = true;
       bestcut.popularity++;
+    })
+    .catch((err) => {
+      if (err.response.status === 401) {
+        alert("로그인 후 이용해주세요.");
+      }
     });
 };
 

@@ -5,26 +5,28 @@ import store from "@/store";
 import MainView from "@/views/MainView.vue";
 
 const authMember = async (to, from, next) => {
-  // const store = useStore();
-  console.log("Asdfasf");
-  const checkMemberInfo = computed(
-    () => store.state.memberStore.memberInfo
-  ).value;
-  // const checkToken = computed(() => store.state.memberStore.isValidToken).value;
   let accessToken = computed(() => store.state.memberStore.accessToken).value;
-  console.log("로그인 처리 전", checkMemberInfo, accessToken);
+  console.log("로그인 처리 전", accessToken);
 
-  if (checkMemberInfo != null && accessToken) {
-    await store.dispatch("memberStore/getMemberInfo", checkMemberInfo.id);
+  if (!accessToken) {
+    await store.dispatch("memberStore/accesstokenReissue", true);
+    // alert("로그인이 필요한 페이지입니다..");
   }
-  // if (!checkToken || checkMemberInfo === null) {
-  //   alert("로그인이 필요한 페이지입니다..");
-  //   // router.push({ name: "login" }); //login 모달로
-  // } else {
-  //   console.log("로그인 했다!!!!!!!!!!!!!.");
-  //   next();
-  // }
+  accessToken = computed(() => store.state.memberStore.accessToken).value;
+  console.log(accessToken);
   next();
+};
+
+const isLogin = async () => {
+  let accessToken = computed(() => store.state.memberStore.accessToken).value;
+  console.log("로그인 처리 전", accessToken);
+
+  if (!accessToken) {
+    console.log("login!@!@");
+    await store.dispatch("memberStore/accesstokenReissue", false);
+  }
+  accessToken = computed(() => store.state.memberStore.accessToken).value;
+  console.log("access 재발급? ", accessToken);
 };
 
 const routes = [
@@ -32,15 +34,18 @@ const routes = [
     path: "/",
     name: "main",
     component: MainView,
+    beforeEnter: isLogin,
   },
   {
     path: "/gameList",
     name: "gameList",
+    beforeEnter: isLogin,
     component: () => import("@/views/GameListView.vue"),
   },
   {
     path: "/gameMake",
     name: "gameMake",
+    beforeEnter: isLogin,
     component: () => import("@/views/GameMakeView.vue"),
     redirect: "/gameMake/createGame",
     children: [
@@ -55,11 +60,13 @@ const routes = [
   {
     path: "/bestcut",
     name: "bestcutList", //bestcut 중복 체크
+    beforeEnter: isLogin,
     component: () => import("@/views/BestcutView.vue"),
   },
   {
     path: "/gameroom/:pinNumber",
     name: "gameroom",
+    beforeEnter: isLogin,
     component: () => import("@/views/GameroomView.vue"),
   },
   {
