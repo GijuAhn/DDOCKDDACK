@@ -13,6 +13,7 @@ export const memberStore = {
     memberInfo: {
       memberId: "",
       email: "",
+      nickname: "",
       profile: "",
       role: "",
     },
@@ -93,7 +94,6 @@ export const memberStore = {
     },
 
     async accesstokenReissue({ commit, state }, isAuthPage) {
-      console.log("REISSUE");
       await accesstokenRegeneration(
         ({ data }) => {
           console.log("!@#@#@#", data);
@@ -105,8 +105,7 @@ export const memberStore = {
         },
         async (error) => {
           //AccessToken 갱신 실패시 refreshToken이 문제임 >> 다시 로그인해야함
-          console.log("갱신 실패");
-          if (error.reembersponse.status === 401 && isAuthPage) {
+          if (error.status === 401 && isAuthPage) {
             console.log("갱신 실패");
             await logout(
               state.memberInfo.id,
