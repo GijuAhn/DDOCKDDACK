@@ -29,6 +29,7 @@ public class AdminApiController {
     private final BestcutService bestcutService;
     private final GameService gameService;
     private final AdminService adminService;
+    private final TokenService tokenService;
 
     @GetMapping("/reported/games")
     @Operation(summary = "신고된 게임 목록 조회")
@@ -38,10 +39,11 @@ public class AdminApiController {
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     public ResponseEntity<?> reportedGameList(@RequestHeader(value = "access-token", required = true) String accessToken) {
+        Long adminId = tokenService.getUid(accessToken);
 
         // admin 확인
-        if(!adminService.isAdminByAccessToken(accessToken)){
-            return ResponseEntity.status(403).body("");
+        if(!adminService.isAdminByAccessToken(adminId)){
+            return ResponseEntity.status(403).body(null);
         }
 
         try {
@@ -60,10 +62,11 @@ public class AdminApiController {
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     public ResponseEntity<?> reportedBestCutList(@RequestHeader(value = "access-token", required = true) String accessToken) {
+        Long adminId = tokenService.getUid(accessToken);
 
         // admin 확인
-        if(!adminService.isAdminByAccessToken(accessToken)){
-            return ResponseEntity.status(403).body("");
+        if(!adminService.isAdminByAccessToken(adminId)){
+            return ResponseEntity.status(403).body(null);
         }
 
         try {
@@ -84,17 +87,41 @@ public class AdminApiController {
             @ApiResponse(responseCode = "404", description = "존재 하지 않는 게임"),
             @ApiResponse(responseCode = "404", description = "존재 하지 않는 유저")
     })
-    public ResponseEntity gameRemove(@PathVariable Long gameId,
+    public ResponseEntity reportedGameDelete(@PathVariable Long gameId,
                                      @RequestHeader(value = "access-token", required = true) String accessToken) {
+        Long adminId = tokenService.getUid(accessToken);
 
         // admin 확인
-        if(!adminService.isAdminByAccessToken(accessToken)){
-            return ResponseEntity.status(403).body("");
+        if(!adminService.isAdminByAccessToken(adminId)){
+            return ResponseEntity.status(403).body(null);
         }
-
-        gameService.removeGame(1L, gameId);
+        // 테스트용 입력
+        gameService.removeGame(adminId, gameId);
 
         return ResponseEntity.ok().build();
 
+    }
+
+    @DeleteMapping("/remove/bestcut/{bestcutId}")
+    @Operation(summary = "신고된 베스트 컷 삭제")
+    @ApiResponses({
+            @ApiResponse(description = "베스트컷 삭제 성공", responseCode = "200"),
+            @ApiResponse(description = "권한 없음", responseCode = "401"),
+            @ApiResponse(responseCode = "403", description = "허가되지 않은 사용자"),
+            @ApiResponse(description = "존재하지 않는 베스트컷", responseCode = "404"),
+            @ApiResponse(description = "존재하지 않는 멤버", responseCode = "404"),
+    })
+    public ResponseEntity reportedBestCutDelete(@PathVariable Long bestcutId,
+                                        @RequestHeader(value = "access-token", required = false) String accessToken) {
+        Long adminId = tokenService.getUid(accessToken);
+
+        // admin 확인
+        if(!adminService.isAdminByAccessToken(adminId)){
+            return ResponseEntity.status(403).body(null);
+        }
+
+        bestcutService.removeBestcut(bestcutId, adminId);
+
+        return ResponseEntity.ok().build();
     }
 }
