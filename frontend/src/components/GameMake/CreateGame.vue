@@ -34,7 +34,7 @@
           </div>
           <input
             type="file"
-            @change="storeImage"
+            @change="fileUploadEvent"
             accept=".jpg,.jpeg"
             multiple
             id="fileInput"
@@ -47,11 +47,12 @@
                 for="fileInput"
                 class="file-label"
                 @dragover="dragover"
-                @dragleave="dragleave"
                 @drop="drop"
               >
                 <span v-if="gameSaveReq.images.length === 0"
-                  >이곳을 클릭하거나 파일을 드래그하여 업로드 하세요.</span
+                  ><span
+                    >이곳을 클릭하거나 파일을 드래그하여 업로드 하세요.</span
+                  ><br /><span>&#40;최소 10장, 최대 20장&#41;</span></span
                 >
                 <span v-else> </span
               ></label>
@@ -118,7 +119,6 @@ const router = useRouter();
 const api = apiInstance();
 
 const step = ref(0); // 0 : 이전, 1: 다음
-const isDragging = ref(false);
 
 const changeStep = () => {
   //이전<->다음
@@ -133,16 +133,38 @@ const gameSaveReq = ref({
   images: [],
 });
 
-const storeImage = (e) => {
-  //파일 이벤트 발생
-  if (e.target.files) {
-    const files = Array.from(e.target.files);
-    files.forEach((file) => {
+const fileUploadEvent = (e) => {
+  storeImage(e.target.files);
+};
+
+const storeImage = (f) => {
+  if (f) {
+    const files = Array.from(f);
+    if (files.length + gameSaveReq.value.images.length > 20) {
+      alert("최대 20장의 이미지만 등록 가능합니다!");
+      return;
+    }
+    let wrongFileCount = 0;
+    for (const file of files) {
+      let fileDot = file.name.lastIndexOf(".");
+      let fileType = file.name.substring(fileDot + 1, file.name.length);
+      if (fileType !== "jpg" && fileType !== "jpeg") {
+        wrongFileCount++;
+        continue;
+      }
+
       gameSaveReq.value.images.push({
         gameImage: file,
         gameImageDesc: "",
       });
-    });
+    }
+    if (wrongFileCount !== 0) {
+      alert(
+        "jpg/jpeg 형식의 이미지 파일만 업로드 가능합니다. " +
+          wrongFileCount +
+          "개의 이미지가 제외되었습니다."
+      );
+    }
   }
 };
 
@@ -165,6 +187,11 @@ const submit = () => {
   if (!gameSaveReq.value.gameTitle) {
     error = true;
     alert("게임 제목을 입력해 주세요.");
+    return;
+  }
+  if (gameSaveReq.value.gameTitle.length > 30) {
+    error = true;
+    alert("게임 제목은 최대 30자 까지 입력해 주세요.");
     return;
   }
   if (gameSaveReq.value.gameDesc.length > 50) {
@@ -223,24 +250,10 @@ const createGame = () => {
 };
 const dragover = (e) => {
   e.preventDefault();
-  isDragging.value = true;
-};
-const dragleave = () => {
-  isDragging.value = false;
 };
 const drop = (e) => {
   e.preventDefault();
-  // console.log(e.dataTransfer.files);
-  if (e.dataTransfer.files) {
-    const files = Array.from(e.dataTransfer.files);
-    files.forEach((file) => {
-      gameSaveReq.value.images.push({
-        gameImage: file,
-        gameImageDesc: "",
-      });
-    });
-  }
-  isDragging.value = false;
+  storeImage(e.dataTransfer.files);
 };
 </script>
 
@@ -305,14 +318,20 @@ label {
   width: 100%;
   height: 100%;
   position: absolute;
-  font-size: 36px;
 }
-#uploadDescSection label span {
+#uploadDescSection label > span {
+  text-align: center;
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   width: 780px;
+}
+#uploadDescSection label > span > span:first-child {
+  font-size: 36px;
+}
+#uploadDescSection label > span > span:last-child {
+  font-size: 24px;
 }
 #previewSection {
   width: 100%;
