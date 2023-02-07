@@ -131,7 +131,6 @@ onBeforeMount(() => {
 
       openviduInfo.value.OV = new OpenVidu();
       openviduInfo.value.session = openviduInfo.value.OV.initSession();
-
       // On every new Stream received...
       openviduInfo.value.session.on("streamCreated", ({ stream }) => {
         const subscriber = openviduInfo.value.session.subscribe(stream);

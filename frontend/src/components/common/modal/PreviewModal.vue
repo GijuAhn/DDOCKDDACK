@@ -51,5 +51,6 @@ api
 }
 img {
   margin: 2px;
+  object-fit: cover;
 }
 </style>
