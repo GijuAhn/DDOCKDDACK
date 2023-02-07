@@ -20,6 +20,7 @@ public class GameRoomRes {
     private String gameTitle;
     private String gameDescription;
     private List<GameImageRes> gameImages;
+    private List<byte[]> byteImages;
     private Boolean isHost;
 
     @Builder

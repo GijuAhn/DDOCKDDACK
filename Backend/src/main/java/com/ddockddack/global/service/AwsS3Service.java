@@ -5,8 +5,8 @@ import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.CannedAccessControlList;
-import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.*;
+import com.amazonaws.util.IOUtils;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
 
@@ -58,8 +59,19 @@ public class AwsS3Service {
     public String InputStreamUpload(byte[] byteImages) {
         String fileName = UUID.randomUUID().toString() + ".jpg";
         s3Client.putObject(new PutObjectRequest(bucket, fileName, new ByteArrayInputStream(byteImages), null).withCannedAcl(CannedAccessControlList.PublicRead));
-
         return fileName;
+    }
+
+    public byte[] getObject(String fileName) {
+        S3Object object = s3Client.getObject(new GetObjectRequest(bucket, fileName));
+        S3ObjectInputStream objectContent = object.getObjectContent();
+        byte[] bytes = new byte[0];
+        try {
+            bytes = IOUtils.toByteArray(objectContent);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return bytes;
     }
 
 
