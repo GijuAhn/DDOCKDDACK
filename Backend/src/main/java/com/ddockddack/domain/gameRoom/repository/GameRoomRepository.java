@@ -34,6 +34,7 @@ public class GameRoomRepository {
     private Map<String, GameRoom> gameRooms = new ConcurrentHashMap<>();
     private OpenVidu openvidu;
 
+
     @PostConstruct
     public void init() {
         this.openvidu = new OpenVidu(OPENVIDU_URL, OPENVIDU_SECRET);
@@ -52,7 +53,6 @@ public class GameRoomRepository {
         //생성한 pin으로 openvidu에 session 생성 요청
         SessionProperties properties = SessionProperties.fromJson(paramMap).build();
         openvidu.createSession(properties);
-
 
         //방 객체 생성 후 map에 저장
         GameRoom gameRoom = GameRoom.builder()
@@ -119,11 +119,12 @@ public class GameRoomRepository {
         this.gameRooms.put(pinNumber,gameRoom);
     }
 
-    public void saveMemberImageUrl(String pinNumber, String sessionId, byte[] byteImage) {
+    public void saveScore(String pinNumber, String sessionId, byte[] byteImage, int score) {
         GameRoom gameRoom = this.gameRooms.get(pinNumber);
         GameMember gameMember = gameRoom.getMembers().get(sessionId);
         gameMember.getImages().add(byteImage);
-        this.gameRooms.put(pinNumber, gameRoom);
+        gameMember.setRoundScore(score);
+        gameMember.setTotalScore(gameMember.getTotalScore()+score);
     }
 
     public byte[] findByImageIndex(String pinNumber, String sessionId, int index) {

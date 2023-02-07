@@ -7,17 +7,21 @@ import com.ddockddack.domain.gameRoom.repository.GameRoomRepository;
 import com.ddockddack.domain.gameRoom.response.GameRoomRes;
 import com.ddockddack.domain.member.entity.Member;
 import com.ddockddack.domain.member.repository.MemberRepository;
+import com.ddockddack.domain.similarity.service.EnsembleModel;
 import com.ddockddack.global.error.ErrorCode;
 import com.ddockddack.global.error.exception.AccessDeniedException;
 import com.ddockddack.global.error.exception.NotFoundException;
+import com.ddockddack.global.service.AwsS3Service;
 import io.openvidu.java.client.OpenViduHttpException;
 import io.openvidu.java.client.OpenViduJavaClientException;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.codec.binary.Base64;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.ddockddack.domain.similarity.service.EnsembleModel;
 
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -27,6 +31,7 @@ public class GameRoomService {
     private final GameRoomRepository gameRoomRepository;
     private final GameRepository gameRepository;
     private final MemberRepository memberRepository;
+    private final AwsS3Service awsS3Service;
 
     /**
      * 방 생성
@@ -141,18 +146,25 @@ public class GameRoomService {
 
     /**
      * 게임 멤버 이미지 저장
-     *
      * @param pinNumber
      * @param sessionId
-     * @param data
+     * @param param
      */
-    public void saveGameMemberImage(String pinNumber, String sessionId, String data) {
-
+    @Async
+    public void scoringImage(String pinNumber, String sessionId, Map<String, String> param) throws Exception {
+        long start = System.currentTimeMillis();
         Optional.ofNullable(gameRoomRepository.findById(pinNumber).orElseThrow(() ->
                 new NotFoundException(ErrorCode.GAME_ROOM_NOT_FOUND)));
+        byte[] byteGameImage = awsS3Service.getObject(param.get("gameImage"));
+        byte[] byteImage = Base64.decodeBase64(param.get("memberGameImage"));
 
-        byte[] byteImage = Base64.decodeBase64(data);
-        gameRoomRepository.saveMemberImageUrl(pinNumber, sessionId, byteImage);
+        int score = EnsembleModel.CalculateSimilarity(byteGameImage, byteImage);
+        System.out.println("점수 : "+ score);
+        long end = System.currentTimeMillis();
+        System.out.println("걸린 시간 : " + (end - start)/1000.0);
+
+        gameRoomRepository.saveScore(pinNumber, sessionId, byteImage, score);
+
     }
     
 }
