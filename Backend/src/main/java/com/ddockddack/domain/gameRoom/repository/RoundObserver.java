@@ -1,5 +1,6 @@
 package com.ddockddack.domain.gameRoom.repository;
 
+import javax.print.attribute.SetOfIntegerSyntax;
 import java.util.Observable;
 
 public class RoundObserver implements Observer {
@@ -12,8 +13,9 @@ public class RoundObserver implements Observer {
 
     @Override
     public void update(Observable o, Integer score) {
-        if (score != 0){
-            this.memberCounter += 1;
+        if (o instanceof GameMember) {
+            GameMember member = (GameMember) o;
+            memberCounter++;
         }
         display();
     }
@@ -21,5 +23,12 @@ public class RoundObserver implements Observer {
     public void display() {
         System.out.println("Observer counts member... : " + memberCounter);
     }
+
+//    public boolean isAllMemberScored() {
+//        GameRoom gameRoom;
+//        if (memberCounter == gameRoom.getMembers().size()) {
+//            return true;
+//        }
+//    }
 
 }

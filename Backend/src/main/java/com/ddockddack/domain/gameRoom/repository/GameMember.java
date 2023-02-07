@@ -29,7 +29,6 @@ public class GameMember extends Observable {
         this.member = member;
         this.nickname = nickname;
     }
-
     public void changeScore(int roundScore){
         setChanged();
         notifyObservers(roundScore);
