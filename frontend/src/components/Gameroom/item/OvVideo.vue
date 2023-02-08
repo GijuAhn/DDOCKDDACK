@@ -26,6 +26,7 @@ video {
 
   /* width: 150px;
   height: 150px; */
+
   position: absolute;
   top: 0;
   left: 0;
@@ -33,7 +34,6 @@ video {
   bottom: 0;
   height: 100%;
   width: 100%;
-  /*border: 1px solid red;*/
   object-fit: contain;
 }
 </style>

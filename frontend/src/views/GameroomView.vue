@@ -34,7 +34,37 @@
             대기중
           </div>
 
-          <div v-if="isEnd">테스트</div>
+          <div v-if="isEnd">
+            <button @click="getMyImages">결과보기</button>
+
+            <div v-if="isShow">
+              <div v-for="(image, index) in resultImages" :key="index">
+                <div>
+                  <input
+                    type="checkbox"
+                    :value="index"
+                    @change="check(index)"
+                  />체크박스
+                  <br />
+                  <input
+                    id="bestcutTitle"
+                    type="text"
+                    v-model="inputs[index]"
+                    placeholder="제목을 입력하세요"
+                  />
+                  <img
+                    :src="`${IMAGE_PATH}/${room.gameImages[index].gameImage}`"
+                  />
+                  <div class="test">
+                    <img :src="image" id="bestcutImg" />
+                  </div>
+                  <br />
+                </div>
+              </div>
+
+              <button @click="upload">베스트 컷 게시</button>
+            </div>
+          </div>
         </div>
 
         <div id="my-video">
@@ -350,6 +380,7 @@ watch(
       isEnd.value = true;
     }
     if (value === 0) {
+      capture();
       resultMode.value = true;
       setTimeout(() => {
         round.value++;
@@ -360,6 +391,82 @@ watch(
   },
   { immediate: true }
 );
+const isShow = ref(false);
+const getMyImages = () => {
+  isShow.value = true;
+};
+const check = (index) => {
+  isChecked.value[index] = !isChecked.value[index];
+};
+const isChecked = ref([
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+]);
+const inputs = ref(["", "", "", "", "", "", "", "", "", ""]);
+
+const upload = () => {
+  bestcutSaveReq.value.pinNumber =
+    openviduInfo.value.publisher.session.sessionId;
+  bestcutSaveReq.value.sessionId =
+    openviduInfo.value.publisher.session.connection.connectionId;
+  bestcutSaveReq.value.gameTitle = room.gameTitle;
+  isChecked.value.forEach((element, index) => {
+    if (element) {
+      bestcutSaveReq.value.images.push({
+        bestcutIndex: index,
+        bestcutImgTitle: inputs.value[index],
+        gameImgUrl: room.gameImages[index].gameImage,
+        gameImgDesc: room.gameImages[index].gameImageDesc,
+      });
+    }
+  });
+  api
+    .post("/api/bestcuts", bestcutSaveReq.value)
+    .then(() => {
+      alert("업로드가 완료 되었습니다.");
+    })
+    .catch((err) => {
+      err;
+      alert("업로드 실패");
+    });
+};
+const bestcutSaveReq = ref({
+  pinNumber: undefined,
+  sessionId: undefined,
+  gameTitle: undefined,
+  images: [],
+});
+const resultImages = ref([]);
+
+const capture = () => {
+  console.log("DD");
+  let me = document.getElementById("local-video-undefined");
+  html2canvas(me).then((canvas) => {
+    let myImg;
+    const sessionId =
+      openviduInfo.value.publisher.session.connection.connectionId;
+    const pinNumber = openviduInfo.value.publisher.session.sessionId;
+    myImg = canvas.toDataURL("image/jpeg");
+    let byteString = myImg.replace("data:image/jpeg;base64,", "");
+
+    let param = {
+      memberGameImage: byteString,
+    };
+    api.post(`/api/game-rooms/${pinNumber}/${sessionId}/images`, param);
+
+    resultImages.value.push(myImg);
+  });
+};
+
+import html2canvas from "html2canvas";
 </script>
 
 <style>
@@ -388,6 +495,7 @@ watch(
   height: 50%;
   flex-direction: column;
   position: relative;
+  overflow: scroll;
 }
 #gameImageSection {
   position: absolute;
@@ -486,5 +594,15 @@ watch(
 .btn-close:focus {
   transform: rotateZ(90deg);
   background: #ff0000;
+}
+.test {
+  width: 400px;
+  height: 400px;
+  border: 1px solid blue;
+}
+.test img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 </style>
