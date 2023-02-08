@@ -29,8 +29,31 @@
 
 <script setup>
 import { useStore } from "vuex";
+import { ref, computed } from "vue";
+import { apiInstance } from "@/api/index";
 
+const api = apiInstance();
 const store = useStore();
+const admin_api_url = `/api/admin`;
+const accessToken = computed(() => store.state.memberStore.accessToken);
+
+let bestcuts = ref();
+
+const callApi = () => {
+  api
+    .get(admin_api_url + `/reported/games`, {
+      headers: { "access-token": accessToken.value },
+      params: {},
+    })
+    .then((response) => {
+      bestcuts.value = response.data.content;
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+};
+
+callApi();
 
 store.dispatch("commonStore/setAdminTabAsync", 0);
 </script>
