@@ -9,11 +9,14 @@
       <router-link to="/bestcut">베스트 컷</router-link>
     </span>
     <span class="right">
-      <span v-if="!accessToken" @click="setCurrentModalAsync(`login`)"
+      <span
+        id="btn_login"
+        v-if="!accessToken"
+        @click="setCurrentModalAsync(`login`)"
         >로그인</span
       >
       <router-link v-if="accessToken" to="/member">마이 페이지</router-link>
-      <span v-if="accessToken" @click="logout">로그아웃</span>
+      <span id="btn_logout" v-if="accessToken" @click="logout">로그아웃</span>
       <router-link to="/admin">관리자 페이지</router-link>
     </span>
   </div>
@@ -114,5 +117,12 @@ a {
 
 .right {
   float: right;
+}
+
+#btn_login:hover {
+  cursor: pointer;
+}
+#btn_logout:hover {
+  cursor: pointer;
 }
 </style>
