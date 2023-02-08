@@ -50,7 +50,7 @@ import html2canvas from "html2canvas";
 import { apiInstance } from "@/api/index";
 import { computed, defineProps, watch, ref, onMounted } from "vue";
 import process from "process";
-import
+
 const IMAGE_PATH = process.env.VUE_APP_IMAGE_PATH;
 const api = apiInstance();
 const props = defineProps({
@@ -86,15 +86,15 @@ onMounted(() => {
 
 watch(
   () => props.timerCount,
-  () => {
-    if (props.timerCount === 0) {
-      capture(props.round - 1);
+  (value) => {
+    if (value === 0) {
+      capture();
     }
   },
   { immediate: true }
 );
 
-const capture = (index) => {
+const capture = () => {
   let me = document.getElementById("local-video-undefined");
   html2canvas(me).then((canvas) => {
     let myImg;
@@ -104,20 +104,11 @@ const capture = (index) => {
     let byteString = myImg.replace("data:image/jpeg;base64,", "");
 
     let param = {
-      gameImage: props.room.gameImages[index].gameImage,
       memberGameImage: byteString,
     };
-    api
-      .post(`/api/game-rooms/${pinNumber}/${sessionId}/images`, param)
-      .then(() => {
-        setTimeout(() => {
-        }, 3000);
-      });
+    api.post(`/api/game-rooms/${pinNumber}/${sessionId}/images`, param);
 
     resultImages.value.push(myImg);
-    // setTimeout(() -> {
-
-    // },1000);
   });
 };
 
