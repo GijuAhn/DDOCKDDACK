@@ -37,18 +37,18 @@ const routes = [
     path: "/",
     name: "main",
     component: MainView,
-    beforeEnter: isLogin,
+    // beforeEnter: isLogin,
   },
   {
     path: "/gameList",
     name: "gameList",
-    beforeEnter: isLogin,
+    // beforeEnter: isLogin,
     component: () => import("@/views/GameListView.vue"),
   },
   {
     path: "/gameMake",
     name: "gameMake",
-    beforeEnter: isLogin,
+    // beforeEnter: isLogin,
     component: () => import("@/views/GameMakeView.vue"),
     redirect: "/gameMake/createGame",
     children: [
@@ -63,43 +63,44 @@ const routes = [
   {
     path: "/bestcut",
     name: "bestcutList", //bestcut 중복 체크
-    beforeEnter: isLogin,
+    // beforeEnter: isLogin,
     component: () => import("@/views/BestcutView.vue"),
   },
   {
     path: "/gameroom/:pinNumber",
     name: "gameroom",
-    beforeEnter: isLogin,
+    // beforeEnter: isLogin,
     component: () => import("@/views/GameroomView.vue"),
   },
   {
     path: "/member",
     name: "member",
+    // beforeEnter: authMember,
     component: () => import("@/views/MemberView.vue"),
     redirect: "/member/myBestcut", // /member/recentGame 기본
     children: [
       {
         path: "recentGame",
         name: "recentGame",
-        beforeEnter: authMember,
+        // beforeEnter: authMember,
         component: () => import("@/components/Member/RecentGameList.vue"),
       },
       {
         path: "starGame",
         name: "starGame",
-        beforeEnter: authMember,
+        // beforeEnter: authMember,
         component: () => import("@/components/Member/StarGameList.vue"),
       },
       {
         path: "myGame",
         name: "myGame",
-        beforeEnter: authMember,
+        // beforeEnter: authMember
         component: () => import("@/components/Member/MyGameList.vue"),
       },
       {
         path: "myBestcut",
         name: "myBestcut",
-        beforeEnter: authMember,
+        // beforeEnter: authMember,
         component: () => import("@/components/Member/MyBestcutList.vue"),
       },
     ],

@@ -84,6 +84,8 @@ public class MemberApiController {
     })
     @GetMapping()
     public ResponseEntity<?> getMemberInfo() {
+    @GetMapping()
+    public ResponseEntity<?> getMemberInfo() {
 
         log.info("sec info {}",
             SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
@@ -109,7 +111,7 @@ public class MemberApiController {
         @ApiResponse(responseCode = "404", description = "존재하지 않는 유저"),
         @ApiResponse(responseCode = "500", description = "서버 오류")
     })
-    @DeleteMapping("/{memberId}")
+    @DeleteMapping()
     public ResponseEntity<?> deleteMember(@PathVariable Long memberId) {
         try {
             memberService.deleteMemberById(memberId); //탈퇴로직에 access, refresh Token 정지시키는 로직 추가해야함

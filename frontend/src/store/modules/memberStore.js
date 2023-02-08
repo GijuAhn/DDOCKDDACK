@@ -13,9 +13,11 @@ export const memberStore = {
     memberInfo: {
       memberId: "",
       email: "",
+      nickname: "",
       profile: "",
       role: "",
     },
+    accessToken: undefined,
   },
   getters: {
     getAccessToken(state) {
@@ -33,10 +35,6 @@ export const memberStore = {
   actions: {
     setTokensAsync({ commit }, accessToken) {
       commit("setToken", accessToken);
-    },
-    setMemberInfo({ commit }, memberInfo) {
-      console.log("setMemberInfo: ", memberInfo);
-      commit("setMemberInfo", memberInfo);
     },
     async userConfirm({ commit }, user) {
       // console.log(user,"^^");

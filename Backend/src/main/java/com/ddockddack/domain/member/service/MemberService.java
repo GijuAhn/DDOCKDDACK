@@ -230,4 +230,14 @@ public class MemberService {
 
         return responsememberInfo;
     }
+
+    @Transactional
+    public Member banMember(Long memberId, java.sql.Date releaseDate) {
+        Member memberToModify = memberRepository.findById(memberId).get();
+
+        memberToModify.setRole(Role.BAN);
+        memberToModify.setReleaseDate(releaseDate);
+
+        return memberRepository.save(memberToModify);
+    }
 }
