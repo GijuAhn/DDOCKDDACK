@@ -21,6 +21,7 @@
       class="modalContent"
       v-if="currentModal.name === `bestcutReport`"
     />
+    <login-modal class="modalContent" v-if="currentModal.name === `login`" />
   </div>
 </template>
 
@@ -42,6 +43,7 @@ import ReportReasonModal from "@/components/common/modal/ReportReasonModal";
 import ReportCompleteModal from "@/components/common/modal/ReportCompleteModal";
 import BestcutDetailModal from "@/components/common/modal/BestcutDetailModal";
 import BestcutReportModal from "@/components/common/modal/BestcutReportModal";
+import LoginModal from "@/components/common/modal/LoginModal";
 </script>
 
 <style scoped>

@@ -48,7 +48,7 @@ public class SecurityConfig {
     // 필터 무시
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring().antMatchers("/static/**", "/js/**", "/webjars/**", "/api/**");
+        return (web) -> web.ignoring().antMatchers("/static/**", "/js/**", "/webjars/**");
     }
 
 //    @Bean

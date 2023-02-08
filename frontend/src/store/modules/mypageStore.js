@@ -4,7 +4,7 @@ import {
   getMygame,
   getRecentGame,
   getStarGame,
-} from "@/api/member";
+} from "@/api/mypage";
 
 export const mypageStore = {
   namespaced: true,
@@ -20,6 +20,9 @@ export const mypageStore = {
     getAccessToken(state) {
       return state.accessToken;
     },
+    getMyBestcut(state) {
+      return state.myBestcutList;
+    },
   },
   mutations: {
     setToken(state, value) {
@@ -29,26 +32,31 @@ export const mypageStore = {
       state.memberInfo = memberInfo;
     },
     setMyBestcutList(state, getMyBestcutList) {
-      state.getMyBestcutList = getMyBestcutList;
+      state.myBestcutList = getMyBestcutList;
     },
     setMyGameList(state, getMyGameList) {
-      state.getMyGameList = getMyGameList;
+      state.myGameList = getMyGameList;
     },
     setRecentGameList(state, getRecentGameList) {
-      state.getRecentGameList = getRecentGameList;
+      state.recentGameList = getRecentGameList;
     },
     setStarGameList(state, starredList) {
       state.starredList = starredList;
     },
   },
   actions: {
-    async getMyBestcutList({ commit }, pageCondition) {
+    async getMyBestcutList({ commit, state }, { userid, pageConditionReq }) {
+      let accessToken = state.accessToken;
+      console.log(userid, "  ", pageConditionReq);
       await getMyBestcut(
-        pageCondition,
+        userid,
+        pageConditionReq,
+        accessToken,
         ({ data }) => {
-          console.log(data, "^^");
+          console.log(data.content, "^^");
           if (data.status === 200) {
-            commit("SET_IS_LOGIN", true);
+            commit("setMyBestcutList", data);
+            return data;
             // sessionStorage.setItem("access-token", accessToken); //변수에
             // sessionStorage.setItem("refresh-token", refreshToken); //cookie에
           }
@@ -59,8 +67,10 @@ export const mypageStore = {
       );
     },
 
-    async getMyGameList({ commit, dispatch }, accessToken) {
+    async getMyGameList({ commit, state }, pageCondition) {
+      let accessToken = state.accessToken;
       await getMygame(
+        pageCondition,
         accessToken,
         ({ data }) => {
           if (data.status === 200) {
@@ -72,18 +82,19 @@ export const mypageStore = {
         },
         async (error) => {
           console.log(
-            "getMemberInfo() error code [토큰 만료되어 사용 불가능.] ::: ",
+            // "getMemberInfo() error code [토큰 만료되어 사용 불가능.] ::: ",
             error.response.status
           );
-          commit("SET_IS_VALID_TOKEN", false);
-          await dispatch("accesstokenReissue");
+          // commit("SET_IS_VALID_TOKEN", false);
+          // await dispatch("accesstokenReissue");
         }
       );
     },
     async getRecentGameList({ commit, state }, pageConditionReq) {
+      let accessToken = state.accessToken;
       await getRecentGame(
-        JSON.stringify(state.memberInfo),
         pageConditionReq,
+        accessToken,
         ({ data }) => {
           if (data.status === 200) {
             let accessToken = data.accessToken;
@@ -122,9 +133,11 @@ export const mypageStore = {
     },
   },
 
-  async getStarGameList({ commit }, id) {
+  async getStarGameList({ commit, state }, id) {
+    let accessToken = state.accessToken;
     await getStarGame(
       id,
+      accessToken,
       ({ data }) => {
         if (data.status === 200) {
           commit("SET_IS_LOGIN", false);
