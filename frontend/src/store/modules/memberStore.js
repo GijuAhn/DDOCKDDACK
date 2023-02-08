@@ -17,7 +17,6 @@ export const memberStore = {
       profile: "",
       role: "",
     },
-    accessToken: undefined,
   },
   getters: {
     getAccessToken(state) {
