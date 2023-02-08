@@ -70,7 +70,7 @@ springdoc:
 OPENVIDU_URL: http://localhost:4443/
 OPENVIDU_SECRET: MY_SECRET
 
-#LOGIN_SUCCESS_URL: http://localhost:8080/login-success?accessToken=
+LOGIN_SUCCESS_URL: http://localhost:8080/login-success?accessToken=
 
 ---
 spring:
