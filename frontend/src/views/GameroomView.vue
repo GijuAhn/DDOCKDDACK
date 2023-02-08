@@ -71,11 +71,6 @@
           <user-video
             id="main-video"
             :stream-manager="openviduInfo.publisher"
-            :timerCount="timerCount"
-            :isEnd="isEnd"
-            :isStart="isStart"
-            :round="round"
-            :room="room"
             :resultMode="resultMode"
             :who="`me`"
           />
@@ -447,8 +442,7 @@ const bestcutSaveReq = ref({
 const resultImages = ref([]);
 
 const capture = () => {
-  console.log("DD");
-  let me = document.getElementById("local-video-undefined");
+  let me = document.getElementById("myVideo2");
   html2canvas(me).then((canvas) => {
     let myImg;
     const sessionId =
@@ -465,7 +459,6 @@ const capture = () => {
     resultImages.value.push(myImg);
   });
 };
-
 import html2canvas from "html2canvas";
 </script>
 

@@ -5,6 +5,7 @@
         class="child1"
         :class="{ blinking: resultMode }"
         :stream-manager="props.streamManager"
+        :who="props.who"
       />
 
       <div v-if="false">
@@ -21,11 +22,6 @@ import { computed, defineProps } from "vue";
 
 const props = defineProps({
   streamManager: Object,
-  timerCount: Number,
-  isEnd: Boolean,
-  isStart: Boolean,
-  round: Number,
-  room: Object,
   resultMode: Boolean,
   who: String,
 });
