@@ -70,8 +70,7 @@ springdoc:
 OPENVIDU_URL: http://localhost:4443/
 OPENVIDU_SECRET: MY_SECRET
 
-gameImageUploadPath: src/main/resources/static/gameImages/
-bestcutImageUploadPath: src/main/resources/static/bestcuts/
+LOGIN_SUCCESS_URL: http://localhost:8080/login-success?accessToken=
 
 ---
 spring:
@@ -124,6 +123,8 @@ spring:
 
 OPENVIDU_URL: ${OPENVIDU_URL}
 OPENVIDU_SECRET: ${OPENVIDU_SECRET}
+
+LOGIN_SUCCESS_URL: ${LOGIN_SUCCESS_URL}
 
 server:
   port: 8080
