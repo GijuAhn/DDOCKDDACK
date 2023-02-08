@@ -9,7 +9,7 @@ import {
 export const memberStore = {
   namespaced: true,
   state: {
-    accessToken: undefined,
+    accessToken: "",
     memberInfo: {
       memberId: "",
       email: "",
@@ -67,14 +67,12 @@ export const memberStore = {
       );
     },
 
-    async getMemberInfo({ commit, dispatch, state }) {
+    async getMemberInfo({ commit, state }) {
       let accessToken = state.accessToken;
-      console.log("get member", accessToken);
       await findByAccessToken(
         accessToken,
         ({ data }) => {
-          console.log(data);
-          if (data.message === "success") {
+          if (data.email !== "") {
             // console.log("getMemberInfo data >> ", data);
             commit("setMemberInfo", data);
           } else {
@@ -86,27 +84,21 @@ export const memberStore = {
             "getMemberInfo() error code [토큰 만료되어 사용 불가능.] ::: ",
             error.response.status
           );
-          commit("SET_IS_VALID_TOKEN", false);
-          await dispatch("accesstokenReissue");
         }
       );
     },
 
     async accesstokenReissue({ commit, state }, isAuthPage) {
-      console.log("REISSUE");
       await accesstokenRegeneration(
         ({ data }) => {
-          console.log("!@#@#@#", data);
           if (data) {
             let accessToken = data;
-            console.log("재발급 완료 >> 새로운 토큰 : {}", accessToken);
             commit("setToken", accessToken);
           }
         },
         async (error) => {
           //AccessToken 갱신 실패시 refreshToken이 문제임 >> 다시 로그인해야함
-          console.log("갱신 실패");
-          if (error.reembersponse.status === 401 && isAuthPage) {
+          if (error === 401 && isAuthPage) {
             console.log("갱신 실패");
             await logout(
               state.memberInfo.id,
@@ -134,9 +126,7 @@ export const memberStore = {
       accessToken,
       ({ data }) => {
         if (data.status === 200) {
-          commit("SET_IS_LOGIN", false);
-          commit("SET_USER_INFO", null);
-          commit("SET_IS_VALID_TOKEN", false);
+          commit("setMemberInfo", null);
         } else {
           console.log("유저 정보 없음!!!!");
         }

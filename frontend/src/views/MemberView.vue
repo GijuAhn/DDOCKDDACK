@@ -22,7 +22,7 @@ const store = useStore();
 //   page: 1,
 // };
 
-store.dispatch("memberStore/getMemberInfo");
+// store.dispatch("memberStore/getMemberInfo");
 
 // const myProfile = ref();
 

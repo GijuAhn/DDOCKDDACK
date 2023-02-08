@@ -63,7 +63,7 @@ public class MemberApiController {
         @ApiResponse(responseCode = "415", description = "지원하지않는 확장자"),
         @ApiResponse(responseCode = "500", description = "서버 오류")
     })
-    @PutMapping("/{memberId}")
+    @PutMapping()
     public ResponseEntity<?> modifyMember(@PathVariable Long memberId,
         @RequestBody MemberModifyReq modifyMemberReq,
         @RequestHeader(value = "access-token", required = false) String accessToken) {
@@ -80,16 +80,16 @@ public class MemberApiController {
         @ApiResponse(responseCode = "200", description = "이력 조회 성공"),
         @ApiResponse(responseCode = "400", description = "파라미터 타입 오류"),
         @ApiResponse(responseCode = "404", description = "존재하지 않는 유저"),
-        @ApiResponse(responseCode = "500", description = "서버 오류")
+        @ApiResponse(responseCode = "5W00", description = "서버 오류")
     })
-    @GetMapping("/{memberId}")
-    public ResponseEntity<?> getMemberInfo(@PathVariable Long memberId) {
+    @GetMapping()
+    public ResponseEntity<?> getMemberInfo() {
 
         log.info("sec info {}",
             SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
         MemberAccessRes memberAccessRes = (MemberAccessRes) SecurityContextHolder.getContext()
             .getAuthentication().getPrincipal();
-        if (memberAccessRes.toString().equals("anonymousUser") || memberAccessRes.getId() != memberId) {
+        if (memberAccessRes.toString().equals("anonymousUser")) {
             throw new NotFoundException(ErrorCode.MEMBER_NOT_FOUND);
         }
 

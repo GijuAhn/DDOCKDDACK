@@ -33,7 +33,6 @@ const accessToken = computed(() => store.state.memberStore.accessToken).value;
 
 const myBestcuts = ref();
 const callApi = () => {
-  console.log("베스트 컷!");
   api
     .get(`/api/members/${memberId}/bestcuts`, {
       params: {
@@ -48,7 +47,7 @@ const callApi = () => {
       },
     })
     .then((response) => {
-      console.log("access-MyBestcut: ", response.data.content);
+      // console.log("access-bestcuts: ", response.data.content);
       myBestcuts.value = response.data.content;
     })
     .catch((error) => {

@@ -64,7 +64,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
         // add cookie to response
         response.addCookie(cookie);
-        response.sendRedirect("http://localhost:8080?accessToken="+token.getToken());
+        response.sendRedirect("http://localhost:8080/login-success?accessToken="+token.getToken());
 
     }
 }

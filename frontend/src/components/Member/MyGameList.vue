@@ -33,7 +33,6 @@ const accessToken = computed(() => store.state.memberStore.accessToken).value;
 
 const myGames = ref();
 const callApi = () => {
-  console.log("베스트 컷!");
   api
     .get(`/api/members/${memberId}/games`, {
       params: {
@@ -48,7 +47,7 @@ const callApi = () => {
       },
     })
     .then((response) => {
-      console.log("access-MyBestcut: ", response.data.content);
+      // console.log("access-games: ", response.data.content);
       myGames.value = response.data.content;
     })
     .catch((error) => {

@@ -24,6 +24,7 @@ onBeforeMount(async () => {
 
   if (accessToken) {
     store.state.memberStore.accessToken = accessToken;
+    store.dispatch("memberStore/getMemberInfo");
   }
 });
 </script>

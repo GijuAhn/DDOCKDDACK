@@ -4,29 +4,32 @@ import { computed } from "vue";
 import store from "@/store";
 import MainView from "@/views/MainView.vue";
 
-const authMember = async (to, from, next) => {
+const authMember = async (to, from, next, isLogin) => {
+  isLogin;
   let accessToken = computed(() => store.state.memberStore.accessToken).value;
-  console.log("로그인 처리 전", accessToken);
+  let memberInfo = computed(() => store.state.memberStore.memberInfo).value;
 
-  if (!accessToken) {
-    await store.dispatch("memberStore/accesstokenReissue", true);
-    // alert("로그인이 필요한 페이지입니다..");
+  if (accessToken === "") {
+    await store.dispatch("memberStore/accesstokenReissue", isLogin);
+  }
+  if (memberInfo.email === "") {
+    await store.dispatch("memberStore/getMemberInfo");
   }
   accessToken = computed(() => store.state.memberStore.accessToken).value;
-  console.log(accessToken);
   next();
 };
 
 const isLogin = async () => {
   let accessToken = computed(() => store.state.memberStore.accessToken).value;
-  console.log("로그인 처리 전", accessToken);
+  let memberInfo = computed(() => store.state.memberStore.memberInfo).value;
 
-  if (!accessToken) {
-    console.log("login!@!@");
+  if (accessToken === "") {
     await store.dispatch("memberStore/accesstokenReissue", false);
   }
+  if (memberInfo.email === "") {
+    await store.dispatch("memberStore/getMemberInfo");
+  }
   accessToken = computed(() => store.state.memberStore.accessToken).value;
-  console.log("access 재발급? ", accessToken);
 };
 
 const routes = [
@@ -120,6 +123,11 @@ const routes = [
         component: () => import("@/components/Admin/BestcutList.vue"),
       },
     ],
+  },
+  {
+    path: "/login-success",
+    name: "loginSuccess",
+    component: () => import("@/components/common/LoginSuccess.vue"),
   },
 ];
 
