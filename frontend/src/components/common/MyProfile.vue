@@ -4,7 +4,7 @@
       <div id="profileImg" style="float: left">
         <img
           :src="
-            require(`@/../../Backend/images/profile/1/${myProfile.profile}`)
+            require(`@/../../Backend/images/profile/${myProfile.id}/${myProfile.profile}`)
           "
           alt="대표사진"
           class="image"
@@ -29,9 +29,8 @@ import { computed } from "vue";
 
 const store = useStore();
 
-console.log("bestCuts !!");
-
-const myProfile = computed(() => store.state.memberStore.memberInfo);
+const myProfile = computed(() => store.state.memberStore.memberInfo).value;
+// console.log(myProfile.value);
 </script>
 
 <style scoped>

@@ -36,6 +36,7 @@ public class MemberService {
     private RestTemplate rt;
 
 
+
     @Transactional
     public Long joinMember(Member member) {
         memberRepository.save(member);
@@ -216,7 +217,7 @@ public class MemberService {
         HttpHeaders headers = new HttpHeaders();
 
         System.out.println(accessToken);
-        headers.add("authorization", "Bearer " + accessToken);
+        headers.add("Authorization", "Bearer " + accessToken);
 
         HttpEntity memberInfoRequest = new HttpEntity<>(headers);
 
