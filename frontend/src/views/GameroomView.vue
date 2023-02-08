@@ -1,5 +1,9 @@
 <template>
   <div id="session">
+    <div>
+      <result-modal v-if="resultMode" :round="round" :result="result" />
+    </div>
+
     <div id="main-container" class="container">
       <div id="session-header">
         <h3 id="session-title">
@@ -35,7 +39,7 @@
           :isStart="isStart"
           :round="round"
           :room="room"
-          :resultMode="resultMode"
+          :captureMode="captureMode"
           @stop="(timerEnabled = false), (isEnd = true)"
           @restart="(timerEnabled = true), (isEnd = false)"
         />
@@ -80,6 +84,7 @@ import { useStore } from "vuex";
 import router from "@/router/index.js";
 import process from "process";
 import SvgIcon from "@jamescoyle/vue-icon";
+import ResultModal from "@/components/Gameroom/item/ResultModal.vue";
 import {
   mdiMicrophone,
   mdiMicrophoneOff,
@@ -118,7 +123,9 @@ const round = ref(1);
 const isHost = ref(false);
 const isEnd = ref(false);
 const resultMode = ref(false);
+const captureMode = ref(false);
 const path = ref([mdiMicrophone, mdiMicrophoneOff, mdiVideo, mdiVideoOff]);
+const result = ref([]);
 
 onBeforeMount(() => {
   api
@@ -161,6 +168,17 @@ onBeforeMount(() => {
       openviduInfo.value.session.on("signal", () => {
         timerEnabled.value = true;
         isStart.value = true;
+      });
+
+      openviduInfo.value.session.on("roundResult", (signal) => {
+        resultMode.value = true;
+        result.value = JSON.parse(signal.data);
+        setTimeout(() => {
+          resultMode.value = false;
+          timerEnabled.value = true;
+          round.value++;
+          timerCount.value++;
+        }, 5000);
       });
 
       openviduInfo.value.session
@@ -321,11 +339,11 @@ watch(
       isEnd.value = true;
     }
     if (value === 0) {
-      resultMode.value = true;
+      captureMode.value = true;
       setTimeout(() => {
         round.value++;
         timerCount.value = 5;
-        resultMode.value = false;
+        captureMode.value = false;
       }, 500);
     }
   },
@@ -333,7 +351,7 @@ watch(
 );
 </script>
 
-<style>
+<style scoped>
 #session {
   background-color: black;
   color: #ffffff;

@@ -18,6 +18,7 @@ import io.openvidu.java.client.OpenViduHttpException;
 import io.openvidu.java.client.OpenViduJavaClientException;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.codec.binary.Base64;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -149,13 +150,15 @@ public class GameRoomService {
      * @param sessionId
      * @param param
      */
-//    @Async
+    @Async
     public void scoringImage(String pinNumber, String sessionId, Map<String, String> param) throws Exception {
 //        long start = System.currentTimeMillis();
         Optional.ofNullable(gameRoomRepository.findById(pinNumber).orElseThrow(() ->
                 new NotFoundException(ErrorCode.GAME_ROOM_NOT_FOUND)));
         byte[] byteGameImage = awsS3Service.getObject(param.get("gameImage"));
         byte[] byteImage = Base64.decodeBase64(param.get("memberGameImage"));
+
+        System.out.println();
 
         int score = EnsembleModel.CalculateSimilarity(byteGameImage, byteImage);
 

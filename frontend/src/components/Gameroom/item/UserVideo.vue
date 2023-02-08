@@ -3,7 +3,7 @@
     <div v-if="props.streamManager">
       <ov-video
         class="child1"
-        :class="{ blinking: resultMode }"
+        :class="{ blinking: captureMode }"
         :stream-manager="props.streamManager"
       />
       <div>
@@ -64,7 +64,7 @@ const props = defineProps({
   isStart: Boolean,
   round: Number,
   room: Object,
-  resultMode: Boolean,
+  captureMode: Boolean,
 });
 const emit = defineEmits(["stop"]);
 const resultImages = ref([]);
@@ -78,7 +78,6 @@ const inputs = ref([]);
 const isChecked = ref([]);
 const isShow = ref(false);
 const roundResult = ref([]);
-const isRoundEnd = ref(false);
 const clientData = computed(() => {
   const { clientData } = getConnectionData();
   return clientData;
@@ -99,37 +98,29 @@ watch(
   { immediate: true }
 );
 
-const capture = (index) => {
+const capture = async (index) => {
   let me = document.getElementById("local-video-undefined");
-  html2canvas(me).then((canvas) => {
-    let myImg;
-    const sessionId = props.streamManager.session.connection.connectionId;
-    const pinNumber = props.streamManager.session.sessionId;
-    myImg = canvas.toDataURL("image/jpeg");
-    let byteString = myImg.replace("data:image/jpeg;base64,", "");
+  html2canvas(me)
+    .then((canvas) => {
+      let myImg;
+      const sessionId = props.streamManager.session.connection.connectionId;
+      const pinNumber = props.streamManager.session.sessionId;
+      myImg = canvas.toDataURL("image/jpeg");
+      setTimeout(() => {
+        let byteString = myImg.replace("data:image/jpeg;base64,", "");
+        console.log(myImg);
 
-    let param = {
-      gameImage: props.room.gameImages[index].gameImage,
-      memberGameImage: byteString,
-    };
-    api
-      .post(`/api/game-rooms/${pinNumber}/${sessionId}/images`, param)
-      .then(() => {
-        setTimeout(() => {
-          api
-            .get(`/api/game-rooms/${pinNumber}/result/${props.round - 2}`)
-            .then((res) => {
-              roundResult.value = res.data;
-              isRoundEnd.value = true;
-            });
-        }, 5000);
-        setTimeout(() => {
-          isRoundEnd.value = false;
-          emit("restart");
-        }, 7000);
-      });
-    resultImages.value.push(myImg);
-  });
+        let param = {
+          gameImage: props.room.gameImages[index].gameImage,
+          memberGameImage: byteString,
+        };
+        api.post(`/api/game-rooms/${pinNumber}/${sessionId}/images`, param);
+        resultImages.value.push(myImg);
+      }, 500);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 };
 
 const getConnectionData = () => {

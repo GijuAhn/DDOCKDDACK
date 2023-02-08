@@ -23,11 +23,14 @@ public class   GameRoom {
 
     private boolean isStarted;
 
+    private int scoreCount = 0;
+    private int round = 0;
+
     private Map<String, GameMember> members = new ConcurrentHashMap<>();
 
     @Builder
     public GameRoom(String pinNumber, Long gameId, String gameTitle, String gameDescription,
-                    List<GameImage> gameImages) {
+            List<GameImage> gameImages) {
         this.pinNumber = pinNumber;
         this.gameId = gameId;
         this.gameTitle = gameTitle;
@@ -38,4 +41,9 @@ public class   GameRoom {
     public void start() {
         this.isStarted = true;
     }
+
+    public void increaseScoreCnt(){
+        this.scoreCount++;
+    }
+    public void resetScoreCnt(){this.scoreCount = 0;}
 }
