@@ -5,23 +5,20 @@
       <colgroup span="6" class="columns"></colgroup>
       <thead>
         <tr>
-          <th></th>
-          <th>게임 ID</th>
+          <th>베스트 컷 ID</th>
           <th>신고 사유</th>
           <th>신고한 유저</th>
           <th>신고당한 유저</th>
-          <th></th>
+          <th>상세 보기</th>
+          <th>처리</th>
         </tr>
       </thead>
       <tfoot>
-        <tr>
-          <td><input type="checkbox" /></td>
-          <td>게임 ID</td>
-          <td>신고 사유</td>
-          <td>신고한 유저</td>
-          <td>신고당한 유저</td>
-          <td><button>처리</button></td>
-        </tr>
+        <reported-best-cut
+          v-for="reportedBestCut in reportedBestCuts"
+          :key="reportedBestCut"
+          :reportedGame="reportedBestCut"
+        ></reported-best-cut>
       </tfoot>
     </table>
   </div>
@@ -29,8 +26,35 @@
 
 <script setup>
 import { useStore } from "vuex";
+import { ref, computed } from "vue";
+import { apiInstance } from "@/api/index";
+import reportedBestCut from "@/components/Admin/item/reportedBestCut.vue";
 
+const api = apiInstance();
 const store = useStore();
+const admin_api_url = `/api/admin`;
+const accessToken = computed(() => store.state.memberStore.accessToken);
+
+let reportedBestCuts = ref();
+
+const callApi = () => {
+  api
+    .get(admin_api_url + `/reported/bestcuts`, {
+      headers: { "access-token": accessToken.value },
+      params: {},
+    })
+    .then((response) => {
+      console.log(response);
+      reportedBestCuts.value = response.data;
+      console.log(reportedBestCuts);
+    })
+    .catch((error) => {
+      error;
+      console.log(error);
+    });
+};
+
+callApi();
 
 store.dispatch("commonStore/setAdminTabAsync", 1);
 </script>
@@ -55,7 +79,7 @@ tfoot {
 }
 
 th {
-  width: 10vw;
+  width: 11vw;
   height: 10vh;
 }
 
@@ -67,11 +91,5 @@ td,
 tr,
 th {
   border-bottom: 1px solid #737373;
-}
-
-input {
-  margin-top: 3px;
-  width: 25px;
-  height: 25px;
 }
 </style>

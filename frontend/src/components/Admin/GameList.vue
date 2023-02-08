@@ -5,23 +5,20 @@
       <colgroup span="6" class="columns"></colgroup>
       <thead>
         <tr>
-          <th></th>
           <th>게임 ID</th>
           <th>신고 사유</th>
           <th>신고한 유저</th>
           <th>신고당한 유저</th>
-          <th></th>
+          <th>상세 보기</th>
+          <th>처리</th>
         </tr>
       </thead>
       <tfoot>
-        <tr>
-          <td><input type="checkbox" /></td>
-          <td>게임 ID</td>
-          <td>신고 사유</td>
-          <td>신고한 유저</td>
-          <td>신고당한 유저</td>
-          <td><button>처리</button></td>
-        </tr>
+        <reported-game
+          v-for="reportedGame in reportedGames"
+          :key="reportedGame"
+          :reportedGame="reportedGame"
+        ></reported-game>
       </tfoot>
     </table>
   </div>
@@ -31,13 +28,14 @@
 import { useStore } from "vuex";
 import { ref, computed } from "vue";
 import { apiInstance } from "@/api/index";
+import reportedGame from "@/components/Admin/item/reportedGame.vue";
 
 const api = apiInstance();
 const store = useStore();
 const admin_api_url = `/api/admin`;
 const accessToken = computed(() => store.state.memberStore.accessToken);
 
-let bestcuts = ref();
+let reportedGames = ref();
 
 const callApi = () => {
   api
@@ -46,7 +44,9 @@ const callApi = () => {
       params: {},
     })
     .then((response) => {
-      bestcuts.value = response.data.content;
+      console.log(response);
+      reportedGames.value = response.data;
+      console.log(reportedGames);
     })
     .catch((error) => {
       console.log(error);
@@ -78,7 +78,7 @@ tfoot {
 }
 
 th {
-  width: 10vw;
+  width: 11vw;
   height: 10vh;
 }
 
@@ -90,11 +90,5 @@ td,
 tr,
 th {
   border-bottom: 1px solid #737373;
-}
-
-input {
-  margin-top: 3px;
-  width: 25px;
-  height: 25px;
 }
 </style>
