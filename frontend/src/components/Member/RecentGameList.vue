@@ -12,6 +12,7 @@
 </template>
 
 <script setup>
+import { apiInstance } from "@/api/index";
 import { useStore } from "vuex";
 import { ref, computed } from "vue";
 
@@ -20,13 +21,43 @@ const store = useStore();
 let pageConditionReq = ref({
   order: "RECENT",
   period: "ALL",
-  search: "GAME",
+  search: "MEMBER",
   keyword: "",
   page: 1,
 });
 
-store.dispatch("mypageStore/getRecentGameList", pageConditionReq);
-const recentGames = computed(() => store.state.mypageStore.recentGameList);
+const api = apiInstance();
+const memberId = computed(() => store.state.memberStore.memberInfo.id).value;
+const accessToken = computed(() => store.state.memberStore.accessToken).value;
+
+const myGames = ref();
+const callApi = () => {
+  api
+    .get(`/api/members/${memberId}/records`, {
+      params: {
+        order: pageConditionReq.value.order,
+        period: pageConditionReq.value.period,
+        search: pageConditionReq.value.search,
+        keyword: pageConditionReq.value.keyword,
+        page: pageConditionReq.value.page,
+      },
+      headers: {
+        "access-token": accessToken, // 변수로 가지고있는 AccessToken
+      },
+    })
+    .then((response) => {
+      // console.log("access-games: ", response.data.content);
+      myGames.value = response.data.content;
+    })
+    .catch((error) => {
+      console.log(error);
+      // if (error.response.status == 401) {
+      //   getAccessTokenByRefreshToken(); // refresh 토큰으로 다시
+      // }
+    });
+};
+
+callApi();
 
 store.dispatch("commonStore/setMemberTabAsync", 0);
 </script>

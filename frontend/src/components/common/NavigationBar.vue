@@ -10,13 +10,13 @@
     </span>
     <span class="right">
       <span
-        id="btn_login"
+        class="btn_log"
         v-if="!accessToken"
         @click="setCurrentModalAsync(`login`)"
         >로그인</span
       >
       <router-link v-if="accessToken" to="/member">마이 페이지</router-link>
-      <span id="btn_logout" v-if="accessToken" @click="logout">로그아웃</span>
+      <span class="btn_log" v-if="accessToken" @click="logout">로그아웃</span>
       <router-link to="/admin">관리자 페이지</router-link>
     </span>
   </div>
@@ -74,12 +74,14 @@ const logout = () => {
 .variant3 {
   background-color: #77a4cc;
 }
-.default a {
+.default a,
+.default .btn_log {
   color: black;
 }
 .variant1 a,
-.variant2 a,
-.variant3 a {
+.variant1 .btn_log .variant2 a,
+.variant1 .btn_log .variant3 a,
+.variant1 .btn_log {
   color: white;
 }
 a {
@@ -119,10 +121,7 @@ a {
   float: right;
 }
 
-#btn_login:hover {
-  cursor: pointer;
-}
-#btn_logout:hover {
+.btn_log:hover {
   cursor: pointer;
 }
 </style>
