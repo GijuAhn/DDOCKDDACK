@@ -65,7 +65,7 @@ public class FeatureDetectorDescriptor {
 
         // Calculate similarity featureScore as the ratio of good matches to total matches
         double featureScore = (double) goodMatches.size() / (double) keypoints1.rows();
-        System.out.println("@KAZE = " + featureScore);
+//        System.out.println("@KAZE = " + featureScore);
         return featureScore;
     }
 }

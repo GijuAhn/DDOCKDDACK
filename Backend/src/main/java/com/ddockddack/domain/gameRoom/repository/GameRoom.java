@@ -27,7 +27,7 @@ public class   GameRoom {
 
     @Builder
     public GameRoom(String pinNumber, Long gameId, String gameTitle, String gameDescription,
-        List<GameImage> gameImages) {
+                    List<GameImage> gameImages) {
         this.pinNumber = pinNumber;
         this.gameId = gameId;
         this.gameTitle = gameTitle;
