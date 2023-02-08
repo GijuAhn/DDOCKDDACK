@@ -84,8 +84,6 @@ public class MemberApiController {
     })
     @GetMapping()
     public ResponseEntity<?> getMemberInfo() {
-    @GetMapping()
-    public ResponseEntity<?> getMemberInfo() {
 
         log.info("sec info {}",
             SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
