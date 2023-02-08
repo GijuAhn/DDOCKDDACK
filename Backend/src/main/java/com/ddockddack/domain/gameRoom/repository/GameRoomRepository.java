@@ -34,7 +34,6 @@ public class GameRoomRepository {
     private Map<String, GameRoom> gameRooms = new ConcurrentHashMap<>();
     private OpenVidu openvidu;
 
-
     @PostConstruct
     public void init() {
         this.openvidu = new OpenVidu(OPENVIDU_URL, OPENVIDU_SECRET);
@@ -125,7 +124,6 @@ public class GameRoomRepository {
         gameMember.getImages().add(byteImage);
         gameMember.setRoundScore(score);
         gameMember.setTotalScore(gameMember.getTotalScore()+score);
-        System.out.println(gameMember.getImages());
 
     }
 

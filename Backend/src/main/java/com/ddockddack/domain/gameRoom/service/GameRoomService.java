@@ -151,16 +151,16 @@ public class GameRoomService {
      */
 //    @Async
     public void scoringImage(String pinNumber, String sessionId, Map<String, String> param) throws Exception {
-        long start = System.currentTimeMillis();
+//        long start = System.currentTimeMillis();
         Optional.ofNullable(gameRoomRepository.findById(pinNumber).orElseThrow(() ->
                 new NotFoundException(ErrorCode.GAME_ROOM_NOT_FOUND)));
         byte[] byteGameImage = awsS3Service.getObject(param.get("gameImage"));
         byte[] byteImage = Base64.decodeBase64(param.get("memberGameImage"));
 
         int score = EnsembleModel.CalculateSimilarity(byteGameImage, byteImage);
-        System.out.println("점수 : " + score);
-        long end = System.currentTimeMillis();
-        System.out.println("걸린 시간 : " + (end - start) / 1000.0);
+
+//        long end = System.currentTimeMillis();
+
         gameRoomRepository.saveScore(pinNumber, sessionId, byteImage, score);
     }
 
@@ -173,12 +173,6 @@ public class GameRoomService {
         for (int i = 0; i < 3; i++) {
             if (pq.isEmpty()) break;
             result.add(GameMemberRes.from(pq.poll(), round));
-        }
-        for (GameMemberRes gm : result) {
-            System.out.println("======================");
-            System.out.println(gm.getSocketId());
-            System.out.println(gm.getRoundScore());
-            System.out.println("======================");
         }
         return result;
     }
