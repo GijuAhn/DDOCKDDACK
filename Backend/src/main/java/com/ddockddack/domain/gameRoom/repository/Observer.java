@@ -4,6 +4,8 @@ import java.util.Observable;
 
 public interface Observer {
 
-    public void update(Observable o, Integer score);
+    public void update();
+
+//    public void update(Observable o, Integer score);
 
 }
