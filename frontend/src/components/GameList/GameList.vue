@@ -60,8 +60,9 @@
       </div>
       <div>
         <input
+          @keyup.enter="callApi"
           type="text"
-          v-model="pageConditionReq.keyword"
+          v-model.trim="pageConditionReq.keyword"
           placeholder="검색어를 입력해주세요"
         />
         <button id="btn-s" @click="callApi">검색</button>
