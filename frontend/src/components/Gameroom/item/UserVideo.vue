@@ -6,14 +6,19 @@
         :class="{ blinking: resultMode }"
         :stream-manager="props.streamManager"
       />
-
       <div>
         <p>{{ clientData }}</p>
       </div>
     </div>
+    <div v-if="isRoundEnd">
+      <div v-for="(image, index) in roundResult" :key="index">
+        <img :src="`data:image/jpg;base64, ${image.image}`" />
+        <img :src="image" id="bestcutImg" /> <br />
+      </div>
+    </div>
     <br />
     <br />
-    <div v-if="props.isEnd">
+    <div v-if="props.isEnd && props.round === 6">
       <button @click="getMyImages">결과보기</button>
     </div>
 
@@ -48,9 +53,8 @@
 import OvVideo from "./OvVideo";
 import html2canvas from "html2canvas";
 import { apiInstance } from "@/api/index";
-import { computed, defineProps, watch, ref, onMounted } from "vue";
+import { computed, defineProps, watch, ref, onMounted, defineEmits } from "vue";
 import process from "process";
-
 const IMAGE_PATH = process.env.VUE_APP_IMAGE_PATH;
 const api = apiInstance();
 const props = defineProps({
@@ -62,7 +66,7 @@ const props = defineProps({
   room: Object,
   resultMode: Boolean,
 });
-
+const emit = defineEmits(["stop"]);
 const resultImages = ref([]);
 const bestcutSaveReq = ref({
   pinNumber: undefined,
@@ -72,9 +76,9 @@ const bestcutSaveReq = ref({
 });
 const inputs = ref([]);
 const isChecked = ref([]);
-const rankingImage = ref([]);
 const isShow = ref(false);
-
+const roundResult = ref([]);
+const isRoundEnd = ref(false);
 const clientData = computed(() => {
   const { clientData } = getConnectionData();
   return clientData;
@@ -86,15 +90,16 @@ onMounted(() => {
 
 watch(
   () => props.timerCount,
-  (value) => {
-    if (value === 0) {
-      capture();
+  () => {
+    if (props.timerCount === 0) {
+      emit("stop");
+      capture(props.round - 1);
     }
   },
   { immediate: true }
 );
 
-const capture = () => {
+const capture = (index) => {
   let me = document.getElementById("local-video-undefined");
   html2canvas(me).then((canvas) => {
     let myImg;
@@ -104,10 +109,25 @@ const capture = () => {
     let byteString = myImg.replace("data:image/jpeg;base64,", "");
 
     let param = {
+      gameImage: props.room.gameImages[index].gameImage,
       memberGameImage: byteString,
     };
-    api.post(`/api/game-rooms/${pinNumber}/${sessionId}/images`, param);
-
+    api
+      .post(`/api/game-rooms/${pinNumber}/${sessionId}/images`, param)
+      .then(() => {
+        setTimeout(() => {
+          api
+            .get(`/api/game-rooms/${pinNumber}/result/${props.round - 2}`)
+            .then((res) => {
+              roundResult.value = res.data;
+              isRoundEnd.value = true;
+            });
+        }, 5000);
+        setTimeout(() => {
+          isRoundEnd.value = false;
+          emit("restart");
+        }, 7000);
+      });
     resultImages.value.push(myImg);
   });
 };
@@ -139,7 +159,6 @@ const init = () => {
     false,
     false,
   ];
-  rankingImage.value = [];
 };
 
 const getMyImages = () => {
