@@ -81,12 +81,7 @@ export const mypageStore = {
           }
         },
         async (error) => {
-          console.log(
-            // "getMemberInfo() error code [토큰 만료되어 사용 불가능.] ::: ",
-            error.response.status
-          );
-          // commit("SET_IS_VALID_TOKEN", false);
-          // await dispatch("accesstokenReissue");
+          console.log(error.response.status);
         }
       );
     },

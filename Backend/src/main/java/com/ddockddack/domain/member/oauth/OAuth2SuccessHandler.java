@@ -58,7 +58,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
         Cookie cookie = new Cookie("refresh-token", token.getRefreshToken());
         // expires in 7 days
-        cookie.setMaxAge(-1);
+        cookie.setMaxAge(60 * 60 * 24* 7);
 
         // optional properties
         cookie.setSecure(true);
@@ -68,8 +68,6 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         // add cookie to response
         response.addCookie(cookie);
 
-
         response.sendRedirect(loginSuccessUrl+token.getToken());
-
     }
 }
