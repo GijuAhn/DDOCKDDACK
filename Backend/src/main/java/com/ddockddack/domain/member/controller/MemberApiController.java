@@ -31,26 +31,27 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
+@RestController
 @Slf4j
 @RequiredArgsConstructor
 @Tag(name = "member", description = "member API 입니다.")
 @RequestMapping("/api/members")
 public class MemberApiController {
 
-    private MemberService memberService;
-    private BestcutService bestcutService;
-    private GameService gameService;
-
-    @Autowired
-    public MemberApiController(MemberService memberService, BestcutService bestcutService,
-        GameService gameService) {
-        this.memberService = memberService;
-        this.bestcutService = bestcutService;
-        this.gameService = gameService;
-    }
+    private final MemberService memberService;
+    private final BestcutService bestcutService;
+    private final GameService gameService;
 
     @Operation(summary = "회원 정보 수정", description = "회원 정보 수정 메소드입니다.")
     @ApiResponses(value = {
@@ -62,7 +63,7 @@ public class MemberApiController {
         @ApiResponse(responseCode = "415", description = "지원하지않는 확장자"),
         @ApiResponse(responseCode = "500", description = "서버 오류")
     })
-    @PutMapping("/{memberId}")
+    @PutMapping()
     public ResponseEntity<?> modifyMember(@PathVariable Long memberId,
         @RequestBody MemberModifyReq modifyMemberReq,
         @RequestHeader(value = "access-token", required = false) String accessToken) {
@@ -79,20 +80,22 @@ public class MemberApiController {
         @ApiResponse(responseCode = "200", description = "이력 조회 성공"),
         @ApiResponse(responseCode = "400", description = "파라미터 타입 오류"),
         @ApiResponse(responseCode = "404", description = "존재하지 않는 유저"),
-        @ApiResponse(responseCode = "500", description = "서버 오류")
+        @ApiResponse(responseCode = "5W00", description = "서버 오류")
     })
-    @GetMapping("/{memberId}")
-    public ResponseEntity<?> getMemberInfo(@PathVariable Long memberId) {
+    @GetMapping()
+    public ResponseEntity<?> getMemberInfo() {
+    @GetMapping()
+    public ResponseEntity<?> getMemberInfo() {
 
-//        log.info("sec info {}",
-//            SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
-//        MemberAccessRes memberAccessRes = (MemberAccessRes) SecurityContextHolder.getContext()
-//            .getAuthentication().getPrincipal();
-//        if (memberAccessRes.toString().equals("anonymousUser") || memberAccessRes.getId() != memberId) {
-//            throw new NotFoundException(ErrorCode.MEMBER_NOT_FOUND);
-//        }
+        log.info("sec info {}",
+            SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
+        MemberAccessRes memberAccessRes = (MemberAccessRes) SecurityContextHolder.getContext()
+            .getAuthentication().getPrincipal();
+        if (memberAccessRes.toString().equals("anonymousUser")) {
+            throw new NotFoundException(ErrorCode.MEMBER_NOT_FOUND);
+        }
 
-        Optional<Member> member = memberService.getMemberById(memberId);
+        Optional<Member> member = memberService.getMemberById(memberAccessRes.getId());
         log.info("member {}", member.get());
         if (member.isEmpty()) {
             throw new NotFoundException(ErrorCode.MEMBER_NOT_FOUND);
@@ -108,7 +111,7 @@ public class MemberApiController {
         @ApiResponse(responseCode = "404", description = "존재하지 않는 유저"),
         @ApiResponse(responseCode = "500", description = "서버 오류")
     })
-    @DeleteMapping("/{memberId}")
+    @DeleteMapping()
     public ResponseEntity<?> deleteMember(@PathVariable Long memberId) {
         try {
             memberService.deleteMemberById(memberId); //탈퇴로직에 access, refresh Token 정지시키는 로직 추가해야함

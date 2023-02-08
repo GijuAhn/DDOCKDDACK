@@ -53,9 +53,9 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         Token token = tokenService.generateToken(member.getId(), "USER");
         log.info("JwT : {}", token);
 
-        Cookie cookie = new Cookie("refreshToken", token.getRefreshToken());
+        Cookie cookie = new Cookie("refresh-token", token.getRefreshToken());
         // expires in 7 days
-        cookie.setMaxAge(7 * 24 * 60 * 60);
+        cookie.setMaxAge(-1);
 
         // optional properties
         cookie.setSecure(true);
@@ -64,25 +64,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
         // add cookie to response
         response.addCookie(cookie);
+        response.sendRedirect("http://localhost:8080/login-success?accessToken="+token.getToken());
 
-        writeTokenResponse(response, token, member.getId());
-    }
-
-    private void writeTokenResponse(HttpServletResponse response, Token token, Long id)
-        throws IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        response.setHeader("accessToken", token.getToken());
-
-        Member member = memberRepository.findById(id).get();
-        MemberInfoRes memberInfoRes = new MemberInfoRes(member.getId(), member.getEmail(),
-            member.getNickname(), member.getProfile(), member.getRole());
-
-        log.info(" {} ", memberInfoRes);
-
-        String json = new ObjectMapper().writeValueAsString(memberInfoRes);
-
-        response.setStatus(HttpStatus.OK.value());
-        response.getWriter().write(json);
-        response.flushBuffer();
     }
 }

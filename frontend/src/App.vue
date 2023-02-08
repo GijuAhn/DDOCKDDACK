@@ -1,10 +1,32 @@
 <template>
   <navigation-bar />
   <router-view />
+  <modal-frame v-if="currentModal.length !== 0" />
 </template>
 
 <script setup>
 import NavigationBar from "@/components/common/NavigationBar";
+import ModalFrame from "@/components/common/ModalFrame";
+import { computed, onBeforeMount } from "vue";
+import { useStore } from "vuex";
+import { useRoute } from "vue-router";
+import router from "./router";
+
+const route = useRoute();
+const store = useStore();
+
+const currentModal = computed(() => store.state.commonStore.currentModal);
+
+onBeforeMount(async () => {
+  await router.isReady();
+
+  const accessToken = route.query.accessToken;
+
+  if (accessToken) {
+    store.state.memberStore.accessToken = accessToken;
+    store.dispatch("memberStore/getMemberInfo");
+  }
+});
 </script>
 
 <style>
