@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -26,6 +27,8 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
     private final TokenService tokenService;
     private final MemberRepository memberRepository;
+    @Value("${LOGIN_SUCCESS_URL}")
+    private String loginSuccessUrl;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -64,7 +67,9 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
         // add cookie to response
         response.addCookie(cookie);
-        response.sendRedirect("http://localhost:8080/login-success?accessToken="+token.getToken());
+
+
+        response.sendRedirect(loginSuccessUrl+token.getToken());
 
     }
 }
