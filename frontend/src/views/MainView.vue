@@ -4,8 +4,9 @@
       <div class="logo"><span>똑딱</span></div>
       <div class="form">
         <input
+          @keyup.enter="join(pinNumber)"
           type="text"
-          v-model="pinNumber"
+          v-model.trim="pinNumber"
           class="input"
           placeholder="게임 PIN"
           maxlength="6"
