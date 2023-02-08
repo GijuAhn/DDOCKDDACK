@@ -16,22 +16,25 @@
 
     <div id="main-container">
       <div id="left-section">
-        <div id="game-image">
-          <span v-if="isStart && !isEnd">
-            <img
-              :src="`${IMAGE_PATH}/${room.gameImages[round - 1].gameImage}`"
-            />
-          </span>
-          <span v-else>대기중 </span>
-          <div v-if="true">
-            <span v-show="!isEnd">/ 게임 라운드 : {{ round }}</span>
-            <span v-show="!isEnd">
-              남은 시간 : {{ timerCount }}
-              <button v-if="isHost" v-show="!isStart" @click="play">
-                play
-              </button>
-            </span>
+        <div id="gameInfoSection">
+          <div v-if="isStart && !isEnd">
+            <div id="gameImageSection">
+              <img
+                :src="`${IMAGE_PATH}/${room.gameImages[round - 1].gameImage}`"
+              />
+            </div>
+            <div id="gameCurrentSection">
+              <span v-show="!isEnd"> 게임 라운드 : {{ round }}</span>
+              <span v-show="!isEnd"> 남은 시간 : {{ timerCount }} </span>
+            </div>
           </div>
+
+          <div v-if="!isStart">
+            <button v-if="isHost" v-show="!isStart" @click="play">play</button>
+            대기중
+          </div>
+
+          <div v-if="isEnd">테스트</div>
         </div>
 
         <div id="my-video">
@@ -121,7 +124,7 @@ const room = ref({
   gameDescription: undefined,
   gameImages: undefined,
 });
-const timerCount = ref(5);
+const timerCount = ref(2);
 const timerEnabled = ref(false);
 const isStart = ref(false);
 const round = ref(1);
@@ -231,7 +234,7 @@ onBeforeMount(() => {
 });
 
 onMounted(() => {
-  timerCount.value = 5;
+  timerCount.value = 2;
   timerEnabled.value = false;
   isStart.value = false;
   round.value = 1;
@@ -350,7 +353,7 @@ watch(
       resultMode.value = true;
       setTimeout(() => {
         round.value++;
-        timerCount.value = 5;
+        timerCount.value = 2;
         resultMode.value = false;
       }, 500);
     }
@@ -380,10 +383,28 @@ watch(
 #left-section {
   width: 50%;
 }
-#game-image {
+#gameInfoSection {
   background-color: rgb(104, 104, 0);
   height: 50%;
   flex-direction: column;
+  position: relative;
+}
+#gameImageSection {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+#gameImageSection img {
+  height: 100%;
+  width: 100%;
+  object-fit: contain;
+}
+#gameCurrentSection {
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 #my-video {
   background-color: rgb(104, 0, 87);
@@ -409,6 +430,7 @@ watch(
 #button-container {
   height: 70px;
   background-color: rgb(150, 216, 255);
+  text-align: center;
 }
 
 .btn-video-control {
