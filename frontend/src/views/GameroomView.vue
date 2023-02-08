@@ -5,7 +5,7 @@
         <h3 id="session-title">
           핀번호 : {{ room.pinNumber }} 인원 :
           {{ openviduInfo.subscribers.length + 1 }}
-          <span v-show="!isEnd">/ 게임 라운드 : {{ round }}</span>
+          <span v-show="isStart">/ 게임 라운드 : {{ round }}</span>
           <button @click="linkShare">
             <img
               src="https://developers.kakao.com/assets/img/about/logos/kakaotalksharing/kakaotalk_sharing_btn_medium.png"
@@ -20,7 +20,10 @@
       </div>
       <div id="game-image">
         <span v-if="isStart && !isEnd">
-          <img :src="`${IMAGE_PATH}/${room.gameImages[round - 1].gameImage}`" />
+          <img
+            class="game-image"
+            :src="`${IMAGE_PATH}/${room.gameImages[round - 1].gameImage}`"
+          />
         </span>
       </div>
       <div>
@@ -33,6 +36,8 @@
           :round="round"
           :room="room"
           :resultMode="resultMode"
+          @stop="(timerEnabled = false), (isEnd = true)"
+          @restart="(timerEnabled = true), (isEnd = false)"
         />
       </div>
       <div id="video-container">
@@ -270,20 +275,12 @@ const play = () => {
 };
 
 const linkShare = async () => {
-  const file = await convertURLtoFile(
-    `/static/images/${room.value.gameId}/${room.value.gameImages[0].gameImage}`
-  );
-  const files = [file];
-
-  let response = await window.Kakao.Share.uploadImage({
-    file: files,
-  });
   window.Kakao.Link.sendDefault({
     objectType: "feed",
     content: {
       title: `${room.value.gameTitle}`,
       description: `${room.value.gameDescription}`,
-      imageUrl: response.infos.original.url,
+      imageUrl: `${IMAGE_PATH}/${room.value.gameImages[0].gameImage}`,
       link: {
         mobileWebUrl: `http://localhost:8080/gameroom/${room.value.pinNumber}`,
         webUrl: `http://localhost:8080/gameroom/${room.value.pinNumber}`,
@@ -301,20 +298,12 @@ const linkShare = async () => {
   });
 };
 
-const convertURLtoFile = async (url) => {
-  const response = await fetch(url, {
-    mode: "no-cors",
-  });
-  const data = await response.blob();
-  const fileName = room.value.gameImages[0].gameImage;
-  const metadata = { type: "image/jpeg" };
-  return new File([data], fileName, metadata);
-};
-
 watch(
   timerEnabled,
   () => {
-    timerCount.value--;
+    if (timerCount.value > 1) {
+      timerCount.value--;
+    }
   },
   { immediate: true }
 );
@@ -403,5 +392,8 @@ watch(
 .btn-close:focus {
   transform: rotateZ(90deg);
   background: #ff0000;
+}
+.game-image {
+  transform: scaleX(-1);
 }
 </style>
