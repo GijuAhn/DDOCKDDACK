@@ -35,6 +35,7 @@ const callApi = () => {
   api
     .get(`/api/members/${memberId}/records`, {
       params: {
+        //있어도 되고 없어도 됨.
         order: pageConditionReq.value.order,
         period: pageConditionReq.value.period,
         search: pageConditionReq.value.search,
@@ -46,13 +47,13 @@ const callApi = () => {
       },
     })
     .then((response) => {
-      // console.log("access-games: ", response.data.content);
+      console.log("access-games: ", response.data.content);
       myGames.value = response.data.content;
     })
     .catch((error) => {
       console.log(error);
       // if (error.response.status == 401) {
-      //   getAccessTokenByRefreshToken(); // refresh 토큰으로 다시
+      //   getAccessTokenByRefreshToken(); // refresh 토큰으로 다시 accessToken불러오기. 성공하면 -> watch로 accessToken 변경감지해서 다시 실행???
       // }
     });
 };
