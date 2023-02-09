@@ -40,7 +40,6 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -92,8 +91,8 @@ public class GameService {
     public Long saveGame(Long memberId, GameSaveReq gameSaveReq) {
 
         // memberId로 member 조회. 조회 결과가 null 이면 NotFoundException 발생.
-        Member getMember = Optional.ofNullable(memberRepository.findById(memberId).orElseThrow(() ->
-                new NotFoundException(ErrorCode.MEMBER_NOT_FOUND))).get();
+        Member getMember = memberRepository.findById(memberId).orElseThrow(() ->
+                new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
 
         // 게임 생성
         Game game = Game
@@ -228,8 +227,8 @@ public class GameService {
         // 검증
         checkMemberAndGameValidation(memberId, gameId);
 
-        StarredGame getStarredGame = Optional.ofNullable(starredGameRepository.findByMemberIdAndGameId(memberId, gameId).orElseThrow(() ->
-                new NotFoundException(ErrorCode.STARREDGAME_NOT_FOUND))).get();
+        StarredGame getStarredGame = starredGameRepository.findByMemberIdAndGameId(memberId, gameId).orElseThrow(() ->
+                new NotFoundException(ErrorCode.STARREDGAME_NOT_FOUND));
 
         starredGameRepository.delete(getStarredGame);
     }
@@ -312,12 +311,12 @@ public class GameService {
     private void checkAccessValidation(Long memberId, Long gameId) {
 
         // 존재하는 유저인지 검증
-        Member getMember = Optional.ofNullable(memberRepository.findById(memberId).orElseThrow(() ->
-                new NotFoundException(ErrorCode.MEMBER_NOT_FOUND))).get();
+        Member getMember = memberRepository.findById(memberId).orElseThrow(() ->
+                new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
 
         // 존재하는 게임 인지 검증
-        Game getGame = Optional.ofNullable(gameRepository.findById(gameId).orElseThrow(() ->
-                new NotFoundException(ErrorCode.GAME_NOT_FOUND))).get();
+        Game getGame = gameRepository.findById(gameId).orElseThrow(() ->
+                new NotFoundException(ErrorCode.GAME_NOT_FOUND));
 
         // 관리자면 바로 리턴
         if (getMember.getRole().equals(Role.ADMIN)) {

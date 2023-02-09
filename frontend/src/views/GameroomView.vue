@@ -17,13 +17,11 @@
             />
           </button>
         </h3>
-        <h3 v-show="!isEnd">
-          남은 시간 : {{ timerCount }}
-          <button v-if="isHost" v-show="!isStart" @click="play">play</button>
-        </h3>
+        <h3 v-show="timerEnabled">남은 시간 : {{ timerCount }}</h3>
+        <button v-if="isHost" v-show="!isStart" @click="play">play</button>
       </div>
       <div id="game-image">
-        <span v-if="isStart && !isEnd">
+        <span v-if="isStart && timerEnabled">
           <img
             class="game-image"
             :src="`${IMAGE_PATH}/${room.gameImages[round - 1].gameImage}`"
@@ -165,7 +163,7 @@ onBeforeMount(() => {
         console.warn(exception);
       });
 
-      openviduInfo.value.session.on("signal", () => {
+      openviduInfo.value.session.on("signal:start", () => {
         timerEnabled.value = true;
         isStart.value = true;
       });
@@ -176,8 +174,8 @@ onBeforeMount(() => {
         setTimeout(() => {
           resultMode.value = false;
           timerEnabled.value = true;
-          round.value++;
-          timerCount.value++;
+          // round.value++;
+          // timerCount.value++;
         }, 5000);
       });
 
@@ -284,6 +282,7 @@ const play = () => {
       setTimeout(() => {
         openviduInfo.value.session.signal({
           data: "", // Any string (optional)
+          type: "start",
         });
       }, 1000);
     })
