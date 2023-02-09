@@ -2,8 +2,12 @@
   <div>
     <div id="reportModal">
       <div>
-        <div v-for="(image, index) in currentModal.data[0]" :key="index">
-          <div v-if="false">
+        <div
+          v-for="(image, index) in resultImages"
+          :key="index"
+          style="border: 1px solid red"
+        >
+          <div v-if="true">
             <input
               type="checkbox"
               :value="index"
@@ -16,13 +20,10 @@
               v-model="inputs[index]"
               placeholder="제목을 입력하세요"
             />
-            <img
-              :src="`${IMAGE_PATH}/${currentModal.data[2].gameImages[index].gameImage}`"
-            />
+            <img :src="`${IMAGE_PATH}/${room.gameImages[index].gameImage}`" />
 
             <br />
           </div>
-          {{ image }}!!!!!!!!!!!!!!!!
           <div class="test">
             <img :src="image" id="bestcutImg" />
           </div>
@@ -44,6 +45,10 @@ import process from "process";
 const IMAGE_PATH = process.env.VUE_APP_IMAGE_PATH;
 const store = useStore();
 const currentModal = computed(() => store.state.commonStore.currentModal);
+const resultImages = ref(currentModal.value.data[0]);
+const streamManager = ref(currentModal.value.data[1]);
+const room = ref(currentModal.value.data[2]);
+
 const api = apiInstance();
 
 const check = (index) => {
@@ -64,17 +69,17 @@ const isChecked = ref([
 const inputs = ref(["", "", "", "", "", "", "", "", "", ""]);
 
 const upload = () => {
-  bestcutSaveReq.value.pinNumber = currentModal.value.data[1].session.sessionId;
+  bestcutSaveReq.value.pinNumber = streamManager.value.session.sessionId;
   bestcutSaveReq.value.sessionId =
-    currentModal.value.data[1].session.connection.connectionId;
-  bestcutSaveReq.value.gameTitle = currentModal.value.data[2].gameTitle;
+    streamManager.value.session.connection.connectionId;
+  bestcutSaveReq.value.gameTitle = room.value.gameTitle;
   isChecked.value.forEach((element, index) => {
     if (element) {
       bestcutSaveReq.value.images.push({
         bestcutIndex: index,
         bestcutImgTitle: inputs.value[index],
-        gameImgUrl: currentModal.value.data[2].gameImages[index].gameImage,
-        gameImgDesc: currentModal.value.data[2].gameImages[index].gameImageDesc,
+        gameImgUrl: room.value.gameImages[index].gameImage,
+        gameImgDesc: room.value.gameImages[index].gameImageDesc,
       });
     }
   });
@@ -100,9 +105,12 @@ const bestcutSaveReq = ref({
 #reportModal {
   background-color: white;
   width: 1000px;
+  height: 500px;
   border-radius: 10px;
   padding: 5px 0;
+  overflow: scroll;
 }
+
 .test {
   width: 400px;
   height: 400px;
