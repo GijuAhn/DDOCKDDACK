@@ -34,11 +34,6 @@
         <user-video
           id="main-video"
           :stream-manager="openviduInfo.publisher"
-          :timerCount="timerCount"
-          :isEnd="isEnd"
-          :isStart="isStart"
-          :round="round"
-          :room="room"
           :captureMode="captureMode"
         />
       </div>
@@ -205,9 +200,10 @@ onBeforeMount(() => {
         console.warn(exception);
       });
 
-      openviduInfo.value.session.on("signal:roundStart", async (signal) => {
+      openviduInfo.value.session.on("signal:roundStart", (signal) => {
         round.value = signal.data;
         if (signal.data == 1) {
+          isStart.value = true;
           console.log("게임 시작");
         }
 
@@ -226,12 +222,12 @@ onBeforeMount(() => {
         result.value = JSON.parse(signal.data);
         setTimeout(() => {
           resultMode.value = false;
-          if (round.value < 5) {
+          if (round.value < 5 && isHost.value) {
             openviduInfo.value.session.signal({
               data: ++round.value,
               type: "roundStart",
             });
-          } else {
+          } else if (round.value == 5) {
             isEnd.value = true;
           }
         }, 5000);
@@ -333,7 +329,7 @@ const leaveSession = () => {
 const play = () => {
   api
     .put(`/api/game-rooms/${route.params.pinNumber}`)
-    .then((isStart.value = true))
+    .then()
     .catch(() => {
       alert("게임시작에 실패 하였습니다.");
     });

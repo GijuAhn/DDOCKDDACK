@@ -15,7 +15,6 @@
 
 <script setup>
 import OvVideo from "./OvVideo";
-// import html2canvas from "html2canvas";
 import { computed, defineProps } from "vue";
 const props = defineProps({
   streamManager: Object,
