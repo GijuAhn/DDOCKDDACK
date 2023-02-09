@@ -1,9 +1,9 @@
 <template>
   <tr>
-    <td>{{ props.reportedBestCut.bestcut }}</td>
-    <td>{{ props.reportedBestCut.reportType }}</td>
-    <td>{{ props.reportedBestCut.reportMember }}</td>
-    <td>{{ props.reportedBestCut.reportedMember }}</td>
+    <td>{{ props.reportedBestCut.bestcutId }}</td>
+    <td>{{ props.reportedBestCut.reason }}</td>
+    <td>{{ props.reportedBestCut.reportMemberId }}</td>
+    <td>{{ props.reportedBestCut.reportedMemberId }}</td>
     <td><input v-model="visible" type="checkbox" /></td>
     <td><button>처리</button></td>
   </tr>
@@ -19,7 +19,7 @@ import { defineProps, ref, computed } from "vue";
 const props = defineProps({ reportedGame: Object });
 const visible = ref();
 const bestcutId = computed(() => {
-  return props.reportedBestCut.bestcut;
+  return props.reportedBestCut.bestcutId;
 });
 bestcutId;
 </script>

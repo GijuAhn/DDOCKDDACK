@@ -1,6 +1,7 @@
 package com.ddockddack.domain.admin.controller;
 
 import com.ddockddack.domain.admin.service.AdminService;
+import com.ddockddack.domain.bestcut.response.ReportedBestcutRes;
 import com.ddockddack.domain.bestcut.service.BestcutService;
 import com.ddockddack.domain.game.response.ReportedGameRes;
 import com.ddockddack.domain.game.service.GameService;
@@ -70,7 +71,7 @@ public class AdminApiController {
         }
 
         try {
-            List<ReportedBestcut> allReportedBestCuts = bestcutService.findAllReportedBestCuts();
+            List<ReportedBestcutRes> allReportedBestCuts = bestcutService.findAllReportedBestCuts();
             return ResponseEntity.ok(allReportedBestCuts);
         } catch (Exception e) {
             return ResponseEntity.status(500).body(e);

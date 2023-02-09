@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class AdminService {
-    private final TokenService tokenService;
     private final MemberService memberService;
     public boolean isAdminByAccessToken(Long adminId){
         return memberService.isAdmin(adminId);
