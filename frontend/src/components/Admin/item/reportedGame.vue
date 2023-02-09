@@ -1,16 +1,16 @@
 <template>
   <tr>
-    <td>{{ props.reportedGame.gameId }}</td>
+    <td>{{ props.reportedGame.gameTitle }}</td>
     <td>{{ props.reportedGame.reason }}</td>
-    <td>{{ props.reportedGame.reportMemberId }}</td>
-    <td>{{ props.reportedGame.reportedMemberId }}</td>
+    <td>{{ props.reportedGame.reportMemberNickname }}</td>
+    <td>{{ props.reportedGame.reportedMemberNickname }}</td>
     <td><input v-model="visible" type="checkbox" /></td>
     <td><button>처리</button></td>
   </tr>
   <tr v-if="visible">
     <td colspan="6">
       <div class="preview">
-        <reported-modal-preview :gameId="gameId"></reported-modal-preview>
+        <reported-game-preview :gameId="gameId"></reported-game-preview>
       </div>
     </td>
   </tr>
@@ -18,7 +18,7 @@
 
 <script setup>
 import { defineProps, ref, computed } from "vue";
-import reportedModalPreview from "@/components/Admin/item/reportedModalPreview.vue";
+import reportedGamePreview from "@/components/Admin/item/reportedGamePreview.vue";
 
 const props = defineProps({ reportedGame: Object });
 const visible = ref();

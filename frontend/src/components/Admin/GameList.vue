@@ -5,7 +5,7 @@
       <colgroup span="6" class="columns"></colgroup>
       <thead>
         <tr>
-          <th>게임 ID</th>
+          <th>게임 제목</th>
           <th>신고 사유</th>
           <th>신고한 유저</th>
           <th>신고당한 유저</th>

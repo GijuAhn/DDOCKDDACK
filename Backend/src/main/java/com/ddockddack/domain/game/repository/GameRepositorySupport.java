@@ -159,7 +159,10 @@ public class GameRepositorySupport {
                         reportedGame.reportMember.id.as("reportMemberId"),
                         reportedGame.reportedMember.id.as("reportedMemberId"),
                         reportedGame.game.id.as("gameId"),
-                        reportedGame.reportType.as("reason").stringValue()
+                        reportedGame.reportType.as("reason").stringValue(),
+                        reportedGame.game.title.as("gameTitle"),
+                        reportedGame.reportMember.nickname.as("reportMemberNickname"),
+                        reportedGame.reportedMember.nickname.as("reportedMemberNickname")
                 ))
                 .from(reportedGame)
                 .innerJoin(reportedGame.reportMember, member)

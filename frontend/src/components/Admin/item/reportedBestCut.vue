@@ -8,15 +8,19 @@
     <td><button>처리</button></td>
   </tr>
   <tr v-if="visible">
-    <td colspan="6"></td>
+    <td colspan="6">
+      <reported-best-cut-preview
+        :bestcutId="bestcutId"
+      ></reported-best-cut-preview>
+    </td>
   </tr>
 </template>
 
 <script setup>
 import { defineProps, ref, computed } from "vue";
-// import reportedModalPreview from "@/components/Admin/item/reportedModalPreview.vue";
+import reportedBestCutPreview from "@/components/Admin/item/reportedBestCutPreview.vue";
 
-const props = defineProps({ reportedGame: Object });
+const props = defineProps({ reportedBestCut: Object });
 const visible = ref();
 const bestcutId = computed(() => {
   return props.reportedBestCut.bestcutId;

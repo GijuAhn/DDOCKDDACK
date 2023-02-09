@@ -5,7 +5,7 @@
       <colgroup span="6" class="columns"></colgroup>
       <thead>
         <tr>
-          <th>베스트 컷 ID</th>
+          <th>베스트 컷 제목</th>
           <th>신고 사유</th>
           <th>신고한 유저</th>
           <th>신고당한 유저</th>
@@ -17,7 +17,7 @@
         <reported-best-cut
           v-for="reportedBestCut in reportedBestCuts"
           :key="reportedBestCut"
-          :reportedGame="reportedBestCut"
+          :reportedBestCut="reportedBestCut"
         ></reported-best-cut>
       </tfoot>
     </table>
