@@ -45,34 +45,6 @@
             <button @click="setCurrentModalAsync(`bestcutUpload`)">
               결과보기
             </button>
-
-            <div v-if="true">
-              <div v-for="(image, index) in resultImages" :key="index">
-                <div>
-                  <input
-                    type="checkbox"
-                    :value="index"
-                    @change="check(index)"
-                  />체크박스
-                  <br />
-                  <input
-                    id="bestcutTitle"
-                    type="text"
-                    v-model="inputs[index]"
-                    placeholder="제목을 입력하세요"
-                  />
-                  <img
-                    :src="`${IMAGE_PATH}/${room.gameImages[index].gameImage}`"
-                  />
-                  <div class="test">
-                    <img :src="image" id="bestcutImg" />
-                  </div>
-                  <br />
-                </div>
-              </div>
-
-              <button @click="upload">베스트 컷 게시</button>
-            </div>
           </div>
         </div>
 
@@ -390,55 +362,6 @@ watch(
   { immediate: true }
 );
 
-const check = (index) => {
-  isChecked.value[index] = !isChecked.value[index];
-};
-const isChecked = ref([
-  false,
-  false,
-  false,
-  false,
-  false,
-  false,
-  false,
-  false,
-  false,
-  false,
-]);
-const inputs = ref(["", "", "", "", "", "", "", "", "", ""]);
-
-const upload = () => {
-  bestcutSaveReq.value.pinNumber =
-    openviduInfo.value.publisher.session.sessionId;
-  bestcutSaveReq.value.sessionId =
-    openviduInfo.value.publisher.session.connection.connectionId;
-  bestcutSaveReq.value.gameTitle = room.gameTitle;
-  isChecked.value.forEach((element, index) => {
-    if (element) {
-      bestcutSaveReq.value.images.push({
-        bestcutIndex: index,
-        bestcutImgTitle: inputs.value[index],
-        gameImgUrl: room.gameImages[index].gameImage,
-        gameImgDesc: room.gameImages[index].gameImageDesc,
-      });
-    }
-  });
-  api
-    .post("/api/bestcuts", bestcutSaveReq.value)
-    .then(() => {
-      alert("업로드가 완료 되었습니다.");
-    })
-    .catch((err) => {
-      err;
-      alert("업로드 실패");
-    });
-};
-const bestcutSaveReq = ref({
-  pinNumber: undefined,
-  sessionId: undefined,
-  gameTitle: undefined,
-  images: [],
-});
 const resultImages = ref([]);
 
 const capture = () => {
@@ -464,7 +387,7 @@ import html2canvas from "html2canvas";
 const setCurrentModalAsync = (what) => {
   store.dispatch("commonStore/setCurrentModalAsync", {
     name: what,
-    data: "",
+    data: [resultImages, openviduInfo.value.publisher, room],
   });
 };
 </script>
@@ -589,16 +512,6 @@ const setCurrentModalAsync = (what) => {
   height: 100%;
 }
 
-.test {
-  width: 400px;
-  height: 400px;
-  border: 1px solid blue;
-}
-.test img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
 #kakaoShareButton {
   width: 30px;
   height: 30px;

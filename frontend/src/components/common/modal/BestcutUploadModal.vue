@@ -1,9 +1,9 @@
 <template>
   <div>
     <div id="reportModal">
-      <div v-if="true">
+      <div>
         <div v-for="(image, index) in currentModal.data[0]" :key="index">
-          <div>
+          <div v-if="false">
             <input
               type="checkbox"
               :value="index"
@@ -16,11 +16,15 @@
               v-model="inputs[index]"
               placeholder="제목을 입력하세요"
             />
-            <img :src="`${IMAGE_PATH}/${room.gameImages[index].gameImage}`" />
-            <div class="test">
-              <img :src="image" id="bestcutImg" />
-            </div>
+            <img
+              :src="`${IMAGE_PATH}/${currentModal.data[2].gameImages[index].gameImage}`"
+            />
+
             <br />
+          </div>
+          {{ image }}!!!!!!!!!!!!!!!!
+          <div class="test">
+            <img :src="image" id="bestcutImg" />
           </div>
         </div>
 
@@ -35,7 +39,9 @@ import { apiInstance } from "@/api/index";
 import { ref } from "vue";
 import { computed } from "vue";
 import { useStore } from "vuex";
+import process from "process";
 
+const IMAGE_PATH = process.env.VUE_APP_IMAGE_PATH;
 const store = useStore();
 const currentModal = computed(() => store.state.commonStore.currentModal);
 const api = apiInstance();
@@ -96,5 +102,15 @@ const bestcutSaveReq = ref({
   width: 1000px;
   border-radius: 10px;
   padding: 5px 0;
+}
+.test {
+  width: 400px;
+  height: 400px;
+  border: 1px solid blue;
+}
+.test img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 </style>
