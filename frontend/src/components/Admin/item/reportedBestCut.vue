@@ -1,9 +1,9 @@
 <template>
   <tr>
-    <td>{{ props.reportedBestCut.bestcutId }}</td>
+    <td>{{ props.reportedBestCut.bestcutTitle }}</td>
     <td>{{ props.reportedBestCut.reason }}</td>
-    <td>{{ props.reportedBestCut.reportMemberId }}</td>
-    <td>{{ props.reportedBestCut.reportedMemberId }}</td>
+    <td>{{ props.reportedBestCut.reportMemberNickname }}</td>
+    <td>{{ props.reportedBestCut.reportedMemberNickname }}</td>
     <td><input v-model="visible" type="checkbox" /></td>
     <td><button>처리</button></td>
   </tr>

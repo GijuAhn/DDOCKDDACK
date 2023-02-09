@@ -23,7 +23,10 @@ public class BestcutRepositorySupport {
                         reportedBestcut.reportMember.id.as("reportMemberId"),
                         reportedBestcut.reportedMember.id.as("reportedMemberId"),
                         reportedBestcut.bestcut.id.as("gameId"),
-                        reportedBestcut.reportType.as("reason").stringValue()
+                        reportedBestcut.reportType.as("reason").stringValue(),
+                        reportedBestcut.bestcut.title.as("bestcutTitle"),
+                        reportedBestcut.reportMember.nickname.as("reportMemberNickname"),
+                        reportedBestcut.reportedMember.nickname.as("reportedMemberNickname")
                 ))
                 .from(reportedBestcut)
                 .innerJoin(reportedBestcut.reportMember, member)
