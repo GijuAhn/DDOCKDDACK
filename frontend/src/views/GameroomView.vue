@@ -1,5 +1,7 @@
 <template>
   <div id="session">
+    <modal-frame v-if="currentModal.length !== 0" />
+
     <div id="session-header">
       <span id="session-title">
         {{ room.gameTitle }} [방 코드 - {{ room.pinNumber }}]
@@ -40,9 +42,11 @@
           </div>
 
           <div v-if="isEnd">
-            <button @click="getMyImages">결과보기</button>
+            <button @click="setCurrentModalAsync(`bestcutUpload`)">
+              결과보기
+            </button>
 
-            <div v-if="isShow">
+            <div v-if="true">
               <div v-for="(image, index) in resultImages" :key="index">
                 <div>
                   <input
@@ -108,14 +112,14 @@
     </div>
 
     <div id="button-container">
-      <button class="btn-video-control">
-        <svg-icon type="mdi" :path="path[0]" /> 음소거
-      </button>
-      <button class="btn-video-control">
-        <svg-icon type="mdi" :path="path[2]" /> 화면 중지
-      </button>
-      <button type="button" class="btn-close" @click="leaveSession">
-        <span class="icon-cross"></span>
+      <button class="btn-video-control">음소거</button>
+      <button class="btn-video-control">화면 중지</button>
+      <button class="btn-close" @click="leaveSession">
+        <img
+          :src="require(`@/assets/images/close.png`)"
+          width="18"
+          height="18"
+        />
       </button>
     </div>
   </div>
@@ -137,13 +141,9 @@ import CaptureVideo from "@/components/Gameroom/item/CaptureVideo.vue";
 import { useStore } from "vuex";
 import router from "@/router/index.js";
 import process from "process";
-import SvgIcon from "@jamescoyle/vue-icon";
-import {
-  mdiMicrophone,
-  mdiMicrophoneOff,
-  mdiVideo,
-  mdiVideoOff,
-} from "@mdi/js";
+import ModalFrame from "@/components/common/ModalFrame";
+
+const currentModal = computed(() => store.state.commonStore.currentModal);
 
 const IMAGE_PATH = process.env.VUE_APP_IMAGE_PATH;
 const api = apiInstance();
@@ -176,7 +176,6 @@ const round = ref(1);
 const isHost = ref(false);
 const isEnd = ref(false);
 const resultMode = ref(false);
-const path = ref([mdiMicrophone, mdiMicrophoneOff, mdiVideo, mdiVideoOff]);
 
 onBeforeMount(() => {
   api
@@ -390,10 +389,7 @@ watch(
   },
   { immediate: true }
 );
-const isShow = ref(false);
-const getMyImages = () => {
-  isShow.value = true;
-};
+
 const check = (index) => {
   isChecked.value[index] = !isChecked.value[index];
 };
@@ -464,6 +460,13 @@ const capture = () => {
   });
 };
 import html2canvas from "html2canvas";
+
+const setCurrentModalAsync = (what) => {
+  store.dispatch("commonStore/setCurrentModalAsync", {
+    name: what,
+    data: "",
+  });
+};
 </script>
 
 <style scoped>
@@ -482,14 +485,12 @@ import html2canvas from "html2canvas";
 #session-header span {
   font-size: 20px;
 }
-#session-header span:first-child {
-}
 #session-header span:last-child {
   margin-left: auto;
 }
 #main-container {
   /* border: 1px solid red; */
-  height: calc(100vh - 100px);
+  height: calc(100vh - 105px);
   display: flex;
   position: relative;
 }
@@ -587,66 +588,6 @@ import html2canvas from "html2canvas";
 #video-container > * {
   height: 100%;
 }
-#button-container {
-  height: 65px;
-  /* background-color: rgb(150, 216, 255); */
-  text-align: center;
-}
-
-.btn-video-control {
-  border-color: #ffffff;
-  color: white;
-  background-color: rgba(0, 0, 0, 0);
-  border-radius: 50px;
-  width: 150px;
-  font-size: 21px;
-}
-
-.btn-close {
-  border: 0;
-  background: #ff0000;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  display: inline;
-  flex-flow: column nowrap;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  transition: all 150ms;
-}
-.btn-close .icon-cross {
-  border: 0;
-  background: none;
-  position: absolute;
-  width: 10px;
-  height: 10px;
-}
-.btn-close .icon-cross:before,
-.btn-close .icon-cross:after {
-  content: "";
-  position: absolute;
-  top: 15px;
-  left: -10px;
-  right: 0;
-  height: 6px;
-  background: #fff;
-  border-radius: 6px;
-}
-.btn-close .icon-cross:before {
-  transform: rotate(45deg);
-}
-.btn-close .icon-cross:after {
-  transform: rotate(-45deg);
-}
-.btn-close .icon-cross span {
-  display: block;
-}
-.btn-close:hover,
-.btn-close:focus {
-  transform: rotateZ(90deg);
-  background: #ff0000;
-}
 
 .test {
   width: 400px;
@@ -667,5 +608,37 @@ import html2canvas from "html2canvas";
 }
 .game-image {
   transform: scaleX(-1);
+}
+#button-container {
+  height: 70px;
+  /* background-color: rgb(150, 216, 255); */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.btn-video-control {
+  border: 1px solid #464646;
+  font-size: 18px;
+  font-family: "NanumSquareRoundB";
+  padding: 10px 0;
+  background: none;
+  color: white;
+  width: 140px;
+  height: 45px;
+  border-radius: 45px;
+}
+.btn-close {
+  border: 1px solid #db1f2e;
+  background-color: #db1f2e;
+  width: 45px;
+  height: 45px;
+  border-radius: 45px;
+}
+.btn-video-control:hover,
+.btn-close:hover {
+  cursor: pointer;
+}
+#button-container button {
+  margin: 0 10px;
 }
 </style>
