@@ -2,19 +2,23 @@
   <div id="session">
     <div id="session-header">
       <span id="session-title">
-        {{ room.gameTitle }} [방 코드 - {{ room.pinNumber }}] 참가자 :
-        {{ openviduInfo.subscribers.length + 1 }}명
-
-        <button @click="linkShare" v-if="false">
-          <img
-            src="https://developers.kakao.com/assets/img/about/logos/kakaotalksharing/kakaotalk_sharing_btn_medium.png"
-            alt="카카오톡 공유 보내기 버튼"
-          />
-        </button>
+        {{ room.gameTitle }} [방 코드 - {{ room.pinNumber }}]
       </span>
+      <img
+        src="https://developers.kakao.com/assets/img/about/logos/kakaotalksharing/kakaotalk_sharing_btn_medium.png"
+        @click="linkShare"
+        id="kakaoShareButton"
+      />
+      <span>공유하기</span>
+
+      <span id="subscribers-count">
+        참가자 : {{ openviduInfo.subscribers.length + 1 }}명</span
+      >
     </div>
 
     <div id="main-container">
+      <capture-video id="main-video" :stream-manager="openviduInfo.publisher" />
+
       <div id="left-section">
         <div id="gameInfoSection">
           <div v-if="isStart && !isEnd">
@@ -72,17 +76,31 @@
             id="main-video"
             :stream-manager="openviduInfo.publisher"
             :resultMode="resultMode"
-            :who="`me`"
           />
         </div>
       </div>
       <div id="right-section">
-        <div id="video-container">
+        <div
+          id="video-container"
+          :class="{
+            grid1: 1 === openviduInfo.subscribers.length,
+            grid2: 2 === openviduInfo.subscribers.length,
+            grid3: 3 === openviduInfo.subscribers.length,
+            grid4: 4 === openviduInfo.subscribers.length,
+            grid5: 5 === openviduInfo.subscribers.length,
+            grid6: 6 === openviduInfo.subscribers.length,
+            grid7: 7 === openviduInfo.subscribers.length,
+            grid8: 8 === openviduInfo.subscribers.length,
+            grid9: 9 === openviduInfo.subscribers.length,
+            grid10: 10 === openviduInfo.subscribers.length,
+            grid11: 11 === openviduInfo.subscribers.length,
+            grid12: 12 === openviduInfo.subscribers.length,
+          }"
+        >
           <user-video
             v-for="sub in openviduInfo.subscribers"
             :key="sub.stream.connection.connectionId"
             :stream-manager="sub"
-            :who="`you`"
           />
         </div>
       </div>
@@ -114,6 +132,7 @@ import {
 import { useRoute } from "vue-router";
 import { OpenVidu } from "openvidu-browser";
 import UserVideo from "@/components/Gameroom/item/UserVideo.vue";
+import CaptureVideo from "@/components/Gameroom/item/CaptureVideo.vue";
 import { useStore } from "vuex";
 import router from "@/router/index.js";
 import process from "process";
@@ -313,20 +332,12 @@ const play = () => {
 };
 
 const linkShare = async () => {
-  const file = await convertURLtoFile(
-    `/static/images/${room.value.gameId}/${room.value.gameImages[0].gameImage}`
-  );
-  const files = [file];
-
-  let response = await window.Kakao.Share.uploadImage({
-    file: files,
-  });
   window.Kakao.Link.sendDefault({
     objectType: "feed",
     content: {
       title: `${room.value.gameTitle}`,
       description: `${room.value.gameDescription}`,
-      imageUrl: response.infos.original.url,
+      imageUrl: `${IMAGE_PATH}/${room.value.gameImages[0].gameImage}`,
       link: {
         mobileWebUrl: `http://localhost:8080/gameroom/${room.value.pinNumber}`,
         webUrl: `http://localhost:8080/gameroom/${room.value.pinNumber}`,
@@ -342,16 +353,6 @@ const linkShare = async () => {
       },
     ],
   });
-};
-
-const convertURLtoFile = async (url) => {
-  const response = await fetch(url, {
-    mode: "no-cors",
-  });
-  const data = await response.blob();
-  const fileName = room.value.gameImages[0].gameImage;
-  const metadata = { type: "image/jpeg" };
-  return new File([data], fileName, metadata);
 };
 
 watch(
@@ -463,28 +464,40 @@ import html2canvas from "html2canvas";
 </script>
 
 <style>
+body {
+  overflow-y: hidden;
+}
 #session {
   background-color: black;
   color: #ffffff;
   height: 100vh;
 }
 #session-header {
-  height: 30px;
-  background-color: rgb(255, 150, 150);
+  height: 35px;
+  /* background-color: rgb(255, 150, 150); */
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
 }
 #session-header span {
   font-size: 20px;
+}
+#session-header span:first-child {
+}
+#session-header span:last-child {
+  margin-left: auto;
 }
 #main-container {
   /* border: 1px solid red; */
   height: calc(100vh - 100px);
   display: flex;
+  position: relative;
 }
 #left-section {
   width: 50%;
 }
 #gameInfoSection {
-  background-color: rgb(104, 104, 0);
+  /* background-color: rgb(104, 104, 0); */
   height: 50%;
   flex-direction: column;
   position: relative;
@@ -508,7 +521,7 @@ import html2canvas from "html2canvas";
   left: 0;
 }
 #my-video {
-  background-color: rgb(104, 0, 87);
+  /* background-color: rgb(104, 0, 87); */
   height: 50%;
   flex-direction: column;
 }
@@ -517,20 +530,66 @@ import html2canvas from "html2canvas";
 }
 #right-section {
   width: 50%;
-  background-color: rgb(0, 0, 99);
+  /* background-color: rgb(0, 0, 99); */
 }
 #video-container {
   height: 100%;
   display: grid;
-  grid-template-rows: repeat(4, 1fr);
+}
+.grid1 {
+  grid-template-columns: repeat(1, 1fr);
+  grid-template-rows: repeat(1, 1fr);
+}
+.grid2 {
+  grid-template-columns: repeat(1, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+}
+.grid3 {
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+}
+.grid4 {
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+}
+.grid5 {
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+}
+.grid6 {
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+}
+.grid7 {
   grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+}
+.grid8 {
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+}
+.grid9 {
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+}
+.grid10 {
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+}
+.grid11 {
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+}
+.grid12 {
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(4, 1fr);
 }
 #video-container > * {
   height: 100%;
 }
 #button-container {
-  height: 70px;
-  background-color: rgb(150, 216, 255);
+  height: 65px;
+  /* background-color: rgb(150, 216, 255); */
   text-align: center;
 }
 
@@ -597,5 +656,12 @@ import html2canvas from "html2canvas";
   width: 100%;
   height: 100%;
   object-fit: contain;
+}
+#kakaoShareButton {
+  width: 30px;
+  height: 30px;
+}
+#kakaoShareButton:hover {
+  cursor: pointer;
 }
 </style>
