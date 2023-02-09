@@ -28,9 +28,9 @@
       </div>
     </div>
     <div id="nameAndEmail">
-      <div id="nickname">
-        <span>{{ myProfile.nickname }}</span>
-        <span v-if="!save" id="modifyName" @click="modifyByName">
+      <div id="nickname" v-if="!save">
+        <span>{{ name }}</span>
+        <span id="modifyName" @click="modifyByName">
           <img
             :src="require(`@/assets/images/modify-name.png`)"
             alt="이름수정버튼"
@@ -38,6 +38,19 @@
           />
         </span>
       </div>
+      <div id="nickname2" v-else>
+        <form id="modifyInput" @submit="abc" onsubmit="return false">
+          <input type="text" name="site" v-model="name" /><br />
+        </form>
+        <span id="modifyName" @click="modifyByName">
+          <img
+            :src="require(`@/assets/images/modify-name.png`)"
+            alt="이름수정버튼"
+            class="modify"
+          />
+        </span>
+      </div>
+
       <div id="email">
         <span>{{ myProfile.email }}</span>
       </div>
@@ -47,18 +60,54 @@
 </template>
 
 <script setup>
+// import { apiInstance } from "@/api/index";
 import { useStore } from "vuex";
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import process from "process";
 
 const store = useStore();
+// const api = apiInstance();
 
 const myProfile = computed(() => store.state.memberStore.memberInfo).value;
-
-console.log(`${process.env.VUE_APP_IMAGE_PATH}`);
 const IMAGE_PATH = process.env.VUE_APP_IMAGE_PATH;
 
-const save = false;
+let name = myProfile.nickname;
+
+let save = ref(false);
+const modifyByName = () => {
+  //form형태로 변경
+  console.log("click ", save.value);
+  save.value = !save.value;
+};
+
+let reg_id1 = /^[A-z가-힣0-9_-]{2,15}$/;
+const abc = () => {
+  console.log("enter ", name);
+  if (reg_id1.test(name)) {
+    console.log("OK!");
+    // api
+    //   .put(
+    //     `/api/members`,
+    //     {},
+    //     { headers: { "access-token": accessToken.value } }
+    //   )
+    //   .then(() => {
+    //     let bestcut = bestcuts.value.find((e) => e.bestcutId === bestcutId);
+    //     bestcut.isLiked = true;
+    //     bestcut.popularity++;
+    //   })
+    //   .catch((err) => {
+    //     if (err.response.status === 401) {
+    //       alert("로그인 후 이용해주세요.");
+    //     }
+    //   });
+
+    save.value = !save.value;
+  } else {
+    console.log("닉네임 규칙에 맞게");
+  }
+};
+
 // console.log(myProfile.value);
 
 // const createGame = () => {
@@ -88,16 +137,12 @@ const save = false;
 //       console.log(error);
 //     });
 // };
-
-const modifyByName = () => {
-  //form형태로 변경
-  console.log("click");
-};
 </script>
 
 <style scoped>
 #image {
-  border-radius: 50%;
+  border-radius: 75%;
+  border: 1px solid #c4c4c4;
   width: 150px;
   height: 150px;
   margin-left: auto;
@@ -123,27 +168,25 @@ const modifyByName = () => {
   width: 20%;
   height: 20%;
 }
-.modifyProfile {
-  width: 150%;
-  height: 150%;
-}
 #modifyName {
   display: none;
 }
 #modifyImg {
   display: none;
   position: absolute;
-  top: 35%;
-  left: 40%;
+  top: 50%;
+  left: 52%;
+  transform: translate(-50%, -50%);
 }
 #nickname:hover #modifyName {
   display: inline;
   cursor: pointer;
 }
-#profileImg:hover {
+/* #profileImg:hover {
   cursor: pointer;
-}
-#profileImg:hover #modifyProfile {
+} */
+#profileImg:hover #modifyImg,
+#modifyProfile {
   display: inline;
   cursor: pointer;
 }

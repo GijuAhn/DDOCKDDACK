@@ -19,29 +19,15 @@ import { ref, computed } from "vue";
 
 const store = useStore();
 
-let pageConditionReq = ref({
-  order: "RECENT",
-  period: "ALL",
-  search: "MEMBER",
-  keyword: "",
-  page: 1,
-});
-
 const api = apiInstance();
 const memberId = computed(() => store.state.memberStore.memberInfo.id).value;
 const accessToken = computed(() => store.state.memberStore.accessToken).value;
 
 const myGames = ref();
 const callApi = () => {
+  console.log("myGames ", accessToken);
   api
     .get(`/api/members/${memberId}/games`, {
-      params: {
-        order: pageConditionReq.value.order,
-        period: pageConditionReq.value.period,
-        search: pageConditionReq.value.search,
-        keyword: pageConditionReq.value.keyword,
-        page: pageConditionReq.value.page,
-      },
       headers: {
         "access-token": accessToken, // 변수로 가지고있는 AccessToken
       },

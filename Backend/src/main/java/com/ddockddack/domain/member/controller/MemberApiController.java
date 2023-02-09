@@ -4,6 +4,7 @@ package com.ddockddack.domain.member.controller;
 import com.ddockddack.domain.bestcut.response.BestcutRes;
 import com.ddockddack.domain.bestcut.service.BestcutService;
 import com.ddockddack.domain.game.response.GameRes;
+import com.ddockddack.domain.game.response.ReportedGameRes;
 import com.ddockddack.domain.game.response.StarredGameRes;
 import com.ddockddack.domain.game.service.GameService;
 import com.ddockddack.domain.member.entity.Member;
@@ -61,8 +62,7 @@ public class MemberApiController {
     })
     @PutMapping()
     public ResponseEntity<?> modifyMember(@PathVariable Long memberId,
-        @RequestBody MemberModifyReq modifyMemberReq,
-        @RequestHeader(value = "access-token", required = false) String accessToken) {
+        @RequestBody MemberModifyReq modifyMemberReq){
         try {
 //            memberService.modifyMember(memberId, modifyMember);
             return ResponseEntity.ok(memberService.modifyMember(memberId, modifyMemberReq));
@@ -143,12 +143,9 @@ public class MemberApiController {
         @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @GetMapping("/{memberId}/games")
-    public ResponseEntity<?> getMyGames(@PathVariable Long memberId,
-        @ModelAttribute PageConditionReq pageCondition) {
-
-        log.info("Page Condition {}", pageCondition);
+    public ResponseEntity<?> getMyGames(@PathVariable Long memberId) {
         try {
-            PageImpl<GameRes> gameResList = gameService.findAllGames(memberId, pageCondition);
+            List<GameRes> gameResList = gameService.findAllGameByMemberId(memberId);
             return ResponseEntity.ok(gameResList);
         } catch (Exception e) {
             return ResponseEntity.status(500).body(e);
@@ -163,7 +160,7 @@ public class MemberApiController {
         @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @GetMapping("/{memberId}/starred")
-    public ResponseEntity<?> getGames(@PathVariable Long memberId) {
+    public ResponseEntity<?> getStarredGames(@PathVariable Long memberId) {
         try {
             List<StarredGameRes> starredGameResList = gameService.findAllStarredGames(
                 memberId); //member Response에 올려야 하나?

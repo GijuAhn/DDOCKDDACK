@@ -2,9 +2,9 @@
   <div id="view">
     <div id="list">
       <normal-bestcut
-        v-for="besctcut in myBestcuts"
-        :key="besctcut"
-        :besctcut="besctcut"
+        v-for="bestcut in myBestcuts"
+        :key="bestcut"
+        :bestcut="bestcut"
       ></normal-bestcut>
     </div>
   </div>
@@ -18,14 +18,6 @@ import { ref, computed } from "vue";
 
 const store = useStore();
 
-let pageConditionReq = ref({
-  order: "RECENT",
-  period: "ALL",
-  search: "MEMBER",
-  keyword: "",
-  page: 1,
-});
-
 const memberId = computed(() => store.state.memberStore.memberInfo.id).value;
 
 const api = apiInstance();
@@ -35,13 +27,6 @@ const myBestcuts = ref();
 const callApi = () => {
   api
     .get(`/api/members/${memberId}/bestcuts`, {
-      params: {
-        order: pageConditionReq.value.order,
-        period: pageConditionReq.value.period,
-        search: pageConditionReq.value.search,
-        keyword: pageConditionReq.value.keyword,
-        page: pageConditionReq.value.page,
-      },
       headers: {
         "access-token": accessToken, // 변수로 가지고있는 AccessToken
       },
