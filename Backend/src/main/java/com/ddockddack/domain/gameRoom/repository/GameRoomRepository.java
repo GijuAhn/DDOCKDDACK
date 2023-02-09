@@ -148,8 +148,6 @@ public class GameRoomRepository {
             ObjectMapper mapper = new ObjectMapper();
             String resultData = mapper.writeValueAsString(findRoundResult(gameRoom));
 
-            System.out.println(resultData);
-
             GameSignalReq req = GameSignalReq.builder()
                     .session(pinNumber)
                     .type("roundResult")
@@ -160,6 +158,7 @@ public class GameRoomRepository {
             HttpEntity<String> httpEntity = new HttpEntity<>(stringReq, headers);
             restTemplate.exchange(url, HttpMethod.POST, httpEntity, String.class);
             gameRoom.resetScoreCnt();
+            gameRoom.increaseRound();
         }
 
     }

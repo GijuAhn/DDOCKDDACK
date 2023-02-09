@@ -46,4 +46,5 @@ public class   GameRoom {
         this.scoreCount++;
     }
     public void resetScoreCnt(){this.scoreCount = 0;}
+    public void increaseRound(){this.round++;}
 }
