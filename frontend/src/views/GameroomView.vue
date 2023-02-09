@@ -9,7 +9,7 @@
         <h3 id="session-title">
           핀번호 : {{ room.pinNumber }} 인원 :
           {{ openviduInfo.subscribers.length + 1 }}
-          <span v-show="isStart">/ 게임 라운드 : {{ round }}</span>
+          <span>/ 게임 라운드 : {{ round }}</span>
           <button @click="linkShare">
             <img
               src="https://developers.kakao.com/assets/img/about/logos/kakaotalksharing/kakaotalk_sharing_btn_medium.png"
@@ -40,8 +40,6 @@
           :round="round"
           :room="room"
           :captureMode="captureMode"
-          @stop="(timerEnabled = false), (isEnd = true)"
-          @restart="(timerEnabled = true), (isEnd = false)"
         />
       </div>
       <div id="video-container">
@@ -53,7 +51,32 @@
         </div>
       </div>
     </div>
+    <div v-if="isEnd">
+      <button @click="getMyImages">결과보기</button>
+    </div>
 
+    <div v-if="isShow">
+      <div v-for="(image, index) in resultImages" :key="index">
+        <div>
+          <input
+            type="checkbox"
+            :value="index"
+            @change="check(index)"
+          />체크박스
+          <br />
+          <input
+            id="bestcutTitle"
+            type="text"
+            v-model="inputs[index]"
+            placeholder="제목을 입력하세요"
+          />
+          <img :src="`${IMAGE_PATH}/${room.gameImages[index].gameImage}`" />
+          <img :src="image" id="bestcutImg" /> <br />
+        </div>
+      </div>
+
+      <button @click="upload">베스트 컷 게시</button>
+    </div>
     <div id="button-container">
       <button class="btn-video-control">
         <svg-icon type="mdi" :path="path[0]" /> 음소거
@@ -70,13 +93,7 @@
 
 <script setup>
 import { apiInstance } from "@/api/index";
-import {
-  computed,
-  onBeforeMount,
-  onMounted,
-  ref,
-  watch,
-} from "@vue/runtime-core";
+import { computed, onBeforeMount, ref } from "@vue/runtime-core";
 import { useRoute } from "vue-router";
 import { OpenVidu } from "openvidu-browser";
 import UserVideo from "@/components/Gameroom/item/UserVideo.vue";
@@ -91,7 +108,7 @@ import {
   mdiVideo,
   mdiVideoOff,
 } from "@mdi/js";
-
+import html2canvas from "html2canvas";
 const IMAGE_PATH = process.env.VUE_APP_IMAGE_PATH;
 const api = apiInstance();
 const route = useRoute();
@@ -117,7 +134,6 @@ const room = ref({
   gameImages: undefined,
 });
 const timerCount = ref(5);
-const timerEnabled = ref(false);
 const isStart = ref(false);
 const round = ref(1);
 const isHost = ref(false);
@@ -126,7 +142,27 @@ const resultMode = ref(false);
 const captureMode = ref(false);
 const path = ref([mdiMicrophone, mdiMicrophoneOff, mdiVideo, mdiVideoOff]);
 const result = ref([]);
-
+const resultImages = ref([]);
+const inputs = ref(["", "", "", "", "", "", "", "", "", ""]);
+const isChecked = ref([
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+]);
+const isShow = ref(false);
+const bestcutSaveReq = ref({
+  pinNumber: undefined,
+  sessionId: undefined,
+  gameTitle: undefined,
+  images: [],
+});
 onBeforeMount(() => {
   api
     .post(`/api/game-rooms/${route.params.pinNumber}`, {})
@@ -165,9 +201,20 @@ onBeforeMount(() => {
         console.warn(exception);
       });
 
-      openviduInfo.value.session.on("signal", () => {
-        timerEnabled.value = true;
-        isStart.value = true;
+      openviduInfo.value.session.on("signal:roundStart", async (signal) => {
+        round.value = signal.data;
+        if (signal.data == 1) {
+          console.log("게임 시작");
+        }
+
+        const timer = setInterval(() => {
+          timerCount.value--;
+          if (timerCount.value === 0) {
+            clearInterval(timer);
+            capture(signal.data - 1);
+            timerCount.value = 5;
+          }
+        }, 1000);
       });
 
       openviduInfo.value.session.on("roundResult", (signal) => {
@@ -175,9 +222,14 @@ onBeforeMount(() => {
         result.value = JSON.parse(signal.data);
         setTimeout(() => {
           resultMode.value = false;
-          timerEnabled.value = true;
-          round.value++;
-          timerCount.value++;
+          if (round.value < 5) {
+            openviduInfo.value.session.signal({
+              data: ++round.value,
+              type: "roundStart",
+            });
+          } else {
+            isEnd.value = true;
+          }
         }, 5000);
       });
 
@@ -238,22 +290,15 @@ onBeforeMount(() => {
     });
 });
 
-onMounted(() => {
-  timerCount.value = 5;
-  timerEnabled.value = false;
-  isStart.value = false;
-  round.value = 1;
-});
-
 const leaveSession = () => {
   // --- 7) Leave the session by calling 'disconnect' method over the Session object ---
   if (openviduInfo.value.session) {
-    let sessionId = openviduInfo.value.session.connection.connectionId;
+    let socketId = openviduInfo.value.session.connection.connectionId;
     // 방에 유저가 있는 경우 멤버삭제
     if (openviduInfo.value.subscribers.length) {
       api
         .delete(
-          `/api/game-rooms/${route.params.pinNumber}/sessions/${sessionId}`
+          `/api/game-rooms/${route.params.pinNumber}/sessions/${socketId}`
         )
         .catch((err) => {
           console.log(err);
@@ -280,13 +325,7 @@ const leaveSession = () => {
 const play = () => {
   api
     .put(`/api/game-rooms/${route.params.pinNumber}`)
-    .then(() => {
-      setTimeout(() => {
-        openviduInfo.value.session.signal({
-          data: "", // Any string (optional)
-        });
-      }, 1000);
-    })
+    .then((isStart.value = true))
     .catch(() => {
       alert("게임시작에 실패 하였습니다.");
     });
@@ -316,39 +355,67 @@ const linkShare = async () => {
   });
 };
 
-watch(
-  timerEnabled,
-  () => {
-    if (timerCount.value > 1) {
-      timerCount.value--;
-    }
-  },
-  { immediate: true }
-);
+const capture = async (index) => {
+  let me = document.getElementById("local-video-undefined");
+  captureMode.value = true;
+  setTimeout(() => {
+    captureMode.value = false;
+  }, 500);
+  html2canvas(me)
+    .then((canvas) => {
+      let myImg;
+      const socketId =
+        openviduInfo.value.publisher.session.connection.connectionId;
+      const pinNumber = openviduInfo.value.publisher.session.sessionId;
+      myImg = canvas.toDataURL("image/jpeg");
+      let byteString = myImg.replace("data:image/jpeg;base64,", "");
 
-watch(
-  timerCount,
-  (value) => {
-    if (value > 0 && timerEnabled.value) {
-      setTimeout(() => {
-        timerCount.value--;
-      }, 1000);
+      let param = {
+        gameImage: room.value.gameImages[index].gameImage,
+        memberGameImage: byteString,
+      };
+      api.post(`/api/game-rooms/${pinNumber}/${socketId}/images`, param);
+      resultImages.value.push(myImg);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
+
+const getMyImages = () => {
+  isShow.value = true;
+};
+
+const check = (index) => {
+  isChecked.value[index] = !isChecked.value[index];
+};
+
+const upload = () => {
+  bestcutSaveReq.value.pinNumber =
+    openviduInfo.value.publisher.session.sessionId;
+  bestcutSaveReq.value.sessionId =
+    openviduInfo.value.publisher.session.connection.connectionId;
+  bestcutSaveReq.value.gameTitle = room.value.gameTitle;
+  isChecked.value.forEach((element, index) => {
+    if (element) {
+      bestcutSaveReq.value.images.push({
+        bestcutIndex: index,
+        bestcutImgTitle: inputs.value[index],
+        gameImgUrl: room.value.gameImages[index].gameImage,
+        gameImgDesc: room.value.gameImages[index].gameImageDesc,
+      });
     }
-    if (round.value > 5) {
-      timerEnabled.value = false;
-      isEnd.value = true;
-    }
-    if (value === 0) {
-      captureMode.value = true;
-      setTimeout(() => {
-        round.value++;
-        timerCount.value = 5;
-        captureMode.value = false;
-      }, 500);
-    }
-  },
-  { immediate: true }
-);
+  });
+  api
+    .post("/api/bestcuts", bestcutSaveReq.value)
+    .then(() => {
+      alert("업로드가 완료 되었습니다.");
+    })
+    .catch((err) => {
+      err;
+      alert("업로드 실패");
+    });
+};
 </script>
 
 <style scoped>
