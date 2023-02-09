@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -26,6 +27,8 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
     private final TokenService tokenService;
     private final MemberRepository memberRepository;
+    @Value("${LOGIN_SUCCESS_URL}")
+    private String loginSuccessUrl;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -53,9 +56,9 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         Token token = tokenService.generateToken(member.getId(), "USER");
         log.info("JwT : {}", token);
 
-        Cookie cookie = new Cookie("refreshToken", token.getRefreshToken());
+        Cookie cookie = new Cookie("refresh-token", token.getRefreshToken());
         // expires in 7 days
-        cookie.setMaxAge(7 * 24 * 60 * 60);
+        cookie.setMaxAge(60 * 60 * 24* 7);
 
         // optional properties
         cookie.setSecure(true);
@@ -65,24 +68,6 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         // add cookie to response
         response.addCookie(cookie);
 
-        writeTokenResponse(response, token, member.getId());
-    }
-
-    private void writeTokenResponse(HttpServletResponse response, Token token, Long id)
-        throws IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        response.setHeader("accessToken", token.getToken());
-
-        Member member = memberRepository.findById(id).get();
-        MemberInfoRes memberInfoRes = new MemberInfoRes(member.getId(), member.getEmail(),
-            member.getNickname(), member.getProfile(), member.getRole());
-
-        log.info(" {} ", memberInfoRes);
-
-        String json = new ObjectMapper().writeValueAsString(memberInfoRes);
-
-        response.setStatus(HttpStatus.OK.value());
-        response.getWriter().write(json);
-        response.flushBuffer();
+        response.sendRedirect(loginSuccessUrl+token.getToken());
     }
 }

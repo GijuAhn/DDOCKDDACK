@@ -12,7 +12,7 @@ onMounted(() => {
 });
 </script>
 
-<style>
+<style scoped>
 #myVideo2 {
   border: 1px solid yellowgreen;
   position: absolute;

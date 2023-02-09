@@ -24,6 +24,7 @@
           <div v-if="isStart && !isEnd">
             <div id="gameImageSection">
               <img
+                class="game-image"
                 :src="`${IMAGE_PATH}/${room.gameImages[round - 1].gameImage}`"
               />
             </div>
@@ -358,7 +359,9 @@ const linkShare = async () => {
 watch(
   timerEnabled,
   () => {
-    timerCount.value--;
+    if (timerCount.value > 1) {
+      timerCount.value--;
+    }
   },
   { immediate: true }
 );
@@ -463,10 +466,7 @@ const capture = () => {
 import html2canvas from "html2canvas";
 </script>
 
-<style>
-body {
-  overflow-y: hidden;
-}
+<style scoped>
 #session {
   background-color: black;
   color: #ffffff;
@@ -647,6 +647,7 @@ body {
   transform: rotateZ(90deg);
   background: #ff0000;
 }
+
 .test {
   width: 400px;
   height: 400px;
@@ -663,5 +664,8 @@ body {
 }
 #kakaoShareButton:hover {
   cursor: pointer;
+}
+.game-image {
+  transform: scaleX(-1);
 }
 </style>

@@ -14,7 +14,7 @@ onMounted(() => {
 });
 </script>
 
-<style>
+<style scoped>
 #parent {
   /* border: 1px solid red; */
   width: 100%;

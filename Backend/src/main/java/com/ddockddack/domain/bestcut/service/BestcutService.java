@@ -24,6 +24,8 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -127,5 +129,9 @@ public class BestcutService {
     public BestcutRes findOne(Long loginMemberId, Long bestcutId) {
         return bestcutRepository.findOne(loginMemberId, bestcutId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.BESTCUT_NOT_FOUND));
+    }
+
+    public List<ReportedBestcut> findAllReportedBestCuts() {
+        return reportedBestcutRepository.findAllReportedBestCuts();
     }
 }

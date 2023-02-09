@@ -36,6 +36,7 @@ public class MemberService {
     private RestTemplate rt;
 
 
+
     @Transactional
     public Long joinMember(Member member) {
         memberRepository.save(member);
@@ -96,11 +97,11 @@ public class MemberService {
     }
 
     @Transactional
-    public void logout(String accessToken, String refreshToken) {
+    public void logout(String refreshToken) {
 //        Long findUserId = tokenService.getUid(refreshToken);
 
         //Redis Cache에 저장
-        Long accessTokenTime = tokenService.getExpiration(accessToken);
+//        Long accessTokenTime = tokenService.getExpiration(accessToken);
         Long refreshTokenTime = tokenService.getExpiration(refreshToken);
 //        if (accessTokenTime > 0) {
 //            redisTemplate.opsForValue()
@@ -216,7 +217,7 @@ public class MemberService {
         HttpHeaders headers = new HttpHeaders();
 
         System.out.println(accessToken);
-        headers.add("authorization", "Bearer " + accessToken);
+        headers.add("Authorization", "Bearer " + accessToken);
 
         HttpEntity memberInfoRequest = new HttpEntity<>(headers);
 
@@ -228,5 +229,15 @@ public class MemberService {
             String.class);
 
         return responsememberInfo;
+    }
+
+    @Transactional
+    public Member banMember(Long memberId, java.sql.Date releaseDate) {
+        Member memberToModify = memberRepository.findById(memberId).get();
+
+        memberToModify.setRole(Role.BAN);
+        memberToModify.setReleaseDate(releaseDate);
+
+        return memberRepository.save(memberToModify);
     }
 }

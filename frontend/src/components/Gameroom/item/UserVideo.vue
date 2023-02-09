@@ -4,10 +4,9 @@
       class="child1"
       :class="{ blinking: resultMode }"
       :stream-manager="props.streamManager"
-      :who="props.who"
     />
 
-    <div v-if="false">
+    <div v-if="true">
       <p>{{ clientData }}</p>
     </div>
   </div>
@@ -22,7 +21,6 @@ const props = defineProps({
   streamManager: Object,
   resultMode: Boolean,
 });
-
 const clientData = computed(() => {
   const { clientData } = getConnectionData();
   return clientData;

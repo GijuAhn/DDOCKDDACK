@@ -53,19 +53,31 @@ public class FeatureDetectorDescriptor {
 //        double ratioThreshold = 0.90f;
 //        double ratioThreshold = 0.999f;
         List<DMatch> goodMatches = new LinkedList<>();
-        for (MatOfDMatch matOfDMatch : matches) {
-            DMatch[] dmatcharray = matOfDMatch.toArray();
-            DMatch m1 = dmatcharray[0];
-            DMatch m2 = dmatcharray[1];
 
-            if (m1.distance <= m2.distance * ratioThreshold) {
-                goodMatches.add(m1);
+        for (MatOfDMatch matOfDMatch : matches) {
+            DMatch[] DMatchArray = matOfDMatch.toArray();
+
+//          ERROR Handling: image does NOT have a feature point (ex. black-screen)
+            if (DMatchArray.length != 0) {
+                DMatch m1 = DMatchArray[0];
+                DMatch m2 = DMatchArray[1];
+
+                if (m1.distance <= m2.distance * ratioThreshold) {
+                    goodMatches.add(m1);
+                }
             }
+
+//            DMatch m1 = DMatchArray[0];
+//            DMatch m2 = DMatchArray[1];
+//
+//            if (m1.distance <= m2.distance * ratioThreshold) {
+//                goodMatches.add(m1);
+//            }
         }
 
         // Calculate similarity featureScore as the ratio of good matches to total matches
         double featureScore = (double) goodMatches.size() / (double) keypoints1.rows();
-        System.out.println("@KAZE = " + featureScore);
+//        System.out.println("@KAZE = " + featureScore);
         return featureScore;
     }
 }
