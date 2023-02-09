@@ -1,6 +1,7 @@
 package com.ddockddack.domain.game.repository;
 
 import com.ddockddack.domain.game.response.*;
+import com.ddockddack.domain.report.repository.ReportedGameRepository;
 import com.ddockddack.global.util.PageCondition;
 import com.ddockddack.global.util.PeriodCondition;
 import com.ddockddack.global.util.SearchCondition;
@@ -34,6 +35,7 @@ import static com.querydsl.jpa.JPAExpressions.select;
 public class GameRepositorySupport {
 
     private final JPAQueryFactory jpaQueryFactory;
+    private final ReportedGameRepository reportedGameRepository;
 
     // 검색 목록 조회
     public PageImpl<GameRes> findAllGameBySearch(Long memberId, PageCondition pageCondition) {
@@ -171,6 +173,14 @@ public class GameRepositorySupport {
                 .fetch();
     }
 
+    /**
+     * 신고된 게임 삭제
+     *
+     * @param reportId
+     */
+    public void removeReportedGame(Long reportId) {
+        reportedGameRepository.deleteById(reportId);
+    }
 
     // 나만 쓸 거야
     // 정렬

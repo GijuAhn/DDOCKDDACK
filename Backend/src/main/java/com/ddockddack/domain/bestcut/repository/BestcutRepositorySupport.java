@@ -1,6 +1,9 @@
 package com.ddockddack.domain.bestcut.repository;
 
 import com.ddockddack.domain.bestcut.response.*;
+import com.ddockddack.domain.report.entity.QReportedBestcut;
+import com.ddockddack.domain.report.entity.ReportedBestcut;
+import com.ddockddack.domain.report.repository.ReportedBestcutRepository;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -14,6 +17,7 @@ import static com.ddockddack.domain.report.entity.QReportedBestcut.reportedBestc
 @RequiredArgsConstructor
 public class BestcutRepositorySupport {
     private final JPAQueryFactory jpaQueryFactory;
+    private final ReportedBestcutRepository reportedBestcutRepository;
 
     // 신고된 베스트컷 목록 조회
     public List<ReportedBestcutRes> findAllReportedBestcut() {
@@ -33,5 +37,14 @@ public class BestcutRepositorySupport {
                 .innerJoin(reportedBestcut.reportedMember, member)
                 .orderBy(reportedBestcut.id.desc())
                 .fetch();
+    }
+
+    /**
+     * 신고된 베스트 컷 삭제
+     *
+     * @param reportId
+     */
+    public void removeReportedBestcut(Long reportId) {
+        reportedBestcutRepository.deleteById(reportId);
     }
 }

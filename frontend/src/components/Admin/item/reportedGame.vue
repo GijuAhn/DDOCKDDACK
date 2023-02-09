@@ -5,7 +5,7 @@
     <td>{{ props.reportedGame.reportMemberNickname }}</td>
     <td>{{ props.reportedGame.reportedMemberNickname }}</td>
     <td><input v-model="visible" type="checkbox" /></td>
-    <td><button>처리</button></td>
+    <td><button>처리</button><button>취소</button></td>
   </tr>
   <tr v-if="visible">
     <td colspan="6">
