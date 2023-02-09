@@ -108,7 +108,6 @@ const capture = async (index) => {
       myImg = canvas.toDataURL("image/jpeg");
       setTimeout(() => {
         let byteString = myImg.replace("data:image/jpeg;base64,", "");
-        console.log(myImg);
 
         let param = {
           gameImage: props.room.gameImages[index].gameImage,

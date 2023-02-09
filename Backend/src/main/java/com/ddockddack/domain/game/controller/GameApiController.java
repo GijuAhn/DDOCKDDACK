@@ -6,6 +6,7 @@ import com.ddockddack.domain.game.response.GameDetailRes;
 import com.ddockddack.domain.game.response.GameRes;
 import com.ddockddack.domain.game.response.StarredGameRes;
 import com.ddockddack.domain.game.service.GameService;
+import com.ddockddack.domain.member.response.MemberAccessRes;
 import com.ddockddack.domain.report.entity.ReportType;
 import com.ddockddack.global.util.PageConditionReq;
 import io.swagger.v3.oas.annotations.Operation;
@@ -15,10 +16,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -35,7 +38,6 @@ public class GameApiController {
     })
     public ResponseEntity<PageImpl<GameRes>> gameList(@ModelAttribute PageConditionReq pageConditionReq,
                                                       @RequestHeader(value = "access-token", required = false) String accessToken) {
-        log.info("들어온 값 확인 {}. ", pageConditionReq);
 
         PageImpl<GameRes> allGames = gameService.findAllGames(null, pageConditionReq);
 

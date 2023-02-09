@@ -95,7 +95,7 @@ const api = apiInstance();
 const route = useRoute();
 const store = useStore();
 
-const accessToken = computed(() => store.state.memberStore.accessToken);
+const accessToken = computed(() => store.state.memberStore.accessToken).value;
 const nickname = ref();
 const openviduInfo = ref({
   // OpenVidu objects
@@ -127,10 +127,14 @@ const result = ref([]);
 
 onBeforeMount(() => {
   api
-    .post(`/api/game-rooms/${route.params.pinNumber}`, {})
+    .post(`/api/game-rooms/${route.params.pinNumber}`, {
+      headers: {
+        "access-token": accessToken,
+      },
+    })
     .then((res) => {
       //access-token 없으면 닉네임 입력 받도록 수정 필요
-      if (!accessToken.value) {
+      if (!accessToken) {
         do {
           nickname.value = prompt("닉네임을 입력해주세요.");
           if (nickname.value == null) {
@@ -178,6 +182,10 @@ onBeforeMount(() => {
           // timerCount.value++;
         }, 5000);
       });
+
+      if (!accessToken) {
+        console.log(typeof res.data);
+      }
 
       openviduInfo.value.session
         .connect(res.data.token, {
