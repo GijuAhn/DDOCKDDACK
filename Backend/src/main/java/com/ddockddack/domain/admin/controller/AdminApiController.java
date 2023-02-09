@@ -112,6 +112,31 @@ public class AdminApiController {
 
     }
 
+    @DeleteMapping("/remove/game/{reportId}")
+    @Operation(summary = "게임 신고 삭제")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "게임 신고 삭제 성공"),
+            @ApiResponse(responseCode = "401", description = "권한 없음"),
+            @ApiResponse(responseCode = "403", description = "허가되지 않은 사용자"),
+            @ApiResponse(responseCode = "404", description = "존재 하지 않는 신고"),
+            @ApiResponse(responseCode = "404", description = "존재 하지 않는 유저")
+    })
+    public ResponseEntity gameReportDelete(@PathVariable Long reportId,
+                                           @RequestHeader(value = "access-token", required = true) String accessToken,
+                                           @RequestBody int[] releaseDate) {
+
+        Long adminId = tokenService.getUid(accessToken);
+
+        // admin 확인
+        if(!adminService.isAdminByAccessToken(adminId)){
+            return ResponseEntity.status(403).body(null);
+        }
+        gameRepositorySupport.removeReportedGame(reportId);
+
+        return ResponseEntity.ok().build();
+
+    }
+
     @DeleteMapping("/remove/bestcut/{reportId}/{bestcutId}")
     @Operation(summary = "신고된 베스트 컷 삭제")
     @ApiResponses({
