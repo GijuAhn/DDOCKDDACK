@@ -99,11 +99,11 @@ public class MemberService {
     }
 
     @Transactional
-    public void logout(String accessToken, String refreshToken) {
+    public void logout(String refreshToken) {
 //        Long findUserId = tokenService.getUid(refreshToken);
 
         //Redis Cache에 저장
-        Long accessTokenTime = tokenService.getExpiration(accessToken);
+//        Long accessTokenTime = tokenService.getExpiration(accessToken);
         Long refreshTokenTime = tokenService.getExpiration(refreshToken);
 //        if (accessTokenTime > 0) {
 //            redisTemplate.opsForValue()

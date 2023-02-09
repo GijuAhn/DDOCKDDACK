@@ -77,10 +77,7 @@ export const memberStore = {
           }
         },
         async (error) => {
-          console.log(
-            "getMemberInfo() error code [토큰 만료되어 사용 불가능.] ::: ",
-            error.response.status
-          );
+          console.log("[토큰 만료]", error.response.status);
         }
       );
     },
@@ -105,8 +102,12 @@ export const memberStore = {
                 } else {
                   console.log("리프레시 토큰 제거 실패");
                 }
-                alert("RefreshToken 기간 만료!!! 다시 로그인해 주세요.");
-                router.push({ name: "login" });
+                // alert("RefreshToken 기간 만료!!! 다시 로그인해 주세요.");
+                // store.dispatch("commonStore/setCurrentModalAsync", {
+                //   name: "login",
+                //   data: "",
+                // });
+                router.push({ name: "main" });
               },
               (error) => {
                 console.log(error);

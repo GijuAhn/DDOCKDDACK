@@ -20,10 +20,12 @@
 </template>
 
 <script setup>
+import { apiInstance } from "@/api/index";
 import { computed } from "vue";
 import { useStore } from "vuex";
 
 const store = useStore();
+const api = apiInstance();
 
 const view = computed(() => store.state.commonStore.view);
 const accessToken = computed(() => store.state.memberStore.accessToken);
@@ -36,7 +38,19 @@ const setCurrentModalAsync = (what) => {
 };
 
 const logout = () => {
-  localStorage.removeItem("access-token");
+  api
+    .get(`/api/members/logout`, {
+      headers: {
+        "access-token": accessToken.value, // 변수로 가지고있는 AccessToken
+      },
+    })
+    .then((response) => {
+      console.log(response);
+      window.location.assign(`/`);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
 };
 </script>
 
