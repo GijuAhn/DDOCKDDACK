@@ -60,18 +60,19 @@
 </template>
 
 <script setup>
-// import { apiInstance } from "@/api/index";
+import { apiInstance } from "@/api/index";
 import { useStore } from "vuex";
 import { computed, ref } from "vue";
 import process from "process";
 
 const store = useStore();
-// const api = apiInstance();
-
+const api = apiInstance();
+const accessToken = computed(() => store.state.memberStore.accessToken);
 const myProfile = computed(() => store.state.memberStore.memberInfo).value;
 const IMAGE_PATH = process.env.VUE_APP_IMAGE_PATH;
 
 let name = myProfile.nickname;
+let profile = myProfile.profile;
 
 let save = ref(false);
 const modifyByName = () => {
@@ -80,27 +81,32 @@ const modifyByName = () => {
   save.value = !save.value;
 };
 
+// let memberReq = ref();
+
 let reg_id1 = /^[A-z가-힣0-9_-]{2,15}$/;
 const abc = () => {
   console.log("enter ", name);
   if (reg_id1.test(name)) {
-    console.log("OK!");
-    // api
-    //   .put(
-    //     `/api/members`,
-    //     {},
-    //     { headers: { "access-token": accessToken.value } }
-    //   )
-    //   .then(() => {
-    //     let bestcut = bestcuts.value.find((e) => e.bestcutId === bestcutId);
-    //     bestcut.isLiked = true;
-    //     bestcut.popularity++;
-    //   })
-    //   .catch((err) => {
-    //     if (err.response.status === 401) {
-    //       alert("로그인 후 이용해주세요.");
-    //     }
-    //   });
+    console.log("OK!", name, " ", profile);
+    api
+      .put(
+        `/api/members`,
+        {
+          nickname: name,
+          profile: profile,
+        },
+        { headers: { "access-token": accessToken.value } }
+      )
+      .then(() => {
+        // let bestcut = bestcuts.value.find((e) => e.bestcutId === bestcutId);
+        // bestcut.isLiked = true;
+        // bestcut.popularity++;
+      })
+      .catch((err) => {
+        if (err.response.status === 401) {
+          alert("로그인 후 이용해주세요.");
+        }
+      });
 
     save.value = !save.value;
   } else {

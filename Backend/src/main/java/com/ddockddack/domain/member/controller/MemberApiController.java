@@ -61,11 +61,21 @@ public class MemberApiController {
         @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @PutMapping()
-    public ResponseEntity<?> modifyMember(@PathVariable Long memberId,
-        @RequestBody MemberModifyReq modifyMemberReq){
+    public ResponseEntity<?> modifyMember(@RequestBody MemberModifyReq
+        modifyMemberReq) {
         try {
+            MemberAccessRes memberAccessRes = (MemberAccessRes) SecurityContextHolder.getContext()
+                .getAuthentication().getPrincipal();
+            Optional<Member> member = memberService.getMemberById(memberAccessRes.getId());
+            if (member.isEmpty()) {
+                throw new NotFoundException(ErrorCode.MEMBER_NOT_FOUND);
+            }
 //            memberService.modifyMember(memberId, modifyMember);
-            return ResponseEntity.ok(memberService.modifyMember(memberId, modifyMemberReq));
+//            return ResponseEntity.ok(memberService.modifyMember(memberId, modifyMemberReq));
+
+            log.info("mereq {}", modifyMemberReq);
+
+            return ResponseEntity.ok("");
         } catch (Exception e) {
             return ResponseEntity.status(500).body(e.getMessage());
         }
@@ -203,7 +213,7 @@ public class MemberApiController {
 
         String refreshToken = null;
         if (cookies != null) {
-            for (Cookie cookie: cookies) {
+            for (Cookie cookie : cookies) {
                 log.info(String.valueOf(cookie.getName()));
                 if (cookie.getName().equals("refresh-token")) {
                     refreshToken = cookie.getValue();
