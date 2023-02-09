@@ -4,6 +4,7 @@ import com.ddockddack.domain.gameRoom.response.GameMemberRes;
 import com.ddockddack.domain.gameRoom.response.GameRoomRes;
 import com.ddockddack.domain.gameRoom.service.GameRoomService;
 import com.ddockddack.global.service.AwsS3Service;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.openvidu.java.client.OpenViduHttpException;
 import io.openvidu.java.client.OpenViduJavaClientException;
 import io.swagger.v3.oas.annotations.Operation;
@@ -100,7 +101,7 @@ public class GameRoomApiController {
             @ApiResponse(responseCode = "200", description = "게임 시작"),
             @ApiResponse(responseCode = "404", description = "존재 하지 않는 게임방")
     })
-    public ResponseEntity startGame(@PathVariable String pinNumber) {
+    public ResponseEntity startGame(@PathVariable String pinNumber) throws JsonProcessingException {
         gameRoomService.startGame(pinNumber);
         return ResponseEntity.ok().build();
     }

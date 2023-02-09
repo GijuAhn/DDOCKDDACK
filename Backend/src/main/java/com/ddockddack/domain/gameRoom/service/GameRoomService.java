@@ -14,6 +14,7 @@ import com.ddockddack.global.error.ErrorCode;
 import com.ddockddack.global.error.exception.AccessDeniedException;
 import com.ddockddack.global.error.exception.NotFoundException;
 import com.ddockddack.global.service.AwsS3Service;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.openvidu.java.client.OpenViduHttpException;
 import io.openvidu.java.client.OpenViduJavaClientException;
 import lombok.RequiredArgsConstructor;
@@ -125,7 +126,7 @@ public class GameRoomService {
      *
      * @param pinNumber
      */
-    public void startGame(String pinNumber) {
+    public void startGame(String pinNumber) throws JsonProcessingException {
 
         gameRoomRepository.findSessionByPinNumber(pinNumber).orElseThrow(() ->
                 new NotFoundException(ErrorCode.GAME_ROOM_NOT_FOUND));

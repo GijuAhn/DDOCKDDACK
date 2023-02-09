@@ -38,6 +38,7 @@ public class GameRoomRepository {
 
     private final Integer PIN_NUMBER_BOUND = 1_000_000;
     private final Random random = new Random();
+    private final ObjectMapper mapper = new ObjectMapper();
     @Value("${OPENVIDU_URL}")
     private String OPENVIDU_URL;
     @Value("${OPENVIDU_SECRET}")
@@ -123,10 +124,13 @@ public class GameRoomRepository {
         return Optional.ofNullable(gameRooms.get(pinNumber));
     }
 
-    public void updateGameRoom(String pinNumber) {
+    public void updateGameRoom(String pinNumber) throws JsonProcessingException {
         GameRoom gameRoom = this.gameRooms.get(pinNumber);
         gameRoom.start();
         this.gameRooms.put(pinNumber,gameRoom);
+
+        String signal = createSignal(pinNumber, "signal:roundStart", "1");
+        sendSignal(signal);
     }
 
     public void saveScore(String pinNumber, String sessionId, byte[] byteImage, int score)
@@ -138,30 +142,41 @@ public class GameRoomRepository {
         gameMember.setTotalScore(gameMember.getTotalScore()+score);
         gameRoom.increaseScoreCnt();
         if(gameRoom.getScoreCount() == gameRoom.getMembers().size()){
-            RestTemplate restTemplate = new RestTemplate();
-            String url = "http://localhost:4443/api/signal";
-            HttpHeaders headers = new HttpHeaders();
-            headers.set("Authorization", "Basic T1BFTlZJRFVBUFA6TVlfU0VDUkVU");
-            headers.setContentType(MediaType.APPLICATION_JSON);
-
-
-            ObjectMapper mapper = new ObjectMapper();
             String resultData = mapper.writeValueAsString(findRoundResult(gameRoom));
+            String signal = createSignal(pinNumber, "roundResult", resultData);
 
-            GameSignalReq req = GameSignalReq.builder()
-                    .session(pinNumber)
-                    .type("roundResult")
-                    .data(resultData)
-                    .build();
-
-            String stringReq = mapper.writeValueAsString(req);
-            HttpEntity<String> httpEntity = new HttpEntity<>(stringReq, headers);
-            restTemplate.exchange(url, HttpMethod.POST, httpEntity, String.class);
+            sendSignal(signal);
             gameRoom.resetScoreCnt();
             gameRoom.increaseRound();
         }
 
     }
+
+    private String createSignal(String pinNumber, String signalName, String data) throws JsonProcessingException {
+        GameSignalReq req = GameSignalReq.builder()
+                .session(pinNumber)
+                .type(signalName)
+                .data(data)
+                .build();
+
+        String stringReq = mapper.writeValueAsString(req);
+        return stringReq;
+    }
+
+    private void sendSignal(String signal) {
+        RestTemplate restTemplate = new RestTemplate();
+
+        String url = OPENVIDU_URL+"/api/signal";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Basic T1BFTlZJRFVBUFA6TVlfU0VDUkVU");
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<String> httpEntity = new HttpEntity<>(signal, headers);
+        restTemplate.exchange(url, HttpMethod.POST, httpEntity, String.class);
+    }
+
+
 
     public byte[] findByImageIndex(String pinNumber, String sessionId, int index) {
         GameMember gameMember = gameRooms.get(pinNumber).getMembers().get(sessionId);
