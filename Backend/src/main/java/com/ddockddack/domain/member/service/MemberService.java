@@ -234,12 +234,36 @@ public class MemberService {
     }
 
     @Transactional
-    public Member banMember(Long memberId, LocalDate releaseDate) {
+    public Member banMember(Long memberId, BanLevel banLevel) {
         Member memberToModify = memberRepository.findById(memberId).get();
 
         memberToModify.setRole(Role.BAN);
-        memberToModify.setReleaseDate(releaseDate);
+        memberToModify.setReleaseDate(getReleaseDate(banLevel));
 
         return memberRepository.save(memberToModify);
+    }
+
+    public LocalDate getReleaseDate(BanLevel banLevel){
+        LocalDate today = LocalDate.now();
+
+        switch (banLevel){
+            case oneWeek:
+                today.plusDays(7);
+                break;
+            case oneMonth:
+                today.plusMonths(1);
+                break;
+            case sixMonth:
+                today.plusMonths(6);
+                break;
+            case oneYear:
+                today.plusYears(1);
+                break;
+            case endless:
+                today.plusYears(9999);
+                break;
+        }
+
+        return today;
     }
 }
