@@ -1,26 +1,22 @@
 <template>
   <div v-if="props.streamManager">
-    <ov-video
-      class="child1"
-      :class="{ blinking: resultMode }"
-      :stream-manager="props.streamManager"
-    />
+    <ov-video2 class="child1" :stream-manager="props.streamManager" />
 
-    <div v-if="true">
+    <div v-if="false">
       <p>{{ clientData }}</p>
     </div>
   </div>
 </template>
 
 <script setup>
-import OvVideo from "./OvVideo";
+import OvVideo2 from "./OvVideo2";
 
 import { computed, defineProps } from "vue";
 
 const props = defineProps({
   streamManager: Object,
-  resultMode: Boolean,
 });
+
 const clientData = computed(() => {
   const { clientData } = getConnectionData();
   return clientData;
@@ -32,16 +28,4 @@ const getConnectionData = () => {
 };
 </script>
 
-<style scoped>
-.blinking {
-  animation: blink 0.5s ease-in-out infinite alternate;
-}
-@keyframes blink {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-</style>
+<style scoped></style>
