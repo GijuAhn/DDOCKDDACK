@@ -1,6 +1,5 @@
 import router from "@/router";
 import {
-  login,
   findByAccessToken,
   accesstokenRegeneration,
   logout,
@@ -34,34 +33,6 @@ export const memberStore = {
   actions: {
     setTokensAsync({ commit }, accessToken) {
       commit("setToken", accessToken);
-    },
-    async userConfirm({ commit }, user) {
-      // console.log(user,"^^");
-      await login(
-        //accessToken과 refreshToken이 생성되게
-        user,
-        ({ data }) => {
-          console.log(data, "^^");
-          if (data.status === 200) {
-            // let accessToken = data["access-token"];
-            // let refreshToken = data["refresh-token"];
-            // console.log("login success token created!!!! >> ", accessToken, refreshToken);
-            commit("SET_IS_LOGIN", true);
-            commit("SET_IS_LOGIN_ERROR", false);
-            commit("SET_IS_VALID_TOKEN", true);
-
-            // sessionStorage.setItem("access-token", accessToken); //변수에
-            // sessionStorage.setItem("refresh-token", refreshToken); //cookie에
-          } else {
-            commit("SET_IS_LOGIN", false);
-            commit("SET_IS_LOGIN_ERROR", true);
-            commit("SET_IS_VALID_TOKEN", false);
-          }
-        },
-        (error) => {
-          console.log(error);
-        }
-      );
     },
 
     async getMemberInfo({ commit, state }) {
