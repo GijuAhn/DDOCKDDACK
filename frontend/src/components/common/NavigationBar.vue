@@ -71,12 +71,16 @@ const logout = () => {
 .variant3 {
   background-color: #77a4cc;
 }
-.default a {
+.default a,
+.default span {
   color: black;
 }
 .variant1 a,
 .variant2 a,
-.variant3 a {
+.variant3 a,
+.variant1 span,
+.variant2 span,
+.variant3 span {
   color: white;
 }
 a {
@@ -84,6 +88,11 @@ a {
   line-height: 95px;
   margin: 40px;
 }
+
+span:hover {
+  cursor: pointer;
+}
+
 .left a {
   font-family: "Gugi-Regular";
   font-size: 48px;
