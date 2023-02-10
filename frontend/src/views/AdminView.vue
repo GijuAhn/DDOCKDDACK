@@ -1,6 +1,8 @@
 <template>
-  <navigation-bar-in-admin-page />
-  <router-view></router-view>
+  <div class="flex-container">
+    <navigation-bar-in-admin-page />
+    <router-view></router-view>
+  </div>
 </template>
 
 <script setup>
@@ -12,4 +14,8 @@ const store = useStore();
 store.dispatch("commonStore/setColorAsync", "default");
 </script>
 
-<style></style>
+<style scoped>
+.flex-container {
+  display: flex;
+}
+</style>

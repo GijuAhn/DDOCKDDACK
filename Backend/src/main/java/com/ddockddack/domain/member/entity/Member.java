@@ -4,6 +4,7 @@ import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 
 @Entity
 @Getter @Setter
@@ -30,7 +31,7 @@ public class Member {
     private Role role; // member, ADMIN, BAN
 
     @Column(name = "member_release_date", nullable = true)
-    private java.sql.Date releaseDate;
+    private LocalDate releaseDate;
 
 
     @Builder

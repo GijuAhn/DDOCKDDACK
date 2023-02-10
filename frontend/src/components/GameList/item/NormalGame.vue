@@ -127,7 +127,11 @@ const createSession = (gameId) => {
 const starredGame = () => {
   open();
   api
-    .post(`/api/games/starred/${props.game.gameId}`)
+    .post(
+      `/api/games/starred/${props.game.gameId}`,
+      {},
+      { headers: { "access-token": accessToken } }
+    )
     .then(() => {
       emit("updateProps", { status: "starred", index: props.index });
     })
@@ -138,7 +142,9 @@ const starredGame = () => {
 const unstarredGame = () => {
   open();
   api
-    .delete(`/api/games/unstarred/${props.game.gameId}`)
+    .delete(`/api/games/unstarred/${props.game.gameId}`, {
+      headers: { "access-token": accessToken },
+    })
     .then(() => {
       emit("updateProps", { status: "unstarred", index: props.index });
     })

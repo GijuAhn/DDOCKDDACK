@@ -48,13 +48,11 @@
         <img
           :src="`${IMAGE_PATH}/${currentModal.data.gameImgUrl}`"
           alt="원본사진"
-          @click="bestcutDetail"
           class="image"
         />
         <img
           :src="`${IMAGE_PATH}/${currentModal.data.bestcutImgUrl}`"
           alt="베스트컷"
-          @click="bestcutDetail"
           class="image"
         />
       </div>
