@@ -6,7 +6,7 @@
     <td>{{ props.reportedBestCut.reportedMemberNickname }}</td>
     <td><input v-model="visible" type="checkbox" /></td>
     <td>
-      <select v-model="banLevel">
+      <select v-model="banLevel" class="action">
         <option value="noPenalty">noPenalty</option>
         <option value="oneWeek" selected>oneWeek</option>
         <option value="oneMonth">oneMonth</option>
@@ -14,8 +14,8 @@
         <option value="oneYear">oneYear</option>
         <option value="endless">endless</option>
       </select>
-      <button @click="punishmentApi()">처리</button>
-      <button @click="reportcancelApi()">취소</button>
+      <button @click="punishmentApi()" class="action" id="red">처리</button>
+      <button @click="reportcancelApi()" class="action">취소</button>
     </td>
   </tr>
   <tr v-if="visible">
@@ -60,7 +60,7 @@ const punishmentApi = () => {
     )
     .then((response) => {
       console.log(response);
-      emit("deleteProps", { index: props.index });
+      emit("deleteProps", { target: props.reportedBestCut.bestcutId });
     })
     .catch((error) => {
       error;
@@ -99,5 +99,20 @@ input {
   margin-top: 3px;
   width: 25px;
   height: 25px;
+}
+
+.action {
+  margin: 2px;
+  height: 40px;
+  background-color: white;
+  border-radius: 5px;
+  border: 2px solid black;
+  font-size: 17px;
+  font-family: "NanumSquareRoundB";
+}
+
+#red {
+  background-color: #d33a3a;
+  color: white;
 }
 </style>
