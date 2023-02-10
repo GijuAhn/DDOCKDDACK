@@ -9,10 +9,8 @@ import com.ddockddack.global.error.exception.NotFoundException;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
-//import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -32,9 +30,8 @@ public class MemberService {
     private final Environment env;
     private final MemberRepository memberRepository;
     private final TokenService tokenService;
-//    private final RedisTemplate redisTemplate;
+    //    private final RedisTemplate redisTemplate;
     private RestTemplate rt;
-
 
 
     @Transactional
@@ -53,9 +50,12 @@ public class MemberService {
     @Transactional
     public Member modifyMember(Long memberId, MemberModifyReq modifyMember) {
         Member memberToModify = memberRepository.findById(memberId).get();
-
-        memberToModify.setNickname(modifyMember.getNickname());
-        memberToModify.setProfile(modifyMember.getProfile());
+        if (!memberToModify.getNickname().equals(modifyMember.getNickname())) {
+            memberToModify.setNickname(modifyMember.getNickname());
+        }
+        if (!memberToModify.getProfile().equals(modifyMember.getProfile())) {
+            memberToModify.setProfile(modifyMember.getProfile());
+        }
 
         return memberRepository.save(memberToModify);
     }

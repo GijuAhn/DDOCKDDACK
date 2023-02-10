@@ -70,12 +70,13 @@ public class MemberApiController {
             if (member.isEmpty()) {
                 throw new NotFoundException(ErrorCode.MEMBER_NOT_FOUND);
             }
-//            memberService.modifyMember(memberId, modifyMember);
-//            return ResponseEntity.ok(memberService.modifyMember(memberId, modifyMemberReq));
+//            memberService.modifyMember(member.get().getId(), modifyMemberReq);
 
             log.info("mereq {}", modifyMemberReq);
+            return ResponseEntity.ok(memberService.modifyMember(member.get().getId(), modifyMemberReq));
 
-            return ResponseEntity.ok("");
+
+//            return ResponseEntity.ok("");
         } catch (Exception e) {
             return ResponseEntity.status(500).body(e.getMessage());
         }
