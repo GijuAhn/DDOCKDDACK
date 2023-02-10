@@ -157,8 +157,31 @@ public class AdminApiController {
         }
 
         bestcutRepositorySupport.removeReportedBestcut(reportId);
-        bestcutService.removeBestcut(bestcutId, adminId);
         if (stringToEnum(banLevel) != BanLevel.noPenalty) memberService.banMember(banMemberId, stringToEnum(banLevel));
+        bestcutService.removeBestcut(bestcutId, adminId);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/remove/bestcut/{reportId}")
+    @Operation(summary = "베스트 컷 신고 삭제")
+    @ApiResponses({
+            @ApiResponse(description = "베스트컷 신고 삭제 성공", responseCode = "200"),
+            @ApiResponse(description = "권한 없음", responseCode = "401"),
+            @ApiResponse(responseCode = "403", description = "허가되지 않은 사용자"),
+            @ApiResponse(description = "존재하지 않는 신고", responseCode = "404"),
+            @ApiResponse(description = "존재하지 않는 멤버", responseCode = "404"),
+    })
+    public ResponseEntity BestCutReportDelete(@PathVariable Long reportId,
+                                                @RequestHeader(value = "access-token", required = true) String accessToken) {
+        Long adminId = tokenService.getUid(accessToken);
+
+        // admin 확인
+        if(!adminService.isAdminByAccessToken(adminId)){
+            return ResponseEntity.status(403).body(null);
+        }
+
+        bestcutRepositorySupport.removeReportedBestcut(reportId);
 
         return ResponseEntity.ok().build();
     }

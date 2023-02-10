@@ -18,6 +18,7 @@
           v-for="reportedGame in reportedGames"
           :key="reportedGame"
           :reportedGame="reportedGame"
+          @deleteProps="(index) => deleteProps(index)"
         ></reported-game>
       </tfoot>
     </table>
@@ -54,6 +55,10 @@ const callApi = () => {
 };
 
 callApi();
+
+const deleteProps = function (targetIndex) {
+  reportedGames.value.splice(targetIndex, 1);
+};
 
 store.dispatch("commonStore/setAdminTabAsync", 0);
 </script>
