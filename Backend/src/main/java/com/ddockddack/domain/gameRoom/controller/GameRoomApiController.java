@@ -5,6 +5,7 @@ import com.ddockddack.domain.gameRoom.response.GameRoomRes;
 import com.ddockddack.domain.gameRoom.service.GameRoomService;
 import com.ddockddack.domain.member.response.MemberAccessRes;
 import com.ddockddack.domain.member.service.TokenService;
+import com.ddockddack.global.util.ClientUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.openvidu.java.client.OpenViduHttpException;
 import io.openvidu.java.client.OpenViduJavaClientException;
@@ -18,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -59,12 +61,16 @@ public class GameRoomApiController {
     })
     public ResponseEntity<GameRoomRes> joinRoom(@PathVariable String pinNumber,
                                                 @RequestBody(required = false) String nickname,
-                                                Authentication authentication) throws OpenViduJavaClientException, OpenViduHttpException {
+                                                Authentication authentication,
+                                                HttpServletRequest request) throws OpenViduJavaClientException, OpenViduHttpException {
+
+        String clientIp = ClientUtils.etRemoteAddr(request);
+        log.info("clientIp 확인 {}", clientIp);
         Long memberId = null;
         if(authentication != null) {
             memberId = ((MemberAccessRes) authentication.getPrincipal()).getId();
         }
-        return new ResponseEntity<>(gameRoomService.joinRoom(pinNumber, memberId, nickname), HttpStatus.OK);
+        return new ResponseEntity<>(gameRoomService.joinRoom(pinNumber, memberId, nickname, clientIp), HttpStatus.OK);
     }
 
     @DeleteMapping("/{pinNumber}/sessions/{socketId}")
