@@ -77,16 +77,21 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 Authentication auth = getAuthentication(memberAccessRes);
                 SecurityContextHolder.getContext().setAuthentication(auth);
 
+                filterChain.doFilter(request, response);
+
             } else if ((request.getMethod().equals("POST") || request.getMethod().equals("PUT"))
                     && request.getRequestURI().contains("api/game-room")){
 
                     filterChain.doFilter(request, response);
-                    return;
 
             } else if (!request.getMethod().equals("GET")){
 
                 log.info(String.valueOf(ErrorCode.EXPIRED_ACCESSTOKEN));
                 throw new AccessDeniedException(ErrorCode.EXPIRED_ACCESSTOKEN);
+
+            } else if (request.getMethod().equals("GET")){
+
+                filterChain.doFilter(request, response);
 
             }
 
@@ -105,10 +110,11 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 Authentication auth = getAuthentication(memberAccessRes);
                 SecurityContextHolder.getContext().setAuthentication(auth);
 
+                filterChain.doFilter(request, response);
+
             }
         }
 
-        filterChain.doFilter(request, response);
     }
 
     public Authentication getAuthentication(MemberAccessRes member) {
