@@ -79,8 +79,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
                 filterChain.doFilter(request, response);
 
-            } else if ((request.getMethod().equals("POST") || request.getMethod().equals("PUT"))
-                    && request.getRequestURI().contains("api/game-room")){
+            } else if (request.getRequestURI().contains("api/game-room")){
 
                     filterChain.doFilter(request, response);
 
