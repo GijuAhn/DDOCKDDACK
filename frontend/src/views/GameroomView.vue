@@ -1,6 +1,9 @@
 <template>
   <div id="session">
     <modal-frame v-if="currentModal.length !== 0" />
+    <div>
+      <result-modal v-if="resultMode" :round="round" :result="result" />
+    </div>
 
     <div id="session-header">
       <span id="session-title">
@@ -61,7 +64,7 @@
           <user-video
             id="main-video"
             :stream-manager="openviduInfo.publisher"
-            :resultMode="resultMode"
+            :captureMode="captureMode"
           />
         </div>
       </div>
@@ -108,13 +111,7 @@
 
 <script setup>
 import { apiInstance } from "@/api/index";
-import {
-  computed,
-  onBeforeMount,
-  onMounted,
-  ref,
-  watch,
-} from "@vue/runtime-core";
+import { computed, onBeforeMount, ref } from "@vue/runtime-core";
 import { useRoute } from "vue-router";
 import { OpenVidu } from "openvidu-browser";
 import UserVideo from "@/components/Gameroom/item/UserVideo.vue";
@@ -123,9 +120,10 @@ import { useStore } from "vuex";
 import router from "@/router/index.js";
 import process from "process";
 import ModalFrame from "@/components/common/ModalFrame";
+import ResultModal from "@/components/Gameroom/item/ResultModal.vue";
+import html2canvas from "html2canvas";
 
 const currentModal = computed(() => store.state.commonStore.currentModal);
-
 const IMAGE_PATH = process.env.VUE_APP_IMAGE_PATH;
 const api = apiInstance();
 const route = useRoute();
@@ -150,13 +148,15 @@ const room = ref({
   gameDescription: undefined,
   gameImages: undefined,
 });
-const timerCount = ref(2);
-const timerEnabled = ref(false);
+const timerCount = ref(5);
 const isStart = ref(false);
 const round = ref(1);
 const isHost = ref(false);
 const isEnd = ref(false);
 const resultMode = ref(false);
+const captureMode = ref(false);
+const result = ref([]);
+const resultImages = ref([]);
 
 onBeforeMount(() => {
   api
@@ -196,10 +196,42 @@ onBeforeMount(() => {
         console.warn(exception);
       });
 
-      openviduInfo.value.session.on("signal", () => {
-        timerEnabled.value = true;
-        isStart.value = true;
+      openviduInfo.value.session.on("signal:roundStart", (signal) => {
+        round.value = signal.data;
+        if (signal.data == 1) {
+          isStart.value = true;
+          console.log("게임 시작");
+        }
+
+        const timer = setInterval(() => {
+          timerCount.value--;
+          if (timerCount.value === 0) {
+            clearInterval(timer);
+            capture(signal.data - 1);
+            timerCount.value = 5;
+          }
+        }, 1000);
       });
+
+      openviduInfo.value.session.on("roundResult", (signal) => {
+        resultMode.value = true;
+        result.value = JSON.parse(signal.data);
+        setTimeout(() => {
+          resultMode.value = false;
+          if (round.value < 5 && isHost.value) {
+            openviduInfo.value.session.signal({
+              data: ++round.value,
+              type: "roundStart",
+            });
+          } else if (round.value == 5) {
+            isEnd.value = true;
+          }
+        }, 5000);
+      });
+
+      if (!accessToken) {
+        console.log(typeof res.data);
+      }
 
       openviduInfo.value.session
         .connect(res.data.token, {
@@ -253,27 +285,21 @@ onBeforeMount(() => {
         router.replace("/");
       }
       if (err.response.status === 401) {
-        console.log(err.response);
+        alert("중복 참가는 불가능 합니다.");
+        router.replace("/");
       }
     });
-});
-
-onMounted(() => {
-  timerCount.value = 2;
-  timerEnabled.value = false;
-  isStart.value = false;
-  round.value = 1;
 });
 
 const leaveSession = () => {
   // --- 7) Leave the session by calling 'disconnect' method over the Session object ---
   if (openviduInfo.value.session) {
-    let sessionId = openviduInfo.value.session.connection.connectionId;
+    let socketId = openviduInfo.value.session.connection.connectionId;
     // 방에 유저가 있는 경우 멤버삭제
     if (openviduInfo.value.subscribers.length) {
       api
         .delete(
-          `/api/game-rooms/${route.params.pinNumber}/sessions/${sessionId}`
+          `/api/game-rooms/${route.params.pinNumber}/sessions/${socketId}`
         )
         .catch((err) => {
           console.log(err);
@@ -300,13 +326,7 @@ const leaveSession = () => {
 const play = () => {
   api
     .put(`/api/game-rooms/${route.params.pinNumber}`)
-    .then(() => {
-      setTimeout(() => {
-        openviduInfo.value.session.signal({
-          data: "", // Any string (optional)
-        });
-      }, 1000);
-    })
+    .then()
     .catch(() => {
       alert("게임시작에 실패 하였습니다.");
     });
@@ -336,62 +356,32 @@ const linkShare = async () => {
   });
 };
 
-watch(
-  timerEnabled,
-  () => {
-    if (timerCount.value > 1) {
-      timerCount.value--;
-    }
-  },
-  { immediate: true }
-);
-
-watch(
-  timerCount,
-  (value) => {
-    if (value > 0 && timerEnabled.value) {
-      setTimeout(() => {
-        timerCount.value--;
-      }, 1000);
-    }
-    if (round.value > 5) {
-      timerEnabled.value = false;
-      isEnd.value = true;
-    }
-    if (value === 0) {
-      capture();
-      resultMode.value = true;
-      setTimeout(() => {
-        round.value++;
-        timerCount.value = 2;
-        resultMode.value = false;
-      }, 500);
-    }
-  },
-  { immediate: true }
-);
-
-const resultImages = ref([]);
-
-const capture = () => {
+const capture = async (index) => {
   let me = document.getElementById("myVideo2");
-  html2canvas(me).then((canvas) => {
-    let myImg;
-    const sessionId =
-      openviduInfo.value.publisher.session.connection.connectionId;
-    const pinNumber = openviduInfo.value.publisher.session.sessionId;
-    myImg = canvas.toDataURL("image/jpeg");
-    let byteString = myImg.replace("data:image/jpeg;base64,", "");
+  captureMode.value = true;
+  setTimeout(() => {
+    captureMode.value = false;
+  }, 500);
+  html2canvas(me)
+    .then((canvas) => {
+      let myImg;
+      const socketId =
+        openviduInfo.value.publisher.session.connection.connectionId;
+      const pinNumber = openviduInfo.value.publisher.session.sessionId;
+      myImg = canvas.toDataURL("image/jpeg");
+      let byteString = myImg.replace("data:image/jpeg;base64,", "");
 
-    let param = {
-      memberGameImage: byteString,
-    };
-    api.post(`/api/game-rooms/${pinNumber}/${sessionId}/images`, param);
-
-    resultImages.value.push(myImg);
-  });
+      let param = {
+        gameImage: room.value.gameImages[index].gameImage,
+        memberGameImage: byteString,
+      };
+      api.post(`/api/game-rooms/${pinNumber}/${socketId}/images`, param);
+      resultImages.value.push(myImg);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 };
-import html2canvas from "html2canvas";
 
 const setCurrentModalAsync = (what) => {
   store.dispatch("commonStore/setCurrentModalAsync", {

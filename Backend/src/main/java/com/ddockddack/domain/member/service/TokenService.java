@@ -93,7 +93,7 @@ public class TokenService {
                 .getExpiration()
                 .after(new Date());
         } catch (Exception e) {
-            log.info("Err {}", e);
+            log.info("Err {}", "access 만료");
             return false;
         }
     }

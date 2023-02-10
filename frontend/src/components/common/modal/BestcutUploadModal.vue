@@ -57,7 +57,7 @@ const resultImages = ref(currentModal.value.data[0]);
 const streamManager = ref(currentModal.value.data[1]);
 const room = ref(currentModal.value.data[2]);
 const api = apiInstance();
-
+const accessToken = computed(() => store.state.memberStore.accessToken).value;
 const bestcutSaveReq = ref({
   pinNumber: undefined,
   sessionId: undefined,
@@ -109,13 +109,16 @@ const upload = () => {
     }
   });
   api
-    .post("/api/bestcuts", bestcutSaveReq.value)
+    .post(`/api/bestcuts`, bestcutSaveReq.value, {
+      headers: {
+        "access-token": accessToken,
+      },
+    })
     .then(() => {
       alert("업로드가 완료 되었습니다.");
     })
-    .catch((err) => {
-      err;
-      alert("업로드 실패");
+    .catch(() => {
+      alert("업로드에 실패 하였습니다.");
     });
 };
 </script>

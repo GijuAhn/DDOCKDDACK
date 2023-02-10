@@ -30,9 +30,10 @@
       </span>
       <span>
         <input
+          @keyup.enter="callApi"
           type="text"
           placeholder="검색어를 입력해주세요"
-          v-model="pageConditionReq.keyword"
+          v-model.trim="pageConditionReq.keyword"
         />
         <button id="btn-s" @click="callApi">검색</button>
       </span>
@@ -68,7 +69,7 @@ import { useStore } from "vuex";
 
 const api = apiInstance();
 const store = useStore();
-const accessToken = computed(() => store.state.memberStore.accessToken);
+const accessToken = computed(() => store.state.memberStore.accessToken).value;
 const tabP = ref("on");
 const tabR = ref("off");
 
@@ -93,6 +94,7 @@ const callApi = () => {
         keyword: pageConditionReq.value.keyword,
         page: pageConditionReq.value.page,
       },
+      headers: { "access-token": accessToken },
     })
     .then((response) => {
       bestcuts.value = response.data.content;
@@ -132,7 +134,7 @@ const bestcutLike = (bestcutId) => {
     .post(
       `/api/bestcuts/like/${bestcutId}`,
       {},
-      { headers: { "access-token": accessToken.value } }
+      { headers: { "access-token": accessToken } }
     )
     .then(() => {
       let bestcut = bestcuts.value.find((e) => e.bestcutId === bestcutId);
@@ -154,7 +156,7 @@ const bestcutDislike = (bestcutId) => {
   }
   api
     .delete(`/api/bestcuts/dislike/${bestcutId}`, {
-      headers: { "access-token": accessToken.value },
+      headers: { "access-token": accessToken },
     })
     .then(() => {
       let bestcut = bestcuts.value.find((e) => e.bestcutId === bestcutId);
