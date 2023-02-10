@@ -3,6 +3,8 @@ package com.ddockddack.domain.member.service;
 import com.ddockddack.domain.member.entity.Member;
 import com.ddockddack.domain.member.entity.Role;
 import com.ddockddack.domain.member.repository.MemberRepository;
+import com.ddockddack.domain.member.request.MemberModifyImgReq;
+import com.ddockddack.domain.member.request.MemberModifyNameReq;
 import com.ddockddack.domain.member.request.MemberModifyReq;
 import com.ddockddack.global.error.ErrorCode;
 import com.ddockddack.global.error.exception.NotFoundException;
@@ -10,6 +12,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -23,6 +26,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @Service
+@Slf4j
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class MemberService {
@@ -53,11 +57,32 @@ public class MemberService {
         if (!memberToModify.getNickname().equals(modifyMember.getNickname())) {
             memberToModify.setNickname(modifyMember.getNickname());
         }
+        log.info("log! {}, {}", modifyMember.getProfile(), modifyMember.getProfile().isEmpty());
         if (!memberToModify.getProfile().equals(modifyMember.getProfile())) {
             memberToModify.setProfile(modifyMember.getProfile());
         }
 
-        return memberRepository.save(memberToModify);
+        return null;
+//        return memberRepository.save(memberToModify);
+    }
+    @Transactional
+    public void modifyMemberNickname(Long memberId, MemberModifyNameReq modifyMember) {
+        Member memberToModify = memberRepository.findById(memberId).get();
+        log.info("log! {}, {}", modifyMember.getNickname(), modifyMember.getNickname().isEmpty());
+        if (!memberToModify.getNickname().equals(modifyMember.getNickname())) {
+            memberToModify.modifyNickname(modifyMember.getNickname());
+        }
+//        return memberRepository.save(memberToModify);
+    }
+
+    @Transactional
+    public void modifyMemberProfileImg(Long memberId, MemberModifyImgReq modifyMember) {
+        Member memberToModify = memberRepository.findById(memberId).get();
+        log.info("log! {}, {}", modifyMember.getProfile(), modifyMember.getProfile().isEmpty());
+        if (!memberToModify.getProfile().equals(modifyMember.getProfile())) {
+            memberToModify.modifyProfile(modifyMember.getProfile());
+        }
+//        return memberRepository.save(memberToModify);
     }
 
     /**
@@ -84,11 +109,6 @@ public class MemberService {
     public boolean findUserBySocialId(String email) {
         return memberRepository.existsByEmail(email);
     }
-
-//    public Member findOne(Long memberId) {
-//        return memberRepository.findOne(Member);
-//    }
-
 
     public boolean isAdmin(Long reportId) {
         Member member = memberRepository.findById(reportId)

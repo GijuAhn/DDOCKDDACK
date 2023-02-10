@@ -41,5 +41,12 @@ public class Member {
         this.role = role;
         this.releaseDate = null;
     }
+    public void modifyNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public void modifyProfile(String profile) {
+        this.profile = profile;
+    }
 
 }

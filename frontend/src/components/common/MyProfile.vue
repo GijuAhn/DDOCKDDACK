@@ -8,16 +8,15 @@
           alt="대표사진"
           id="image"
         />
-        <div id="modifyImg">
+        <div id="div_modifyImg">
           <input
             type="file"
-            @change="fileUploadEvent"
+            @change="imgUploadEvent"
             accept=".jpg,.jpeg,.png"
-            multiple
-            id="fileInput"
+            id="imgInput"
             style="display: none"
           />
-          <label for="fileInput">
+          <label for="imgInput">
             <img
               :src="require(`@/assets/images/modify-profile-img.png`)"
               alt="대표사진"
@@ -30,7 +29,7 @@
     <div id="nameAndEmail">
       <div id="nickname" v-if="!save">
         <span>{{ name }}</span>
-        <span id="modifyName" @click="modifyByName">
+        <span id="btn_modifyName" @click="modifyNameInput">
           <img
             :src="require(`@/assets/images/modify-name.png`)"
             alt="이름수정버튼"
@@ -38,16 +37,12 @@
           />
         </span>
       </div>
-      <div id="nickname2" v-else>
-        <form id="modifyInput" @submit="abc" onsubmit="return false">
+      <div v-else>
+        <form id="modifyInput" @submit="modifyName" onsubmit="return false">
           <input type="text" name="site" v-model="name" /><br />
         </form>
-        <span id="modifyName" @click="modifyByName">
-          <img
-            :src="require(`@/assets/images/modify-name.png`)"
-            alt="이름수정버튼"
-            class="modify"
-          />
+        <span v-if="checkNickname" id="checkNickname">
+          2~15글자내외, 특수문자 사용 불가능
         </span>
       </div>
 
@@ -68,14 +63,16 @@ import process from "process";
 const store = useStore();
 const api = apiInstance();
 const accessToken = computed(() => store.state.memberStore.accessToken);
-const myProfile = computed(() => store.state.memberStore.memberInfo).value;
+let myProfile = computed(() => store.state.memberStore.memberInfo).value;
 const IMAGE_PATH = process.env.VUE_APP_IMAGE_PATH;
+const maxSize = 2 * 1024 * 1024;
 
 let name = myProfile.nickname;
 let profile = myProfile.profile;
 
 let save = ref(false);
-const modifyByName = () => {
+let checkNickname = ref(false);
+const modifyNameInput = () => {
   //form형태로 변경
   console.log("click ", save.value);
   save.value = !save.value;
@@ -83,34 +80,74 @@ const modifyByName = () => {
 
 // let memberReq = ref();
 
-let reg_id1 = /^[A-z가-힣0-9_-]{2,15}$/;
-const abc = () => {
+let reg_nickname = /^[A-z가-힣0-9_-]{2,15}$/;
+const modifyName = () => {
   console.log("enter ", name);
-  if (reg_id1.test(name)) {
+  if (reg_nickname.test(name)) {
     console.log("OK!", name, " ", profile);
     api
       .put(
-        `/api/members`,
+        `/api/members/nickname`,
         {
           nickname: name,
-          profile: profile,
         },
         { headers: { "access-token": accessToken.value } }
       )
       .then(() => {
-        // let bestcut = bestcuts.value.find((e) => e.bestcutId === bestcutId);
-        // bestcut.isLiked = true;
-        // bestcut.popularity++;
+        console.log("성공");
+        myProfile.nickname = name;
       })
       .catch((err) => {
+        console.log("err ", err);
         if (err.response.status === 401) {
           alert("로그인 후 이용해주세요.");
         }
       });
 
     save.value = !save.value;
+    checkNickname.value = !checkNickname.value;
   } else {
     console.log("닉네임 규칙에 맞게");
+    if (!checkNickname.value) {
+      checkNickname.value = !checkNickname.value;
+    }
+  }
+};
+
+const imgUploadEvent = (e) => {
+  console.log("i e ", e);
+  modifyProfileImg(e.target.files);
+};
+
+let reg_img = ["jpg", "jpeg", "png"];
+const modifyProfileImg = (f) => {
+  const modifyImgName = f[0].name;
+  maxSize;
+  console.log(
+    "enterImg",
+    modifyImgName,
+    modifyImgName.split(".").pop().toLowerCase()
+  );
+  const ext = modifyImgName.split(".").pop().toLowerCase();
+  if (reg_img.includes(ext)) {
+    console.log("OK!", name, " ", modifyImgName);
+    api
+      .put(
+        `/api/members/profile`,
+        {
+          profile: f,
+        },
+        { headers: { "access-token": accessToken.value } }
+      )
+      .then(() => {})
+      .catch((err) => {
+        if (err.response.status === 401) {
+          alert("로그인 후 이용해주세요.");
+        }
+      });
+  } else {
+    alert("2MB이하의 jpg, jpeg, png 이미지만 가능합니다!");
+    console.log("이미지 규칙에 맞게");
   }
 };
 
@@ -174,26 +211,29 @@ const abc = () => {
   width: 20%;
   height: 20%;
 }
-#modifyName {
+#btn_modifyName {
   display: none;
 }
-#modifyImg {
+#div_modifyImg {
   display: none;
   position: absolute;
   top: 50%;
   left: 52%;
   transform: translate(-50%, -50%);
 }
-#nickname:hover #modifyName {
+#nickname:hover #btn_modifyName {
   display: inline;
   cursor: pointer;
 }
-#profileImg:hover #modifyImg,
+#profileImg:hover #div_modifyImg,
 #modifyProfile {
   display: inline;
   cursor: pointer;
 
   width: 50px;
   height: 50px;
+}
+#checkNickname {
+  color: crimson;
 }
 </style>

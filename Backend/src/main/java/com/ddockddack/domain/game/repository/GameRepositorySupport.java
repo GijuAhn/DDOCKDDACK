@@ -97,26 +97,28 @@ public class GameRepositorySupport {
     // 내가 만든 게임 전체 조회
     public List<GameRes> findAllByMemberId(Long memberId) {
         return jpaQueryFactory.select(
-                        new QGameRes(game.id.as("gameId"),
-                                game.category.as("gameCategory").stringValue(),
-                                game.title.as("gameTitle"),
-                                game.description.as("gameDesc"),
-                                game.member.nickname.as("creator"),
-                                isStarred(memberId),
-                                getStarredCnt(),
-                                game.playCount.as("popularity"),
-                                gameImage.imageUrl.min().as("thumbnail")
-                        ))
-                .from(game)
-                .innerJoin(game.member, member)
-                .innerJoin(game.images, gameImage)
-                .join(starredGame.game).on(starredGame.game.id.eq(game.id),
-                        starredGame.member.id.eq(member.id))
-//                .where(starredGame.game.member.id.eq(memberId))
-                .groupBy(starredGame.id)
-                .having(starredGame.game.member.id.eq(memberId))
-                .orderBy(game.id.desc())
-                .fetch();
+                new QGameRes(game.id.as("gameId"),
+                    game.category.as("gameCategory").stringValue(),
+                    game.title.as("gameTitle"),
+                    game.description.as("gameDesc"),
+                    game.member.nickname.as("creator"),
+                    isStarred(memberId),
+                    getStarredCnt(),
+                    game.playCount.as("popularity"),
+                    gameImage.imageUrl.min().as("thumbnail")
+                ))
+            .from(game)
+            .innerJoin(game.member, member)
+            .innerJoin(game.images, gameImage)
+            .where(member.id.eq(memberId))
+            .groupBy(game.id,
+                game.category,
+                game.title,
+                game.description,
+                game.member.nickname,
+                game.playCount)
+            .orderBy(game.id.desc())
+            .fetch();
     }
 
     // 즐겨찾기 목록 조회

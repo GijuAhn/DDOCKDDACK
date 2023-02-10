@@ -3,11 +3,14 @@ package com.ddockddack.domain.member.controller;
 
 import com.ddockddack.domain.bestcut.response.BestcutRes;
 import com.ddockddack.domain.bestcut.service.BestcutService;
+import com.ddockddack.domain.game.request.GameModifyReq;
 import com.ddockddack.domain.game.response.GameRes;
 import com.ddockddack.domain.game.response.ReportedGameRes;
 import com.ddockddack.domain.game.response.StarredGameRes;
 import com.ddockddack.domain.game.service.GameService;
 import com.ddockddack.domain.member.entity.Member;
+import com.ddockddack.domain.member.request.MemberModifyImgReq;
+import com.ddockddack.domain.member.request.MemberModifyNameReq;
 import com.ddockddack.domain.member.request.MemberModifyReq;
 import com.ddockddack.domain.member.response.MemberAccessRes;
 import com.ddockddack.domain.member.service.MemberService;
@@ -24,6 +27,7 @@ import java.util.Optional;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageImpl;
@@ -50,7 +54,36 @@ public class MemberApiController {
     private final BestcutService bestcutService;
     private final GameService gameService;
 
-    @Operation(summary = "회원 정보 수정", description = "회원 정보 수정 메소드입니다.")
+    @Operation(summary = "회원 nickname 수정", description = "회원 nickname 수정 메소드입니다.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "이력 조회 성공"),
+        @ApiResponse(responseCode = "400", description = "필수 값 누락"),
+        @ApiResponse(responseCode = "400", description = "권한 없음"),
+        @ApiResponse(responseCode = "404", description = "존재하지 않는 유저"),
+        @ApiResponse(responseCode = "500", description = "서버 오류")
+    })
+    @PutMapping("/nickname")
+    public ResponseEntity<?> modifyMemberNickname(@RequestBody MemberModifyNameReq
+        memberModifyNameReq) {
+        try {
+            MemberAccessRes memberAccessRes = (MemberAccessRes) SecurityContextHolder.getContext()
+                .getAuthentication().getPrincipal();
+            Optional<Member> member = memberService.getMemberById(memberAccessRes.getId());
+            if (member.isEmpty()) {
+                throw new NotFoundException(ErrorCode.MEMBER_NOT_FOUND);
+            }
+            memberService.modifyMemberNickname(member.get().getId(), memberModifyNameReq);
+
+//            return ResponseEntity.ok(memberService.modifyMember(member.get().getId(), modifyMemberReq));
+            log.info("mereq {}", memberModifyNameReq);
+
+            return ResponseEntity.ok("");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(e.getMessage());
+        }
+    }
+
+    @Operation(summary = "회원 이미지 수정", description = "회원 이미지 수정 메소드입니다.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "이력 조회 성공"),
         @ApiResponse(responseCode = "400", description = "필수 값 누락"),
@@ -60,9 +93,9 @@ public class MemberApiController {
         @ApiResponse(responseCode = "415", description = "지원하지않는 확장자"),
         @ApiResponse(responseCode = "500", description = "서버 오류")
     })
-    @PutMapping()
-    public ResponseEntity<?> modifyMember(@RequestBody MemberModifyReq
-        modifyMemberReq) {
+    @PutMapping("/profile")
+    public ResponseEntity<?> modifyMemberProfileImg(@ModelAttribute @Valid MemberModifyImgReq memberModifyImgReq,
+        ) {
         try {
             MemberAccessRes memberAccessRes = (MemberAccessRes) SecurityContextHolder.getContext()
                 .getAuthentication().getPrincipal();
@@ -70,13 +103,16 @@ public class MemberApiController {
             if (member.isEmpty()) {
                 throw new NotFoundException(ErrorCode.MEMBER_NOT_FOUND);
             }
-//            memberService.modifyMember(member.get().getId(), modifyMemberReq);
 
-            log.info("mereq {}", modifyMemberReq);
-            return ResponseEntity.ok(memberService.modifyMember(member.get().getId(), modifyMemberReq));
+            log.info(String.valueOf(memberModifyImgReq));
 
+            memberService.modifyMemberProfileImg(member.get().getId(), memberModifyImgReq);
 
-//            return ResponseEntity.ok("");
+//            return ResponseEntity.ok(memberService.modifyMember(member.get().getId(), modifyMemberReq));
+
+            log.info("mereq {}", memberModifyImgReq);
+
+            return ResponseEntity.ok("");
         } catch (Exception e) {
             return ResponseEntity.status(500).body(e.getMessage());
         }
