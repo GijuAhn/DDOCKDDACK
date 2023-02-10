@@ -4,79 +4,113 @@
       <result-modal v-if="resultMode" :round="round" :result="result" />
     </div>
 
-    <div id="main-container" class="container">
-      <div id="session-header">
-        <h3 id="session-title">
-          핀번호 : {{ room.pinNumber }} 인원 :
-          {{ openviduInfo.subscribers.length + 1 }}
-          <span>/ 게임 라운드 : {{ round }}</span>
-          <button @click="linkShare">
-            <img
-              src="https://developers.kakao.com/assets/img/about/logos/kakaotalksharing/kakaotalk_sharing_btn_medium.png"
-              alt="카카오톡 공유 보내기 버튼"
-            />
-          </button>
-        </h3>
-        <h3 v-show="!isEnd">
-          남은 시간 : {{ timerCount }}
-          <button v-if="isHost" v-show="!isStart" @click="play">play</button>
-        </h3>
-      </div>
-      <div id="game-image">
-        <span v-if="isStart && !isEnd">
-          <img
-            class="game-image"
-            :src="`${IMAGE_PATH}/${room.gameImages[round - 1].gameImage}`"
+    <div id="session-header">
+      <span id="session-title">
+        {{ room.gameTitle }} [방 코드 - {{ room.pinNumber }}]
+      </span>
+      <img
+        src="https://developers.kakao.com/assets/img/about/logos/kakaotalksharing/kakaotalk_sharing_btn_medium.png"
+        @click="linkShare"
+        id="kakaoShareButton"
+      />
+      <span>공유하기</span>
+
+      <span id="subscribers-count">
+        참가자 : {{ openviduInfo.subscribers.length + 1 }}명</span
+      >
+    </div>
+
+    <div id="main-container">
+      <capture-video id="main-video" :stream-manager="openviduInfo.publisher" />
+
+      <div id="left-section">
+        <div id="gameInfoSection">
+          <div v-if="isStart && !isEnd">
+            <div id="gameImageSection">
+              <img
+                class="game-image"
+                :src="`${IMAGE_PATH}/${room.gameImages[round - 1].gameImage}`"
+              />
+            </div>
+            <div id="gameCurrentSection">
+              <span v-show="!isEnd"> 게임 라운드 : {{ round }}</span>
+              <span v-show="!isEnd"> 남은 시간 : {{ timerCount }} </span>
+            </div>
+          </div>
+
+          <div v-if="!isStart">
+            <button v-if="isHost" v-show="!isStart" @click="play">play</button>
+            대기중
+          </div>
+
+          <div v-if="isEnd">
+            <button @click="getMyImages">결과보기</button>
+
+            <div v-if="isShow">
+              <div v-for="(image, index) in resultImages" :key="index">
+                <div>
+                  <input
+                    type="checkbox"
+                    :value="index"
+                    @change="check(index)"
+                  />체크박스
+                  <br />
+                  <input
+                    id="bestcutTitle"
+                    type="text"
+                    v-model="inputs[index]"
+                    placeholder="제목을 입력하세요"
+                  />
+                  <img
+                    :src="`${IMAGE_PATH}/${room.gameImages[index].gameImage}`"
+                  />
+                  <div class="test">
+                    <img :src="image" id="bestcutImg" />
+                  </div>
+                  <br />
+                </div>
+              </div>
+
+              <button @click="upload">베스트 컷 게시</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="my-video">
+          <user-video
+            id="main-video"
+            :stream-manager="openviduInfo.publisher"
+            :captureMode="captureMode"
           />
-        </span>
+        </div>
       </div>
-      <div>
-        <user-video
-          id="main-video"
-          :stream-manager="openviduInfo.publisher"
-          :timerCount="timerCount"
-          :isEnd="isEnd"
-          :isStart="isStart"
-          :round="round"
-          :room="room"
-          :captureMode="captureMode"
-        />
-      </div>
-      <div id="video-container">
+      <div id="right-section">
         <div
-          v-for="sub in openviduInfo.subscribers"
-          :key="sub.stream.connection.connectionId"
+          id="video-container"
+          :class="{
+            grid1: 1 === openviduInfo.subscribers.length,
+            grid2: 2 === openviduInfo.subscribers.length,
+            grid3: 3 === openviduInfo.subscribers.length,
+            grid4: 4 === openviduInfo.subscribers.length,
+            grid5: 5 === openviduInfo.subscribers.length,
+            grid6: 6 === openviduInfo.subscribers.length,
+            grid7: 7 === openviduInfo.subscribers.length,
+            grid8: 8 === openviduInfo.subscribers.length,
+            grid9: 9 === openviduInfo.subscribers.length,
+            grid10: 10 === openviduInfo.subscribers.length,
+            grid11: 11 === openviduInfo.subscribers.length,
+            grid12: 12 === openviduInfo.subscribers.length,
+          }"
         >
-          <user-video :stream-manager="sub" />
-        </div>
-      </div>
-    </div>
-    <div v-if="isEnd">
-      <button @click="getMyImages">결과보기</button>
-    </div>
-
-    <div v-if="isShow">
-      <div v-for="(image, index) in resultImages" :key="index">
-        <div>
-          <input
-            type="checkbox"
-            :value="index"
-            @change="check(index)"
-          />체크박스
-          <br />
-          <input
-            id="bestcutTitle"
-            type="text"
-            v-model="inputs[index]"
-            placeholder="제목을 입력하세요"
+          <user-video
+            v-for="sub in openviduInfo.subscribers"
+            :key="sub.stream.connection.connectionId"
+            :stream-manager="sub"
           />
-          <img :src="`${IMAGE_PATH}/${room.gameImages[index].gameImage}`" />
-          <img :src="image" id="bestcutImg" /> <br />
         </div>
       </div>
-
-      <button @click="upload">베스트 컷 게시</button>
     </div>
+
     <div id="button-container">
       <button class="btn-video-control">
         <svg-icon type="mdi" :path="path[0]" /> 음소거
@@ -97,6 +131,7 @@ import { computed, onBeforeMount, ref } from "@vue/runtime-core";
 import { useRoute } from "vue-router";
 import { OpenVidu } from "openvidu-browser";
 import UserVideo from "@/components/Gameroom/item/UserVideo.vue";
+import CaptureVideo from "@/components/Gameroom/item/CaptureVideo.vue";
 import { useStore } from "vuex";
 import router from "@/router/index.js";
 import process from "process";
@@ -114,7 +149,7 @@ const api = apiInstance();
 const route = useRoute();
 const store = useStore();
 
-const accessToken = computed(() => store.state.memberStore.accessToken).value;
+const accessToken = computed(() => store.state.memberStore.accessToken);
 const nickname = ref();
 const openviduInfo = ref({
   // OpenVidu objects
@@ -165,14 +200,10 @@ const bestcutSaveReq = ref({
 });
 onBeforeMount(() => {
   api
-    .post(`/api/game-rooms/${route.params.pinNumber}`, {
-      headers: {
-        "access-token": accessToken,
-      },
-    })
+    .post(`/api/game-rooms/${route.params.pinNumber}`, {})
     .then((res) => {
       //access-token 없으면 닉네임 입력 받도록 수정 필요
-      if (!accessToken) {
+      if (!accessToken.value) {
         do {
           nickname.value = prompt("닉네임을 입력해주세요.");
           if (nickname.value == null) {
@@ -205,9 +236,10 @@ onBeforeMount(() => {
         console.warn(exception);
       });
 
-      openviduInfo.value.session.on("signal:roundStart", async (signal) => {
+      openviduInfo.value.session.on("signal:roundStart", (signal) => {
         round.value = signal.data;
         if (signal.data == 1) {
+          isStart.value = true;
           console.log("게임 시작");
         }
 
@@ -226,9 +258,12 @@ onBeforeMount(() => {
         result.value = JSON.parse(signal.data);
         setTimeout(() => {
           resultMode.value = false;
-          if (round.value < 5) {
-            api.get(`/api/game-rooms/${route.params.pinNumber}/round`);
-          } else {
+          if (round.value < 5 && isHost.value) {
+            openviduInfo.value.session.signal({
+              data: ++round.value,
+              type: "roundStart",
+            });
+          } else if (round.value == 5) {
             isEnd.value = true;
           }
         }, 5000);
@@ -330,7 +365,7 @@ const leaveSession = () => {
 const play = () => {
   api
     .put(`/api/game-rooms/${route.params.pinNumber}`)
-    .then((isStart.value = true))
+    .then()
     .catch(() => {
       alert("게임시작에 실패 하였습니다.");
     });
@@ -361,7 +396,7 @@ const linkShare = async () => {
 };
 
 const capture = async (index) => {
-  let me = document.getElementById("local-video-undefined");
+  let me = document.getElementById("myVideo2");
   captureMode.value = true;
   setTimeout(() => {
     captureMode.value = false;
@@ -401,29 +436,19 @@ const upload = () => {
   bestcutSaveReq.value.sessionId =
     openviduInfo.value.publisher.session.connection.connectionId;
   bestcutSaveReq.value.gameTitle = room.value.gameTitle;
-  isChecked.value.forEach((element, index) => {
-    if (element) {
-      bestcutSaveReq.value.images.push({
-        bestcutIndex: index,
-        bestcutImgTitle: inputs.value[index],
-        gameImgUrl: room.value.gameImages[index].gameImage,
-        gameImgDesc: room.value.gameImages[index].gameImageDesc,
-      });
-    }
-  });
-  api
-    .post("/api/bestcuts", bestcutSaveReq.value, {
-      headers: {
-        "access-token": accessToken,
-      },
-    })
-    .then(() => {
-      alert("업로드가 완료 되었습니다.");
-    })
-    .catch((err) => {
-      err;
-      alert("업로드 실패");
-    });
+  isChecked.value.forEach(
+    (element, index) => {
+      if (element) {
+        bestcutSaveReq.value.images.push({
+          bestcutIndex: index,
+          bestcutImgTitle: inputs.value[index],
+          gameImgUrl: room.value.gameImages[index].gameImage,
+          gameImgDesc: room.value.gameImages[index].gameImageDesc,
+        });
+      }
+    },
+    { immediate: true }
+  );
 };
 </script>
 
@@ -431,6 +456,127 @@ const upload = () => {
 #session {
   background-color: black;
   color: #ffffff;
+  height: 100vh;
+}
+#session-header {
+  height: 35px;
+  /* background-color: rgb(255, 150, 150); */
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+}
+#session-header span {
+  font-size: 20px;
+}
+#session-header span:first-child {
+}
+#session-header span:last-child {
+  margin-left: auto;
+}
+#main-container {
+  /* border: 1px solid red; */
+  height: calc(100vh - 100px);
+  display: flex;
+  position: relative;
+}
+#left-section {
+  width: 50%;
+}
+#gameInfoSection {
+  /* background-color: rgb(104, 104, 0); */
+  height: 50%;
+  flex-direction: column;
+  position: relative;
+  overflow: scroll;
+}
+#gameImageSection {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+#gameImageSection img {
+  height: 100%;
+  width: 100%;
+  object-fit: contain;
+}
+#gameCurrentSection {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+#my-video {
+  /* background-color: rgb(104, 0, 87); */
+  height: 50%;
+  flex-direction: column;
+}
+#my-video > * {
+  height: 100%;
+}
+#right-section {
+  width: 50%;
+  /* background-color: rgb(0, 0, 99); */
+}
+#video-container {
+  height: 100%;
+  display: grid;
+}
+.grid1 {
+  grid-template-columns: repeat(1, 1fr);
+  grid-template-rows: repeat(1, 1fr);
+}
+.grid2 {
+  grid-template-columns: repeat(1, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+}
+.grid3 {
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+}
+.grid4 {
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+}
+.grid5 {
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+}
+.grid6 {
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+}
+.grid7 {
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+}
+.grid8 {
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+}
+.grid9 {
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+}
+.grid10 {
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+}
+.grid11 {
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+}
+.grid12 {
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+}
+#video-container > * {
+  height: 100%;
+}
+#button-container {
+  height: 65px;
+  /* background-color: rgb(150, 216, 255); */
+  text-align: center;
 }
 
 .btn-video-control {
@@ -486,6 +632,24 @@ const upload = () => {
 .btn-close:focus {
   transform: rotateZ(90deg);
   background: #ff0000;
+}
+
+.test {
+  width: 400px;
+  height: 400px;
+  border: 1px solid blue;
+}
+.test img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+#kakaoShareButton {
+  width: 30px;
+  height: 30px;
+}
+#kakaoShareButton:hover {
+  cursor: pointer;
 }
 .game-image {
   transform: scaleX(-1);

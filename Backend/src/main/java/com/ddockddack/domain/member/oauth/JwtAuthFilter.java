@@ -41,11 +41,14 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         Cookie[] cookies = request.getCookies();
         log.info("cokies {}", cookies);
-        for(Cookie cookie:cookies) {
-            if(cookie.getName().equals("refresh-token")) {
-                logger.info(cookie.getValue());
-                refreshToken = cookie.getValue();
-                break;
+
+        if(cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals("refresh-token")) {
+                    logger.info(cookie.getValue());
+                    refreshToken = cookie.getValue();
+                    break;
+                }
             }
         }
 
