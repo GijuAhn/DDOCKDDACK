@@ -130,9 +130,15 @@ public class GameRoomRepository {
     public void updateGameRoom(String pinNumber) throws JsonProcessingException {
         GameRoom gameRoom = this.gameRooms.get(pinNumber);
         gameRoom.start();
-        this.gameRooms.put(pinNumber,gameRoom);
 
-        String signal = createSignal(pinNumber, "signal:roundStart", "1");
+        String signal = createSignal(pinNumber, "signal:roundStart", String.valueOf(gameRoom.getRound()));
+        sendSignal(signal);
+    }
+
+    public void nextRound(String pinNumber) throws JsonProcessingException{
+        GameRoom gameRoom = this.gameRooms.get(pinNumber);
+
+        String signal = createSignal(pinNumber, "signal:roundStart", String.valueOf(gameRoom.getRound()));
         sendSignal(signal);
     }
 
@@ -155,12 +161,18 @@ public class GameRoomRepository {
 
     }
 
-    public void nextRound(String pinNumber) throws JsonProcessingException {
-        GameRoom gameRoom = gameRooms.get(pinNumber);
-        String signal = createSignal(pinNumber, "signal:roundStart", String.valueOf(gameRoom.getRound()));
-        sendSignal(signal);
-
+    public void finalResult(String pinNumber){
+        GameRoom gameRoom = this.gameRooms.get(pinNumber);
+        List<GameMember> members = new ArrayList<>(gameRoom.getMembers().values());
+        PriorityQueue<GameMember> pq = new PriorityQueue<>((a, b) -> b.getRoundScore() - a.getRoundScore());
+        pq.addAll(members);
+        List<GameMemberRes> result = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            if (pq.isEmpty()) break;
+            result.add(GameMemberRes.from(pq.poll(), gameRoom.getRound()));
+        }
     }
+
 
     private String createSignal(String pinNumber, String signalName, String data) throws JsonProcessingException {
         GameSignalReq req = GameSignalReq.builder()
@@ -179,7 +191,7 @@ public class GameRoomRepository {
         String url = OPENVIDU_URL+"/api/signal";
 
         HttpHeaders headers = new HttpHeaders();
-        System.out.println(OPENVIDU_HEADER);
+
         headers.set("Authorization", OPENVIDU_HEADER);
         headers.setContentType(MediaType.APPLICATION_JSON);
 
@@ -205,7 +217,7 @@ public class GameRoomRepository {
         List<GameMemberRes> result = new ArrayList<>();
         for (int i = 0; i < 3; i++) {
             if (pq.isEmpty()) break;
-            result.add(GameMemberRes.from(pq.poll(), gameRoom.getRound()));
+            result.add(GameMemberRes.from(pq.poll(), gameRoom.getRound()-1));
         }
         return result;
     }

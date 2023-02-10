@@ -219,14 +219,15 @@ onBeforeMount(() => {
         setTimeout(() => {
           resultMode.value = false;
           if (round.value < 5 && isHost.value) {
-            openviduInfo.value.session.signal({
-              data: ++round.value,
-              type: "roundStart",
-            });
+            api.get(`/api/game-rooms/${route.params.pinNumber}/round`);
           } else if (round.value == 5) {
             isEnd.value = true;
           }
         }, 5000);
+      });
+
+      openviduInfo.value.session.on("signal:host", () => {
+        isHost.value = true;
       });
 
       if (!accessToken) {
@@ -295,6 +296,7 @@ const leaveSession = () => {
   // --- 7) Leave the session by calling 'disconnect' method over the Session object ---
   if (openviduInfo.value.session) {
     let socketId = openviduInfo.value.session.connection.connectionId;
+    throwHost();
     // 방에 유저가 있는 경우 멤버삭제
     if (openviduInfo.value.subscribers.length) {
       api
@@ -323,6 +325,17 @@ const leaveSession = () => {
   window.removeEventListener("beforeunload", leaveSession);
   router.replace("/");
 };
+
+const throwHost = () => {
+  const nextHost =
+    openviduInfo.value.subscribers[0].stream.connection.connectionId;
+  openviduInfo.value.session.signal({
+    data: "",
+    to: [nextHost],
+    type: "host",
+  });
+};
+
 const play = () => {
   api
     .put(`/api/game-rooms/${route.params.pinNumber}`)
