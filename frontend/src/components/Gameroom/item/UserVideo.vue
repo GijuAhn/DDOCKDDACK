@@ -2,7 +2,7 @@
   <div v-if="props.streamManager">
     <ov-video
       class="child1"
-      :class="{ blinking: resultMode }"
+      :class="{ blinking: captureMode }"
       :stream-manager="props.streamManager"
     />
 
@@ -19,7 +19,7 @@ import { computed, defineProps } from "vue";
 
 const props = defineProps({
   streamManager: Object,
-  resultMode: Boolean,
+  captureMode: Boolean,
 });
 const clientData = computed(() => {
   const { clientData } = getConnectionData();

@@ -1,6 +1,7 @@
 package com.ddockddack.domain.game.entity;
 
 import com.ddockddack.domain.member.entity.Member;
+import com.ddockddack.domain.report.entity.ReportedGame;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -45,6 +46,9 @@ public class Game {
     @OneToMany(mappedBy = "game", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<GameImage> images;
 
+    @OneToMany(mappedBy = "game", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<ReportedGame> reportedGames;
+
     @Builder
     public Game(Member member, String title, Category category, String description) {
         this.member = member;
@@ -58,6 +62,8 @@ public class Game {
         this.description = gameDesc;
     }
 
-
+    public void increasePlayCount() {
+        this.playCount++;
+    }
 
 }

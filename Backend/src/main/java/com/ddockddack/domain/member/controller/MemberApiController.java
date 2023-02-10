@@ -129,8 +129,8 @@ public class MemberApiController {
     public ResponseEntity<?> getMemberInfo() {
         log.info("sec info {}",
             SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
-        MemberAccessRes memberAccessRes = (MemberAccessRes) SecurityContextHolder.getContext()
-            .getAuthentication().getPrincipal();
+        MemberAccessRes memberAccessRes = Optional.ofNullable((MemberAccessRes) SecurityContextHolder.getContext()
+                .getAuthentication().getPrincipal()).get();
         if (memberAccessRes.toString().equals("anonymousUser")) {
             throw new NotFoundException(ErrorCode.MEMBER_NOT_FOUND);
         }

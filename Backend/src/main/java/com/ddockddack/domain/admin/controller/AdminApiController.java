@@ -1,13 +1,16 @@
 package com.ddockddack.domain.admin.controller;
 
 import com.ddockddack.domain.admin.service.AdminService;
+import com.ddockddack.domain.bestcut.repository.BestcutRepositorySupport;
+import com.ddockddack.domain.bestcut.response.ReportedBestcutRes;
 import com.ddockddack.domain.bestcut.service.BestcutService;
+import com.ddockddack.domain.game.repository.GameRepositorySupport;
 import com.ddockddack.domain.game.response.ReportedGameRes;
 import com.ddockddack.domain.game.service.GameService;
-import com.ddockddack.domain.member.request.MemberModifyReq;
+import com.ddockddack.domain.member.service.BanLevel;
 import com.ddockddack.domain.member.service.MemberService;
 import com.ddockddack.domain.member.service.TokenService;
-import com.ddockddack.domain.report.entity.ReportedBestcut;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -16,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.*;
 
 
@@ -30,6 +34,8 @@ public class AdminApiController {
     private final AdminService adminService;
     private final TokenService tokenService;
     private final MemberService memberService;
+    private final BestcutRepositorySupport bestcutRepositorySupport;
+    private final GameRepositorySupport gameRepositorySupport;
 
     @GetMapping("/reported/games")
     @Operation(summary = "신고된 게임 목록 조회")
@@ -70,7 +76,7 @@ public class AdminApiController {
         }
 
         try {
-            List<ReportedBestcut> allReportedBestCuts = bestcutService.findAllReportedBestCuts();
+            List<ReportedBestcutRes> allReportedBestCuts = bestcutService.findAllReportedBestCuts();
             return ResponseEntity.ok(allReportedBestCuts);
         } catch (Exception e) {
             return ResponseEntity.status(500).body(e);
@@ -78,7 +84,7 @@ public class AdminApiController {
 
     }
 
-    @DeleteMapping("/remove/game/{gameId}")
+    @DeleteMapping("/remove/game/{reportId}/{gameId}")
     @Operation(summary = "신고된 게임 삭제")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "게임 삭제 성공"),
@@ -87,22 +93,50 @@ public class AdminApiController {
             @ApiResponse(responseCode = "404", description = "존재 하지 않는 게임"),
             @ApiResponse(responseCode = "404", description = "존재 하지 않는 유저")
     })
-    public ResponseEntity reportedGameDelete(@PathVariable Long gameId,
-                                     @RequestHeader(value = "access-token", required = true) String accessToken) {
+    public ResponseEntity reportedGameDelete(@PathVariable Long gameId, @PathVariable Long reportId,
+                                             @RequestHeader(value = "access-token", required = true) String accessToken,
+                                             @RequestHeader(value = "banMemberId", required = true) Long banMemberId,
+                                             @RequestHeader(value = "banLevel", required = true) String banLevel) {
         Long adminId = tokenService.getUid(accessToken);
 
         // admin 확인
         if(!adminService.isAdminByAccessToken(adminId)){
             return ResponseEntity.status(403).body(null);
         }
-        // 테스트용 입력
+
         gameService.removeGame(adminId, gameId);
+        if (stringToEnum(banLevel) != BanLevel.noPenalty) memberService.banMember(banMemberId, stringToEnum(banLevel));
+//        gameRepositorySupport.removeReportedGame(reportId);
 
         return ResponseEntity.ok().build();
 
     }
 
-    @DeleteMapping("/remove/bestcut/{bestcutId}")
+    @DeleteMapping("/remove/game/{reportId}")
+    @Operation(summary = "게임 신고 삭제")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "게임 신고 삭제 성공"),
+            @ApiResponse(responseCode = "401", description = "권한 없음"),
+            @ApiResponse(responseCode = "403", description = "허가되지 않은 사용자"),
+            @ApiResponse(responseCode = "404", description = "존재 하지 않는 신고"),
+            @ApiResponse(responseCode = "404", description = "존재 하지 않는 유저")
+    })
+    public ResponseEntity gameReportDelete(@PathVariable Long reportId,
+                                           @RequestHeader(value = "access-token", required = true) String accessToken) {
+
+        Long adminId = tokenService.getUid(accessToken);
+
+        // admin 확인
+        if(!adminService.isAdminByAccessToken(adminId)){
+            return ResponseEntity.status(403).body(null);
+        }
+        gameRepositorySupport.removeReportedGame(reportId);
+
+        return ResponseEntity.ok().build();
+
+    }
+
+    @DeleteMapping("/remove/bestcut/{reportId}/{bestcutId}")
     @Operation(summary = "신고된 베스트 컷 삭제")
     @ApiResponses({
             @ApiResponse(description = "베스트컷 삭제 성공", responseCode = "200"),
@@ -111,8 +145,10 @@ public class AdminApiController {
             @ApiResponse(description = "존재하지 않는 베스트컷", responseCode = "404"),
             @ApiResponse(description = "존재하지 않는 멤버", responseCode = "404"),
     })
-    public ResponseEntity reportedBestCutDelete(@PathVariable Long bestcutId,
-                                        @RequestHeader(value = "access-token", required = true) String accessToken) {
+    public ResponseEntity reportedBestCutDelete(@PathVariable Long bestcutId, @PathVariable Long reportId,
+                                                @RequestHeader(value = "access-token", required = true) String accessToken,
+                                                @RequestHeader(value = "banMemberId", required = true) Long banMemberId,
+                                                @RequestHeader(value = "banLevel", required = true) String banLevel) {
         Long adminId = tokenService.getUid(accessToken);
 
         // admin 확인
@@ -121,22 +157,46 @@ public class AdminApiController {
         }
 
         bestcutService.removeBestcut(bestcutId, adminId);
+        if (stringToEnum(banLevel) != BanLevel.noPenalty) memberService.banMember(banMemberId, stringToEnum(banLevel));
+//        bestcutRepositorySupport.removeReportedBestcut(reportId);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/remove/bestcut/{reportId}")
+    @Operation(summary = "베스트 컷 신고 삭제")
+    @ApiResponses({
+            @ApiResponse(description = "베스트컷 신고 삭제 성공", responseCode = "200"),
+            @ApiResponse(description = "권한 없음", responseCode = "401"),
+            @ApiResponse(responseCode = "403", description = "허가되지 않은 사용자"),
+            @ApiResponse(description = "존재하지 않는 신고", responseCode = "404"),
+            @ApiResponse(description = "존재하지 않는 멤버", responseCode = "404"),
+    })
+    public ResponseEntity BestCutReportDelete(@PathVariable Long reportId,
+                                                @RequestHeader(value = "access-token", required = true) String accessToken) {
+        Long adminId = tokenService.getUid(accessToken);
+
+        // admin 확인
+        if(!adminService.isAdminByAccessToken(adminId)){
+            return ResponseEntity.status(403).body(null);
+        }
+
+        bestcutRepositorySupport.removeReportedBestcut(reportId);
 
         return ResponseEntity.ok().build();
     }
 
     @Operation(summary = "회원 정지", description = "회원 정지 메소드입니다.")
-    @PutMapping("/ban/{memberId}")
+    @PutMapping("/ban/{banMemberId}")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "이력 조회 성공"),
             @ApiResponse(responseCode = "403", description = "허가되지 않은 사용자"),
             @ApiResponse(responseCode = "404", description = "존재하지 않는 유저"),
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
-    public ResponseEntity<?> modifyMember(@PathVariable Long memberId,
-                                          @PathVariable java.sql.Date releaseDate,
-                                          @RequestBody MemberModifyReq modifyMemberReq,
-                                          @RequestHeader(value = "access-token", required = true) String accessToken) {
+    public ResponseEntity<?> banMember(@PathVariable Long banMemberId,
+                                       @RequestHeader(value = "access-token", required = true) String accessToken,
+                                       @RequestBody Map<String, Object> Data) {
 
         Long adminId = tokenService.getUid(accessToken);
 
@@ -145,11 +205,17 @@ public class AdminApiController {
             return ResponseEntity.status(403).body(null);
         }
 
+        BanLevel banLevel = stringToEnum((String) Data.get("banLevel"));
+
         try {
-            memberService.banMember(memberId, releaseDate);
-            return ResponseEntity.ok(memberService.modifyMember(memberId, modifyMemberReq));
+            return ResponseEntity.ok(memberService.banMember(banMemberId, banLevel));
         } catch (Exception e) {
             return ResponseEntity.status(500).body(e.getMessage());
         }
+    }
+
+    @JsonCreator
+    public static BanLevel stringToEnum(String input) {
+        return BanLevel.valueOf(input);
     }
 }

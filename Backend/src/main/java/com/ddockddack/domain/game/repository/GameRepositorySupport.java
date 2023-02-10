@@ -1,6 +1,7 @@
 package com.ddockddack.domain.game.repository;
 
 import com.ddockddack.domain.game.response.*;
+import com.ddockddack.domain.report.repository.ReportedGameRepository;
 import com.ddockddack.global.util.PageCondition;
 import com.ddockddack.global.util.PeriodCondition;
 import com.ddockddack.global.util.SearchCondition;
@@ -34,6 +35,7 @@ import static com.querydsl.jpa.JPAExpressions.select;
 public class GameRepositorySupport {
 
     private final JPAQueryFactory jpaQueryFactory;
+    private final ReportedGameRepository reportedGameRepository;
 
     // 검색 목록 조회
     public PageImpl<GameRes> findAllGameBySearch(Long memberId, PageCondition pageCondition) {
@@ -97,28 +99,28 @@ public class GameRepositorySupport {
     // 내가 만든 게임 전체 조회
     public List<GameRes> findAllByMemberId(Long memberId) {
         return jpaQueryFactory.select(
-                new QGameRes(game.id.as("gameId"),
-                    game.category.as("gameCategory").stringValue(),
-                    game.title.as("gameTitle"),
-                    game.description.as("gameDesc"),
-                    game.member.nickname.as("creator"),
-                    isStarred(memberId),
-                    getStarredCnt(),
-                    game.playCount.as("popularity"),
-                    gameImage.imageUrl.min().as("thumbnail")
-                ))
-            .from(game)
-            .innerJoin(game.member, member)
-            .innerJoin(game.images, gameImage)
-            .where(member.id.eq(memberId))
-            .groupBy(game.id,
-                game.category,
-                game.title,
-                game.description,
-                game.member.nickname,
-                game.playCount)
-            .orderBy(game.id.desc())
-            .fetch();
+                        new QGameRes(game.id.as("gameId"),
+                                game.category.as("gameCategory").stringValue(),
+                                game.title.as("gameTitle"),
+                                game.description.as("gameDesc"),
+                                game.member.nickname.as("creator"),
+                                isStarred(memberId),
+                                getStarredCnt(),
+                                game.playCount.as("popularity"),
+                                gameImage.imageUrl.min().as("thumbnail")
+                        ))
+                .from(game)
+                .innerJoin(game.member, member)
+                .innerJoin(game.images, gameImage)
+                .where(member.id.eq(memberId))
+                .groupBy(game.id,
+                        game.category,
+                        game.title,
+                        game.description,
+                        game.member.nickname,
+                        game.playCount)
+                .orderBy(game.id.desc())
+                .fetch();
     }
 
     // 즐겨찾기 목록 조회
@@ -161,7 +163,10 @@ public class GameRepositorySupport {
                         reportedGame.reportMember.id.as("reportMemberId"),
                         reportedGame.reportedMember.id.as("reportedMemberId"),
                         reportedGame.game.id.as("gameId"),
-                        reportedGame.reportType.as("reason").stringValue()
+                        reportedGame.reportType.as("reason").stringValue(),
+                        reportedGame.game.title.as("gameTitle"),
+                        reportedGame.reportMember.nickname.as("reportMemberNickname"),
+                        reportedGame.reportedMember.nickname.as("reportedMemberNickname")
                 ))
                 .from(reportedGame)
                 .innerJoin(reportedGame.reportMember, member)
@@ -170,6 +175,14 @@ public class GameRepositorySupport {
                 .fetch();
     }
 
+    /**
+     * 신고된 게임 삭제
+     *
+     * @param reportId
+     */
+    public void removeReportedGame(Long reportId) {
+        reportedGameRepository.deleteById(reportId);
+    }
 
     // 나만 쓸 거야
     // 정렬

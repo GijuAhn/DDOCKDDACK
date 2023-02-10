@@ -10,8 +10,9 @@ const authMember = async (to, from, next) => {
 
   if (accessToken === "") {
     await store.dispatch("memberStore/accesstokenReissue", true);
+    accessToken = computed(() => store.state.memberStore.accessToken).value;
   }
-  if (memberInfo.email === "") {
+  if (accessToken !== "" && memberInfo.email === "") {
     await store.dispatch("memberStore/getMemberInfo");
   }
   accessToken = computed(() => store.state.memberStore.accessToken).value;
@@ -24,11 +25,13 @@ const isLogin = async () => {
   console.log("isLogin ", accessToken);
   if (accessToken === "") {
     await store.dispatch("memberStore/accesstokenReissue", false);
+    accessToken = computed(() => store.state.memberStore.accessToken).value;
   }
-  if (memberInfo.email === "") {
+  if (accessToken !== "" && memberInfo.email === "") {
     await store.dispatch("memberStore/getMemberInfo");
   }
   accessToken = computed(() => store.state.memberStore.accessToken).value;
+  console.log("isLogin ", accessToken);
 };
 
 const routes = [

@@ -1,30 +1,30 @@
-package com.ddockddack.domain.game.response;
+package com.ddockddack.domain.bestcut.response;
 
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.*;
 
-@Setter
 @Getter
+@Setter
 @ToString
 @NoArgsConstructor
-public class ReportedGameRes {
+public class ReportedBestcutRes {
     private Long reportId;
     private Long reportMemberId;
     private Long reportedMemberId;
-    private Long gameId;
+    private Long bestcutId;
     private String reason;
-    private String gameTitle;
+    private String bestcutTitle;
     private String reportMemberNickname;
     private String reportedMemberNickname;
 
     @QueryProjection
-    public ReportedGameRes(Long reportId, Long reportMemberId, Long reportedMemberId, Long gameId, String reason, String gameTitle, String reportMemberNickname, String reportedMemberNickname) {
+    public ReportedBestcutRes(Long reportId, Long reportMemberId, Long reportedMemberId, Long bestcutId, String reason, String bestcutTitle, String reportMemberNickname, String reportedMemberNickname) {
         this.reportId = reportId;
         this.reportMemberId = reportMemberId;
         this.reportedMemberId = reportedMemberId;
-        this.gameId = gameId;
+        this.bestcutId = bestcutId;
         this.reason = reason;
-        this.gameTitle = gameTitle;
+        this.bestcutTitle = bestcutTitle;
         this.reportMemberNickname = reportMemberNickname;
         this.reportedMemberNickname = reportedMemberNickname;
     }
