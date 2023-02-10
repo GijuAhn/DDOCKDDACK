@@ -2,10 +2,14 @@ package com.ddockddack.domain.gameRoom.service;
 
 import com.ddockddack.domain.game.entity.Game;
 import com.ddockddack.domain.game.repository.GameRepository;
+import com.ddockddack.domain.gameRoom.entity.GameRoomHistory;
 import com.ddockddack.domain.gameRoom.repository.GameMember;
 import com.ddockddack.domain.gameRoom.repository.GameRoom;
+import com.ddockddack.domain.gameRoom.repository.GameRoomHistoryRepository;
 import com.ddockddack.domain.gameRoom.repository.GameRoomRepository;
+import com.ddockddack.domain.gameRoom.request.GameRoomHistoryReq;
 import com.ddockddack.domain.gameRoom.response.GameMemberRes;
+import com.ddockddack.domain.gameRoom.response.GameRoomHistoryRes;
 import com.ddockddack.domain.gameRoom.response.GameRoomRes;
 import com.ddockddack.domain.member.entity.Member;
 import com.ddockddack.domain.member.repository.MemberRepository;
@@ -19,8 +23,11 @@ import io.openvidu.java.client.OpenViduJavaClientException;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.Column;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -30,6 +37,8 @@ public class GameRoomService {
     private final GameRepository gameRepository;
     private final MemberRepository memberRepository;
     private final AwsS3Service awsS3Service;
+
+    private final GameRoomHistoryRepository gameRoomHistoryRepository;
 
     /**
      * 방 생성
@@ -177,5 +186,36 @@ public class GameRoomService {
         return result;
     }
 
+    /**
+     * 게임 이력 저장
+     *
+     * @param gameRoomHistoryReq
+     */
+    @Transactional
+    public void saveGameRoomHistory(GameRoomHistoryReq gameRoomHistoryReq) {
+        //유저가 없는경우
+        memberRepository.findById(gameRoomHistoryReq.getMemberId()).orElseThrow(() ->
+                new NotFoundException(ErrorCode.MEMBER_NOT_FOUND)
+        );
+
+        GameRoomHistory gameRoomHistory = GameRoomHistory.of(gameRoomHistoryReq);
+        gameRoomHistoryRepository.save(gameRoomHistory);
+    }
+
+    /**
+     * 게임 이력 전체 조회
+     *
+     * @param memberId
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public List<GameRoomHistoryRes> findAllRoomHistory(Long memberId) {
+        memberRepository.findById(memberId).orElseThrow(() ->
+                new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
+
+        List<GameRoomHistory> list = gameRoomHistoryRepository.findByMemberId(memberId);
+
+        return list.stream().map(GameRoomHistoryRes::of).collect(Collectors.toList());
+    }
 
 }
