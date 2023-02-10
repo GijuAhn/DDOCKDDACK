@@ -77,5 +77,9 @@ public class AwsS3Service {
         return bytes;
     }
 
+    public void deleteObject(String fileName){
+        s3Client.deleteObject(new DeleteObjectRequest(bucket, fileName));
+    }
+
 
 }
