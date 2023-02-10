@@ -3,7 +3,9 @@ package com.ddockddack.domain.gameRoom.controller;
 import com.ddockddack.domain.gameRoom.response.GameMemberRes;
 import com.ddockddack.domain.gameRoom.response.GameRoomRes;
 import com.ddockddack.domain.gameRoom.service.GameRoomService;
-import com.ddockddack.global.service.AwsS3Service;
+import com.ddockddack.domain.member.response.MemberAccessRes;
+import com.ddockddack.domain.member.service.TokenService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.openvidu.java.client.OpenViduHttpException;
 import io.openvidu.java.client.OpenViduJavaClientException;
 import io.swagger.v3.oas.annotations.Operation;
@@ -13,10 +15,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Async;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,7 +30,7 @@ import java.util.Map;
 public class GameRoomApiController {
 
     private final GameRoomService gameRoomService;
-    private final AwsS3Service awsS3Service;
+    private final TokenService tokenService;
 
     @PostMapping
     @Operation(summary = "게임방 생성")
@@ -56,27 +57,27 @@ public class GameRoomApiController {
             @ApiResponse(responseCode = "200", description = "방 참가 성공"),
             @ApiResponse(responseCode = "404", description = "존재 하지 않는 게임방")
     })
-    public ResponseEntity<GameRoomRes> joinRoom(@PathVariable String pinNumber, @RequestHeader(value = "access-token", required = false) String accessToken, @RequestBody(required = false) String nickname) throws OpenViduJavaClientException, OpenViduHttpException {
+    public ResponseEntity<GameRoomRes> joinRoom(@PathVariable String pinNumber,
+                                                @RequestBody(required = false) String nickname,
+                                                Authentication authentication) throws OpenViduJavaClientException, OpenViduHttpException {
         Long memberId = null;
-
-        if (accessToken != null) {
-            //로그인 한 경우 token에서 memberId 추출
-            memberId = 1L;
+        if(authentication != null) {
+            memberId = ((MemberAccessRes) authentication.getPrincipal()).getId();
         }
         return new ResponseEntity<>(gameRoomService.joinRoom(pinNumber, memberId, nickname), HttpStatus.OK);
     }
 
-    @DeleteMapping("/{pinNumber}/sessions/{sessionId}")
+    @DeleteMapping("/{pinNumber}/sessions/{socketId}")
     @Operation(summary = "게임방 멤버 삭제")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "방 나가기 성공"),
             @ApiResponse(responseCode = "404", description = "존재 하지 않는 게임방")
     })
     public ResponseEntity removeGameMember(@PathVariable String pinNumber,
-                                           @PathVariable String sessionId) {
+                                           @PathVariable String socketId) {
 
 
-        gameRoomService.removeGameMember(pinNumber, sessionId);
+        gameRoomService.removeGameMember(pinNumber, socketId);
 
         return ResponseEntity.ok().build();
 
@@ -91,6 +92,7 @@ public class GameRoomApiController {
     public ResponseEntity removeGameRoom(@PathVariable String pinNumber) {
 
         gameRoomService.removeGameRoom(pinNumber);
+
         return ResponseEntity.ok().build();
     }
 
@@ -100,7 +102,7 @@ public class GameRoomApiController {
             @ApiResponse(responseCode = "200", description = "게임 시작"),
             @ApiResponse(responseCode = "404", description = "존재 하지 않는 게임방")
     })
-    public ResponseEntity startGame(@PathVariable String pinNumber) {
+    public ResponseEntity startGame(@PathVariable String pinNumber) throws JsonProcessingException {
         gameRoomService.startGame(pinNumber);
         return ResponseEntity.ok().build();
     }
@@ -116,16 +118,16 @@ public class GameRoomApiController {
         return ResponseEntity.ok(gameRoomService.isStartedGame(pinNumber));
     }
 
-    @PostMapping("/{pinNumber}/{sessionId}/images")
+    @PostMapping("/{pinNumber}/{socketId}/images")
     @Operation(summary = "게임 멤버 이미지 저장")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "게임 멤버 이미지 저장성공"),
             @ApiResponse(responseCode = "404", description = "존재 하지 않는 게임방")
     })
     public ResponseEntity scoringImage(@PathVariable("pinNumber") String pinNumber,
-                                       @PathVariable("sessionId") String sessionId,
+                                       @PathVariable("socketId") String socketId,
                                        @RequestBody HashMap<String, String> param) throws Exception {
-        gameRoomService.scoringImage(pinNumber, sessionId, param);
+        gameRoomService.scoringImage(pinNumber, socketId, param);
 
         return ResponseEntity.ok().build();
     }
@@ -138,8 +140,15 @@ public class GameRoomApiController {
     public ResponseEntity<List<GameMemberRes>> getResult(@PathVariable("pinNumber") String pinNumber,
                                                          @PathVariable("round") int round) {
 
-
         return ResponseEntity.ok(gameRoomService.findRoundResult(pinNumber, round));
     }
+
+    @GetMapping("{pinNumber}/round")
+    @Operation(summary = "다음 라운드로 진행")
+    public ResponseEntity next(@PathVariable("pinNumber") String pinNumber) throws JsonProcessingException {
+        gameRoomService.nextRound(pinNumber);
+        return ResponseEntity.ok().build();
+    }
+
 
 }

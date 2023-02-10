@@ -72,7 +72,7 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits, onMounted, ref } from "vue";
+import { defineProps, defineEmits, onMounted, ref, computed } from "vue";
 import { useStore } from "vuex";
 import { apiInstance } from "@/api/index";
 import router from "@/router/index.js";
@@ -83,6 +83,7 @@ const emit = defineEmits(["updateProps"]);
 const props = defineProps(["game", "index"]);
 const api = apiInstance();
 const IMAGE_PATH = process.env.VUE_APP_IMAGE_PATH;
+const accessToken = computed(() => store.state.memberStore.accessToken).value;
 
 const onClickOutside = () => {
   state.value = false;
@@ -106,9 +107,21 @@ onMounted(() => {
 });
 
 const createSession = (gameId) => {
-  api.post("/api/game-rooms", { gameId }).then((res) => {
-    router.replace(`/gameroom/${res.data}`);
-  });
+  api
+    .post(
+      "/api/game-rooms",
+      {
+        gameId,
+      },
+      {
+        headers: {
+          "access-token": accessToken,
+        },
+      }
+    )
+    .then((res) => {
+      router.replace(`/gameroom/${res.data}`);
+    });
 };
 
 const starredGame = () => {

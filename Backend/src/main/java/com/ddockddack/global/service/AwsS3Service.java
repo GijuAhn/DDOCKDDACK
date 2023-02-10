@@ -46,10 +46,10 @@ public class AwsS3Service {
     }
 
     public String multipartFileUpload(MultipartFile uploadFile) {
-        String fileName = UUID.randomUUID().toString() + ".jpg";
+        String fileName = UUID.randomUUID().toString() + uploadFile.getOriginalFilename();
         try {
             ObjectMetadata om = new ObjectMetadata();
-            om.setContentType("image/jpg");
+            om.setContentType(uploadFile.getContentType());
             s3Client.putObject(new PutObjectRequest(bucket, fileName, uploadFile.getInputStream(), om).withCannedAcl(CannedAccessControlList.PublicRead));
         } catch (IOException e) {
             e.printStackTrace();
@@ -75,6 +75,10 @@ public class AwsS3Service {
             e.printStackTrace();
         }
         return bytes;
+    }
+
+    public void deleteObject(String fileName){
+        s3Client.deleteObject(new DeleteObjectRequest(bucket, fileName));
     }
 
 
