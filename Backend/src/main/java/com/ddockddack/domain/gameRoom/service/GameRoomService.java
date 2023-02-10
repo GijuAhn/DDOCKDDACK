@@ -68,7 +68,7 @@ public class GameRoomService {
      * @throws OpenViduJavaClientException
      * @throws OpenViduHttpException
      */
-    public GameRoomRes joinRoom(String pinNumber, Long memberId, String nickname)
+    public GameRoomRes joinRoom(String pinNumber, Long memberId, String nickname, String clientIp)
             throws OpenViduJavaClientException, OpenViduHttpException {
         Member member = null;
         //로그인 한 유저면 memberId로 검색해서 넘겨줌
@@ -77,8 +77,17 @@ public class GameRoomService {
                     .orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
         }
 
-        String token = gameRoomRepository.join(pinNumber, member, nickname);
         GameRoom gameRoom = this.findGameRoom(pinNumber);
+
+        for(GameMember gameMember : gameRoom.getMembers().values()) {
+            if(clientIp.equals(gameMember.getClientIp())) {
+                throw new AccessDeniedException(ErrorCode.NOT_AUTHORIZED);
+            }
+        }
+
+        String token = gameRoomRepository.join(pinNumber, member, nickname, clientIp);
+
+
 
         if (gameRoom.isStarted()) {
             throw new AccessDeniedException(ErrorCode.ALREADY_STARTED_GAME);

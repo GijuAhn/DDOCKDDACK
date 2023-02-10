@@ -75,12 +75,16 @@ const logout = () => {
   background-color: #77a4cc;
 }
 .default a,
+.default span,
 .default .btn_log {
   color: black;
 }
 .variant1 a,
 .variant1 .btn_log .variant2 a,
 .variant1 .btn_log .variant3 a,
+.variant1 span,
+.variant2 span,
+.variant3 span,
 .variant1 .btn_log {
   color: white;
 }
@@ -89,6 +93,11 @@ a {
   line-height: 95px;
   margin: 40px;
 }
+
+span:hover {
+  cursor: pointer;
+}
+
 .left a {
   font-family: "Gugi-Regular";
   font-size: 48px;

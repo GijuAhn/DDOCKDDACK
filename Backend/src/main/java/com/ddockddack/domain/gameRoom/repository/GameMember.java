@@ -15,17 +15,19 @@ import java.util.Observable;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class GameMember extends Observable {
+public class GameMember {
     private String socketId;
     private Member member;
     private String nickname;
     private Integer roundScore = 0;
     private Integer totalScore = 0;
+    private String clientIp;
     private List<byte[]> images = new ArrayList<>();
 
-    public GameMember(String socketId, Member member, String nickname) {
+    public GameMember(String socketId, Member member, String nickname, String clientIp) {
         this.socketId = socketId;
         this.member = member;
         this.nickname = nickname;
+        this.clientIp = clientIp;
     }
 }

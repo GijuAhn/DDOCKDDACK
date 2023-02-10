@@ -22,6 +22,10 @@
       v-if="currentModal.name === `bestcutReport`"
     />
     <login-modal class="modalContent" v-if="currentModal.name === `login`" />
+    <bestcut-upload-modal
+      class="modalContent"
+      v-if="currentModal.name === `bestcutUpload`"
+    />
   </div>
 </template>
 
@@ -33,6 +37,8 @@ import ReportCompleteModal from "@/components/common/modal/ReportCompleteModal";
 import BestcutDetailModal from "@/components/common/modal/BestcutDetailModal";
 import BestcutReportModal from "@/components/common/modal/BestcutReportModal";
 import LoginModal from "@/components/common/modal/LoginModal";
+import BestcutUploadModal from "@/components/common/modal/BestcutUploadModal";
+
 import { computed } from "vue";
 
 const store = useStore();
