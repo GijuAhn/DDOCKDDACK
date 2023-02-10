@@ -77,7 +77,7 @@ const reportcancelApi = () => {
     })
     .then((response) => {
       console.log(response);
-      emit("deleteProps", { index: props.index });
+      emit("deleteProps", { target: props.reportedGame.gameId });
     })
     .catch((error) => {
       error;

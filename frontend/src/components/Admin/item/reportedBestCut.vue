@@ -60,7 +60,7 @@ const punishmentApi = () => {
     )
     .then((response) => {
       console.log(response);
-      emit("deleteProps", { index: props.index });
+      emit("deleteProps", { target: props.reportedBestCut.bestcutId });
     })
     .catch((error) => {
       error;

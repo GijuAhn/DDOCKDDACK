@@ -15,11 +15,10 @@
       </thead>
       <tfoot>
         <reported-best-cut
-          v-for="(reportedBestCut, index) in reportedBestCuts"
-          :key="index"
+          v-for="reportedBestCut in reportedBestCuts"
+          :key="reportedBestCut"
           :reportedBestCut="reportedBestCut"
-          :index="index"
-          @deleteProps="(index) => deleteProps(index)"
+          @deleteProps="(target) => deleteProps(target)"
         ></reported-best-cut>
       </tfoot>
     </table>
@@ -58,8 +57,10 @@ const callApi = () => {
 
 callApi();
 
-const deleteProps = function (targetIndex) {
-  reportedBestCuts.value.splice(targetIndex, 1);
+const deleteProps = function (target) {
+  reportedBestCuts.value = reportedBestCuts.value.filter((item) => {
+    item.bestcutId !== target;
+  });
 };
 
 store.dispatch("commonStore/setAdminTabAsync", 1);

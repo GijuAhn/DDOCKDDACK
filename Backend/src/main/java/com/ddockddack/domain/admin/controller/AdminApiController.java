@@ -106,7 +106,7 @@ public class AdminApiController {
 
         gameService.removeGame(adminId, gameId);
         if (stringToEnum(banLevel) != BanLevel.noPenalty) memberService.banMember(banMemberId, stringToEnum(banLevel));
-        gameRepositorySupport.removeReportedGame(reportId);
+//        gameRepositorySupport.removeReportedGame(reportId);
 
         return ResponseEntity.ok().build();
 
@@ -156,9 +156,9 @@ public class AdminApiController {
             return ResponseEntity.status(403).body(null);
         }
 
-        bestcutRepositorySupport.removeReportedBestcut(reportId);
-        if (stringToEnum(banLevel) != BanLevel.noPenalty) memberService.banMember(banMemberId, stringToEnum(banLevel));
         bestcutService.removeBestcut(bestcutId, adminId);
+        if (stringToEnum(banLevel) != BanLevel.noPenalty) memberService.banMember(banMemberId, stringToEnum(banLevel));
+//        bestcutRepositorySupport.removeReportedBestcut(reportId);
 
         return ResponseEntity.ok().build();
     }

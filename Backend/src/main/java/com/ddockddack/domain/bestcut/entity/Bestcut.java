@@ -2,15 +2,10 @@ package com.ddockddack.domain.bestcut.entity;
 
 import com.ddockddack.domain.member.entity.Member;
 import java.time.LocalDateTime;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.ForeignKey;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import java.util.List;
+import javax.persistence.*;
+
+import com.ddockddack.domain.report.entity.ReportedBestcut;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -50,6 +45,9 @@ public class Bestcut {
 
     @Column(columnDefinition = "DATETIME default now()")
     private LocalDateTime createdAt;
+
+    @OneToMany(mappedBy = "bestcut", cascade = CascadeType.REMOVE)
+    private List<ReportedBestcut> reportedBestcutList;
 
     @Builder
     public Bestcut(Member member, String gameImageUrl, String gameTitle, String gameImgDesc,
