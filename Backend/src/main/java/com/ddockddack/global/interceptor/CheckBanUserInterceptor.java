@@ -49,7 +49,7 @@ public class CheckBanUserInterceptor implements HandlerInterceptor {
             } else if (member.getRole() == Role.BAN && !member.getReleaseDate().isBefore(LocalDate.now())){
 
                 log.info("정지된 유저입니다. (" + member.getReleaseDate() + ")");
-                throw new NotFoundException(ErrorCode.BANED_USER);
+                throw new Exception("정지된 유저입니다. (" + member.getReleaseDate() + ")");
 
             }
 
