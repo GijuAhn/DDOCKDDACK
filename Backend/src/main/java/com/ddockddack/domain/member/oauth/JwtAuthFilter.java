@@ -55,10 +55,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         log.info("accessToken {} ", accessToken);
         log.info("refreshToken {} ", refreshToken);
 
-        if ((accessToken != null || !("").equals(accessToken)) && tokenService.verifyToken(accessToken)) {
+        if (!(accessToken == null || "".equals(accessToken)) && tokenService.verifyToken(accessToken)) {
             Long id = tokenService.getUid(accessToken);
             Member member = memberRepository.getReferenceById(id);
-//            log.info("member {}", member);
+
             if (member == null) {
                 throw new NotFoundException(ErrorCode.MEMBER_NOT_FOUND);
             }
@@ -82,7 +82,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             Authentication auth = getAuthentication(memberAccessRes);
             SecurityContextHolder.getContext().setAuthentication(auth);
 
-        }else if(request.getMethod().equals("POST") || request.getMethod().equals("PUT") && request.getRequestURI().contains("api/game-room")){
+        }else if((request.getMethod().equals("POST") || request.getMethod().equals("PUT")) && request.getRequestURI().contains("api/game-room")){
             filterChain.doFilter(request, response);
             return;
         }else if(!request.getMethod().equals("GET")){ //GET Mapping이 아닌 경우만 ERROR처리 하지만

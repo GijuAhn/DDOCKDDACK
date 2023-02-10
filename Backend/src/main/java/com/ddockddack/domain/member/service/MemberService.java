@@ -243,6 +243,16 @@ public class MemberService {
         return memberRepository.save(memberToModify);
     }
 
+    @Transactional
+    public Member releaseMember(Long memberId) {
+        Member memberToModify = memberRepository.findById(memberId).get();
+
+        memberToModify.setRole(Role.MEMBER);
+        memberToModify.setReleaseDate(null);
+
+        return memberRepository.save(memberToModify);
+    }
+
     public LocalDate getReleaseDate(BanLevel banLevel){
         LocalDate today = LocalDate.now();
 
