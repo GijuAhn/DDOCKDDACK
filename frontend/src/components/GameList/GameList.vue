@@ -86,6 +86,8 @@
 </template>
 
 <script setup>
+import { apiInstance } from "@/api/index";
+import { ref, watch } from "vue";
 import NormalGame from "@/components/GameList/item/NormalGame";
 import PageNav from "@/components/common/PageNav.vue";
 
@@ -95,9 +97,6 @@ const changePage = (page) => {
   pageConditionReq.value.page = page;
   callApi();
 };
-
-import { apiInstance } from "@/api/index";
-import { ref, watch } from "vue";
 
 const tabP = ref("on");
 const tabR = ref("off");

@@ -1,10 +1,12 @@
 package com.ddockddack.domain.bestcut.service;
 
-import com.ddockddack.domain.bestcut.entity.Bestcut;
+ import com.ddockddack.domain.bestcut.entity.Bestcut;
 import com.ddockddack.domain.bestcut.repository.BestcutRepository;
+import com.ddockddack.domain.bestcut.repository.BestcutRepositorySupport;
 import com.ddockddack.domain.bestcut.request.BestcutImageReq;
 import com.ddockddack.domain.bestcut.request.BestcutSaveReq;
 import com.ddockddack.domain.bestcut.response.BestcutRes;
+import com.ddockddack.domain.bestcut.response.ReportedBestcutRes;
 import com.ddockddack.domain.gameRoom.repository.GameRoomRepository;
 import com.ddockddack.domain.member.entity.Member;
 import com.ddockddack.domain.member.entity.Role;
@@ -36,6 +38,7 @@ public class BestcutService {
     private final ReportedBestcutRepository reportedBestcutRepository;
     private final GameRoomRepository gameRoomRepository;
     private final AwsS3Service awsS3Service;
+    private final BestcutRepositorySupport bestcutRepositorySupport;
 
 
     /**
@@ -100,7 +103,7 @@ public class BestcutService {
                 .orElseThrow(() -> new org.webjars.NotFoundException("존재하지 않는 멤버"));
         Bestcut bestcut = bestcutRepository.findById(bestcutId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.BESTCUT_NOT_FOUND));
-        if (reportedBestcutRepository.findOne(bestcutId, memberId).isPresent()) {
+        if (reportedBestcutRepository.existsByReportMemberIdAndBestcutId(memberId, bestcutId)) {
             throw new AlreadyExistResourceException(ErrorCode.ALREADY_EXIST_REPORT);
         }
 
@@ -131,7 +134,14 @@ public class BestcutService {
                 .orElseThrow(() -> new NotFoundException(ErrorCode.BESTCUT_NOT_FOUND));
     }
 
-    public List<ReportedBestcut> findAllReportedBestCuts() {
-        return reportedBestcutRepository.findAllReportedBestCuts();
+    /**
+     * 신고 된 게임 목록 전체 조회하기
+     *
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public List<ReportedBestcutRes> findAllReportedBestCuts() {
+
+        return bestcutRepositorySupport.findAllReportedBestcut();
     }
 }

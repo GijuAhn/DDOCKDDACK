@@ -8,6 +8,8 @@ import com.ddockddack.global.error.ErrorCode;
 import com.ddockddack.global.error.exception.NotFoundException;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+
+import java.time.LocalDate;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
@@ -232,12 +234,36 @@ public class MemberService {
     }
 
     @Transactional
-    public Member banMember(Long memberId, java.sql.Date releaseDate) {
+    public Member banMember(Long memberId, BanLevel banLevel) {
         Member memberToModify = memberRepository.findById(memberId).get();
 
         memberToModify.setRole(Role.BAN);
-        memberToModify.setReleaseDate(releaseDate);
+        memberToModify.setReleaseDate(getReleaseDate(banLevel));
 
         return memberRepository.save(memberToModify);
+    }
+
+    public LocalDate getReleaseDate(BanLevel banLevel){
+        LocalDate today = LocalDate.now();
+
+        switch (banLevel){
+            case oneWeek:
+                today.plusDays(7);
+                break;
+            case oneMonth:
+                today.plusMonths(1);
+                break;
+            case sixMonth:
+                today.plusMonths(6);
+                break;
+            case oneYear:
+                today.plusYears(1);
+                break;
+            case endless:
+                today.plusYears(9999);
+                break;
+        }
+
+        return today;
     }
 }
