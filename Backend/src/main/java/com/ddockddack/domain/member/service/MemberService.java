@@ -13,6 +13,7 @@ import com.google.gson.JsonParser;
 
 import java.time.LocalDate;
 import java.util.Optional;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.env.Environment;
@@ -80,9 +81,11 @@ public class MemberService {
     @Transactional
     public void modifyMemberProfileImg(Long memberId, MemberModifyImgReq modifyMember) {
         Member memberToModify = memberRepository.findById(memberId).get();
-        log.info("log! {}, {}", modifyMember.getProfile(), modifyMember.getProfile().isEmpty());
+        String fileName = UUID.randomUUID().toString() + modifyMember.getProfile().getOriginalFilename();
+
+        log.info("log! {}, {}", modifyMember.getProfile(), fileName);
         if (!memberToModify.getProfile().equals(modifyMember.getProfile())) {
-            memberToModify.modifyProfile(modifyMember.getProfile());
+            memberToModify.modifyProfile(fileName);
         }
 //        return memberRepository.save(memberToModify);
     }

@@ -3,15 +3,12 @@ package com.ddockddack.domain.member.controller;
 
 import com.ddockddack.domain.bestcut.response.BestcutRes;
 import com.ddockddack.domain.bestcut.service.BestcutService;
-import com.ddockddack.domain.game.request.GameModifyReq;
 import com.ddockddack.domain.game.response.GameRes;
-import com.ddockddack.domain.game.response.ReportedGameRes;
 import com.ddockddack.domain.game.response.StarredGameRes;
 import com.ddockddack.domain.game.service.GameService;
 import com.ddockddack.domain.member.entity.Member;
 import com.ddockddack.domain.member.request.MemberModifyImgReq;
 import com.ddockddack.domain.member.request.MemberModifyNameReq;
-import com.ddockddack.domain.member.request.MemberModifyReq;
 import com.ddockddack.domain.member.response.MemberAccessRes;
 import com.ddockddack.domain.member.service.MemberService;
 import com.ddockddack.global.error.ErrorCode;
@@ -94,8 +91,9 @@ public class MemberApiController {
         @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @PutMapping("/profile")
-    public ResponseEntity<?> modifyMemberProfileImg(@ModelAttribute @Valid MemberModifyImgReq memberModifyImgReq,
-        ) {
+    public ResponseEntity<?> modifyMemberProfileImg(
+        @ModelAttribute @Valid MemberModifyImgReq memberModifyImgReq
+    ) {
         try {
             MemberAccessRes memberAccessRes = (MemberAccessRes) SecurityContextHolder.getContext()
                 .getAuthentication().getPrincipal();
@@ -104,7 +102,7 @@ public class MemberApiController {
                 throw new NotFoundException(ErrorCode.MEMBER_NOT_FOUND);
             }
 
-            log.info(String.valueOf(memberModifyImgReq));
+//            log.info(memberModifyImgReq);
 
             memberService.modifyMemberProfileImg(member.get().getId(), memberModifyImgReq);
 
@@ -129,7 +127,8 @@ public class MemberApiController {
     public ResponseEntity<?> getMemberInfo() {
         log.info("sec info {}",
             SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
-        MemberAccessRes memberAccessRes = Optional.ofNullable((MemberAccessRes) SecurityContextHolder.getContext()
+        MemberAccessRes memberAccessRes = Optional.ofNullable(
+            (MemberAccessRes) SecurityContextHolder.getContext()
                 .getAuthentication().getPrincipal()).get();
         if (memberAccessRes.toString().equals("anonymousUser")) {
             throw new NotFoundException(ErrorCode.MEMBER_NOT_FOUND);

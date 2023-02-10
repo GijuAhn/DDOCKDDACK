@@ -122,23 +122,21 @@ const imgUploadEvent = (e) => {
 let reg_img = ["jpg", "jpeg", "png"];
 const modifyProfileImg = (f) => {
   const modifyImgName = f[0].name;
-  maxSize;
+  const formData = new FormData();
+  formData.append("profileImg", f);
   console.log(
     "enterImg",
     modifyImgName,
-    modifyImgName.split(".").pop().toLowerCase()
+    modifyImgName.split(".").pop().toLowerCase(),
+    f[0].size
   );
   const ext = modifyImgName.split(".").pop().toLowerCase();
-  if (reg_img.includes(ext)) {
+  if (reg_img.includes(ext) && f[0].size < maxSize) {
     console.log("OK!", name, " ", modifyImgName);
     api
-      .put(
-        `/api/members/profile`,
-        {
-          profile: f,
-        },
-        { headers: { "access-token": accessToken.value } }
-      )
+      .put(`/api/members/profile`, formData, {
+        headers: { "access-token": accessToken.value },
+      })
       .then(() => {})
       .catch((err) => {
         if (err.response.status === 401) {
