@@ -81,7 +81,7 @@ public class GameRoomRepository {
         return pinNumber;
     }
 
-    public String join(String pinNumber, Member member, String nickname)
+    public String join(String pinNumber, Member member, String nickname, String clientIp)
             throws OpenViduJavaClientException, OpenViduHttpException {
         //존재하는 pin인지 확인
         Session session = findSessionByPinNumber(pinNumber).orElseThrow(
@@ -93,7 +93,7 @@ public class GameRoomRepository {
 
         //member를 gameMember로 변환하여 gameRoom에 저장
         String socketId = connection.getConnectionId();
-        GameMember gameMember = new GameMember(socketId, member, nickname);
+        GameMember gameMember = new GameMember(socketId, member, nickname, clientIp);
         gameRooms.get(pinNumber).getMembers().put(socketId, gameMember);
 
         return connection.getToken();

@@ -325,7 +325,8 @@ onBeforeMount(() => {
         router.replace("/");
       }
       if (err.response.status === 401) {
-        console.log(err.response);
+        alert("중복 참가는 불가능 합니다.");
+        router.replace("/");
       }
     });
 });
