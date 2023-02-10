@@ -77,9 +77,15 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 Authentication auth = getAuthentication(memberAccessRes);
                 SecurityContextHolder.getContext().setAuthentication(auth);
 
+                // 정상 진행
+
             } else if (request.getRequestURI().contains("api/game-room")){
 
+                // 정상 진행
+
             } else if (request.getMethod().equals("GET")){
+
+                // 정상 진행
 
             } else {
 
@@ -103,6 +109,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 Authentication auth = getAuthentication(memberAccessRes);
                 SecurityContextHolder.getContext().setAuthentication(auth);
 
+                // 정상 진행
 
             } else {
 
