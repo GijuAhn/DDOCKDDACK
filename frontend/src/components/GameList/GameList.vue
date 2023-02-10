@@ -87,7 +87,8 @@
 
 <script setup>
 import { apiInstance } from "@/api/index";
-import { ref, watch } from "vue";
+import { ref, watch, computed } from "vue";
+import { useStore } from "vuex";
 import NormalGame from "@/components/GameList/item/NormalGame";
 import PageNav from "@/components/common/PageNav.vue";
 
@@ -154,6 +155,9 @@ const updateSearch = (option) => {
 };
 
 const api = apiInstance();
+const store = useStore();
+const accessToken = computed(() => store.state.memberStore.accessToken);
+
 let games = ref();
 let pageConditionReq = ref({
   order: "POPULARITY",
@@ -172,6 +176,7 @@ const callApi = () => {
         keyword: pageConditionReq.value.keyword,
         page: pageConditionReq.value.page,
       },
+      headers: { "access-token": accessToken.value },
     })
     .then((response) => {
       console.log(response);

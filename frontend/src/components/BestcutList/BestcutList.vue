@@ -93,6 +93,7 @@ const callApi = () => {
         keyword: pageConditionReq.value.keyword,
         page: pageConditionReq.value.page,
       },
+      headers: { "access-token": accessToken.value },
     })
     .then((response) => {
       bestcuts.value = response.data.content;
@@ -129,11 +130,7 @@ const changePage = (page) => {
 //베스트컷 좋아요
 const bestcutLike = (bestcutId) => {
   api
-    .post(
-      `/api/bestcuts/like/${bestcutId}`,
-      {},
-      { headers: { "access-token": accessToken.value } }
-    )
+    .post(`/api/bestcuts/like/${bestcutId}`, {})
     .then(() => {
       let bestcut = bestcuts.value.find((e) => e.bestcutId === bestcutId);
       bestcut.isLiked = true;
@@ -152,15 +149,11 @@ const bestcutDislike = (bestcutId) => {
     alert("로그인 후 이용해주세요.");
     return;
   }
-  api
-    .delete(`/api/bestcuts/dislike/${bestcutId}`, {
-      headers: { "access-token": accessToken.value },
-    })
-    .then(() => {
-      let bestcut = bestcuts.value.find((e) => e.bestcutId === bestcutId);
-      bestcut.isLiked = false;
-      bestcut.popularity--;
-    });
+  api.delete(`/api/bestcuts/dislike/${bestcutId}`).then(() => {
+    let bestcut = bestcuts.value.find((e) => e.bestcutId === bestcutId);
+    bestcut.isLiked = false;
+    bestcut.popularity--;
+  });
 };
 </script>
 
