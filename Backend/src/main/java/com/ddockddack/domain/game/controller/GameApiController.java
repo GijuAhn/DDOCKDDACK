@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,9 +38,12 @@ public class GameApiController {
             @ApiResponse(responseCode = "200", description = "게임 목록 조회 성공")
     })
     public ResponseEntity<PageImpl<GameRes>> gameList(@ModelAttribute PageConditionReq pageConditionReq,
-                                                      @RequestHeader(value = "access-token", required = false) String accessToken) {
-
-        PageImpl<GameRes> allGames = gameService.findAllGames(null, pageConditionReq);
+                                                      Authentication authentication) {
+        Long memberId = null;
+        if(authentication != null) {
+            memberId = ((MemberAccessRes) authentication.getPrincipal()).getId();
+        }
+        PageImpl<GameRes> allGames = gameService.findAllGames(memberId, pageConditionReq);
 
         return ResponseEntity.ok(allGames);
     }
@@ -66,9 +70,10 @@ public class GameApiController {
             @ApiResponse(responseCode = "414", description = "지원 하지 않는 확장자")
     })
     public ResponseEntity gameSave(@ModelAttribute @Valid GameSaveReq gameSaveReq,
-                                   @RequestHeader(value = "access-token", required = false) String accessToken) {
+                                   Authentication authentication) {
 
-        gameService.saveGame(1L, gameSaveReq);
+        Long memberId = ((MemberAccessRes) authentication.getPrincipal()).getId();
+        gameService.saveGame(memberId, gameSaveReq);
         return ResponseEntity.ok().build();
 
     }
