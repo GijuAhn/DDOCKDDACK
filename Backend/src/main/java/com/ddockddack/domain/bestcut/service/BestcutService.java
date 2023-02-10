@@ -51,12 +51,12 @@ public class BestcutService {
                 .orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
 
         String pinNumber = saveReq.getPinNumber();
-        String sessionId = saveReq.getSessionId();
+        String socketId = saveReq.getSocketId();
 
         for (BestcutImageReq imageReq : saveReq.getImages()) {
             int index = imageReq.getBestcutIndex();
 
-            byte[] byteImage = gameRoomRepository.findByImageIndex(pinNumber, sessionId, index);
+            byte[] byteImage = gameRoomRepository.findByImageIndex(pinNumber, socketId, index);
             String fileName = awsS3Service.InputStreamUpload(byteImage);
 
             Bestcut bestcut = Bestcut.builder()
@@ -91,6 +91,7 @@ public class BestcutService {
             throw new AccessDeniedException(ErrorCode.NOT_AUTHORIZED);
         }
 
+        awsS3Service.deleteObject(bestcut.getImageUrl());
         bestcutRepository.delete(bestcut);
     }
 

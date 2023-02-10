@@ -194,7 +194,7 @@ const isChecked = ref([
 const isShow = ref(false);
 const bestcutSaveReq = ref({
   pinNumber: undefined,
-  sessionId: undefined,
+  socketId: undefined,
   gameTitle: undefined,
   images: [],
 });
@@ -433,7 +433,7 @@ const check = (index) => {
 const upload = () => {
   bestcutSaveReq.value.pinNumber =
     openviduInfo.value.publisher.session.sessionId;
-  bestcutSaveReq.value.sessionId =
+  bestcutSaveReq.value.socketId =
     openviduInfo.value.publisher.session.connection.connectionId;
   bestcutSaveReq.value.gameTitle = room.value.gameTitle;
   isChecked.value.forEach(

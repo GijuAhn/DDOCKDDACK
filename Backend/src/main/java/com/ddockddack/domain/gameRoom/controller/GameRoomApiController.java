@@ -3,6 +3,7 @@ package com.ddockddack.domain.gameRoom.controller;
 import com.ddockddack.domain.gameRoom.response.GameMemberRes;
 import com.ddockddack.domain.gameRoom.response.GameRoomRes;
 import com.ddockddack.domain.gameRoom.service.GameRoomService;
+import com.ddockddack.domain.member.response.MemberAccessRes;
 import com.ddockddack.domain.member.service.TokenService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.openvidu.java.client.OpenViduHttpException;
@@ -10,10 +11,12 @@ import io.openvidu.java.client.OpenViduJavaClientException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -37,8 +40,9 @@ public class GameRoomApiController {
             @ApiResponse(responseCode = "404", description = "존재 하지 않는 게임")
     })
     public ResponseEntity<String> createRoom(@RequestBody Map<String, String> params,
-                                             @RequestHeader(value = "access-token", required = false) String accessToken) {
+                                             @RequestHeader(value = "access-token", required = false) String accessToken, Authentication authentication) {
         String pinNumber;
+
         try {
             pinNumber = gameRoomService.createRoom(Long.parseLong(params.get("gameId")));
         } catch (OpenViduJavaClientException e) {
