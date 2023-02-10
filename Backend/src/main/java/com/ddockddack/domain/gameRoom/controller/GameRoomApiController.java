@@ -1,6 +1,9 @@
 package com.ddockddack.domain.gameRoom.controller;
 
+import com.ddockddack.domain.gameRoom.entity.GameRoomHistory;
+import com.ddockddack.domain.gameRoom.request.GameRoomHistoryReq;
 import com.ddockddack.domain.gameRoom.response.GameMemberRes;
+import com.ddockddack.domain.gameRoom.response.GameRoomHistoryRes;
 import com.ddockddack.domain.gameRoom.response.GameRoomRes;
 import com.ddockddack.domain.gameRoom.service.GameRoomService;
 import com.ddockddack.global.service.AwsS3Service;
@@ -14,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -140,6 +144,19 @@ public class GameRoomApiController {
 
 
         return ResponseEntity.ok(gameRoomService.findRoundResult(pinNumber, round));
+    }
+
+
+    @PostMapping("/log")
+    @Operation(summary = "게임 이력 저장")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "게임 이력 성공"),
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 유저"),
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 게임")
+    })
+    public ResponseEntity saveGameRoomHistory(@RequestBody GameRoomHistoryReq gameRoomHistoryReq) {
+        gameRoomService.saveGameRoomHistory(gameRoomHistoryReq);
+        return ResponseEntity.ok().build();
     }
 
 }
