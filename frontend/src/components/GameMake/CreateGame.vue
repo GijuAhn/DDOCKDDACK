@@ -368,7 +368,6 @@ label {
   text-align: right;
 }
 .yellow {
-  background-color: white;
   border-radius: 5px;
   border: 2px solid black;
   font-size: 20px;
