@@ -112,7 +112,7 @@
 <script setup>
 import { apiInstance } from "@/api/index";
 import { computed, onBeforeMount, ref } from "@vue/runtime-core";
-import { useRoute } from "vue-router";
+import { useRoute, onBeforeRouteLeave } from "vue-router";
 import { OpenVidu } from "openvidu-browser";
 import UserVideo from "@/components/Gameroom/item/UserVideo.vue";
 import CaptureVideo from "@/components/Gameroom/item/CaptureVideo.vue";
@@ -157,6 +157,24 @@ const resultMode = ref(false);
 const captureMode = ref(false);
 const result = ref([]);
 const resultImages = ref([]);
+
+// 뒤로가기 이벤트 감지
+onBeforeRouteLeave(() => {
+  if (openviduInfo.value.subscribers.length) {
+    api
+      .delete(
+        `/api/game-rooms/${route.params.pinNumber}/sessions/${openviduInfo.value.session.connection.connectionId}`
+      )
+      .catch((err) => {
+        console.log(err);
+      });
+  } else {
+    // 남아있는 유저가 나 혼자인 경우 방삭제
+    api.delete(`/api/game-rooms/${route.params.pinNumber}`).catch((err) => {
+      console.log(err);
+    });
+  }
+});
 
 onBeforeMount(() => {
   api

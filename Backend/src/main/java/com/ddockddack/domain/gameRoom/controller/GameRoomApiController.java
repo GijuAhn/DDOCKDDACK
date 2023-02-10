@@ -84,7 +84,6 @@ public class GameRoomApiController {
 
 
         gameRoomService.removeGameMember(pinNumber, socketId);
-
         return ResponseEntity.ok().build();
 
     }
@@ -98,7 +97,6 @@ public class GameRoomApiController {
     public ResponseEntity removeGameRoom(@PathVariable String pinNumber) {
 
         gameRoomService.removeGameRoom(pinNumber);
-
         return ResponseEntity.ok().build();
     }
 
