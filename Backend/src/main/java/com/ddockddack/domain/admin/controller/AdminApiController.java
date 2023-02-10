@@ -45,12 +45,6 @@ public class AdminApiController {
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     public ResponseEntity<?> reportedGameList(@RequestHeader(value = "access-token", required = true) String accessToken) {
-        Long adminId = tokenService.getUid(accessToken);
-
-        // admin 확인
-        if(!adminService.isAdminByAccessToken(adminId)){
-            return ResponseEntity.status(403).body(null);
-        }
 
         try {
             List<ReportedGameRes> allReportedGames = gameService.findAllReportedGames();
@@ -68,12 +62,6 @@ public class AdminApiController {
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     public ResponseEntity<?> reportedBestCutList(@RequestHeader(value = "access-token", required = true) String accessToken) {
-        Long adminId = tokenService.getUid(accessToken);
-
-        // admin 확인
-        if(!adminService.isAdminByAccessToken(adminId)){
-            return ResponseEntity.status(403).body(null);
-        }
 
         try {
             List<ReportedBestcutRes> allReportedBestCuts = bestcutService.findAllReportedBestCuts();
@@ -99,14 +87,8 @@ public class AdminApiController {
                                              @RequestHeader(value = "banLevel", required = true) String banLevel) {
         Long adminId = tokenService.getUid(accessToken);
 
-        // admin 확인
-        if(!adminService.isAdminByAccessToken(adminId)){
-            return ResponseEntity.status(403).body(null);
-        }
-
         gameService.removeGame(adminId, gameId);
         if (stringToEnum(banLevel) != BanLevel.noPenalty) memberService.banMember(banMemberId, stringToEnum(banLevel));
-//        gameRepositorySupport.removeReportedGame(reportId);
 
         return ResponseEntity.ok().build();
 
@@ -124,12 +106,6 @@ public class AdminApiController {
     public ResponseEntity gameReportDelete(@PathVariable Long reportId,
                                            @RequestHeader(value = "access-token", required = true) String accessToken) {
 
-        Long adminId = tokenService.getUid(accessToken);
-
-        // admin 확인
-        if(!adminService.isAdminByAccessToken(adminId)){
-            return ResponseEntity.status(403).body(null);
-        }
         gameRepositorySupport.removeReportedGame(reportId);
 
         return ResponseEntity.ok().build();
@@ -151,14 +127,8 @@ public class AdminApiController {
                                                 @RequestHeader(value = "banLevel", required = true) String banLevel) {
         Long adminId = tokenService.getUid(accessToken);
 
-        // admin 확인
-        if(!adminService.isAdminByAccessToken(adminId)){
-            return ResponseEntity.status(403).body(null);
-        }
-
         bestcutService.removeBestcut(bestcutId, adminId);
         if (stringToEnum(banLevel) != BanLevel.noPenalty) memberService.banMember(banMemberId, stringToEnum(banLevel));
-//        bestcutRepositorySupport.removeReportedBestcut(reportId);
 
         return ResponseEntity.ok().build();
     }
@@ -174,12 +144,6 @@ public class AdminApiController {
     })
     public ResponseEntity BestCutReportDelete(@PathVariable Long reportId,
                                                 @RequestHeader(value = "access-token", required = true) String accessToken) {
-        Long adminId = tokenService.getUid(accessToken);
-
-        // admin 확인
-        if(!adminService.isAdminByAccessToken(adminId)){
-            return ResponseEntity.status(403).body(null);
-        }
 
         bestcutRepositorySupport.removeReportedBestcut(reportId);
 
@@ -197,13 +161,6 @@ public class AdminApiController {
     public ResponseEntity<?> banMember(@PathVariable Long banMemberId,
                                        @RequestHeader(value = "access-token", required = true) String accessToken,
                                        @RequestBody Map<String, Object> Data) {
-
-        Long adminId = tokenService.getUid(accessToken);
-
-        // admin 확인
-        if(!adminService.isAdminByAccessToken(adminId)){
-            return ResponseEntity.status(403).body(null);
-        }
 
         BanLevel banLevel = stringToEnum((String) Data.get("banLevel"));
 

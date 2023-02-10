@@ -13,6 +13,7 @@ public enum ErrorCode {
     EXPIRED_ACCESSTOKEN(401, "expired access-token"),
     ALREADY_STARTED_GAME(401, "already started game."),
     BANED_USER(403, "baned user."),
+    NOT_ADMIN(403, "not admin."),
     MEMBER_NOT_FOUND(404, "member not found"),
     GAME_NOT_FOUND(404, "game not found"),
     GAME_ROOM_NOT_FOUND(404, "game room not found"),
