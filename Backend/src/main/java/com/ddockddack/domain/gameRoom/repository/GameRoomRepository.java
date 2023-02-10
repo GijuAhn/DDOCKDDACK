@@ -11,6 +11,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.openvidu.java.client.*;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 import java.util.PriorityQueue;
@@ -43,12 +44,14 @@ public class GameRoomRepository {
     private String OPENVIDU_URL;
     @Value("${OPENVIDU_SECRET}")
     private String OPENVIDU_SECRET;
+    private String OPENVIDU_HEADER;
     private Map<String, GameRoom> gameRooms = new ConcurrentHashMap<>();
     private OpenVidu openvidu;
 
     @PostConstruct
     public void init() {
         this.openvidu = new OpenVidu(OPENVIDU_URL, OPENVIDU_SECRET);
+        OPENVIDU_HEADER = "Basic " + Base64.getEncoder().encodeToString(("OPENVIDUAPP:"+OPENVIDU_SECRET).getBytes());
         log.info("OPENVIDU_URL" + OPENVIDU_URL);
     }
 
@@ -176,7 +179,8 @@ public class GameRoomRepository {
         String url = OPENVIDU_URL+"/api/signal";
 
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Basic T1BFTlZJRFVBUFA6TVlfU0VDUkVU");
+        System.out.println(OPENVIDU_HEADER);
+        headers.set("Authorization", OPENVIDU_HEADER);
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         HttpEntity<String> httpEntity = new HttpEntity<>(signal, headers);
