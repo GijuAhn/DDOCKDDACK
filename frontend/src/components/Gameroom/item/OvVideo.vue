@@ -35,9 +35,9 @@ onMounted(() => {
   left: 0;
   right: 0;
   bottom: 0;
-  height: calc(100% - 22px);
-  width: calc(100% - 22px);
-  margin: 11px;
+  height: calc(100% - 20px);
+  width: calc(100% - 20px);
+  margin: 10px;
   object-fit: contain;
 }
 </style>

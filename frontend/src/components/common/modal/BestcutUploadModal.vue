@@ -1,35 +1,43 @@
 <template>
   <div>
     <div id="reportModal">
-      <div>
-        <div
-          v-for="(image, index) in resultImages"
-          :key="index"
-          style="border: 1px solid red"
-        >
-          <div v-if="true">
+      <div id="myImageSection">
+        <div v-for="(image, index) in resultImages" :key="index">
+          <img :src="image" @click="updateSelectedIndex(index)" />
+          <span
+            @click="check(index)"
+            :class="{
+              isChecked: isChecked[index] === true,
+              isNotChecked: isChecked[index] === false,
+            }"
+          ></span>
+        </div>
+        <!-- <div v-for="n in 4" :key="n">
+          <img :src="require(`@/assets/images/minus.png`)" />
+        </div> -->
+      </div>
+      <div id="uploadSection">
+        <div id="ImageCompareSection">
+          <img :src="resultImages[selectedIndex]" />
+          <img
+            :src="`${IMAGE_PATH}/${room.gameImages[selectedIndex].gameImage}`"
+          />
+        </div>
+        <div id="submitSection">
+          <div id="bestCutTitleSection">
+            <label for="bestcutTitle">제목</label>
             <input
-              type="checkbox"
-              :value="index"
-              @change="check(index)"
-            />체크박스
-            <br />
-            <input
-              id="bestcutTitle"
               type="text"
-              v-model="inputs[index]"
-              placeholder="제목을 입력하세요"
+              id="bestcutTitle"
+              v-model="inputs[selectedIndex]"
+              placeholder="베스트컷 제목을 입력해 주세요."
             />
-            <img :src="`${IMAGE_PATH}/${room.gameImages[index].gameImage}`" />
-
-            <br />
           </div>
-          <div class="test">
-            <img :src="image" id="bestcutImg" />
+          <div id="uploadButtonSection">
+            <span>총 {{ isCheckedCount }} 장</span>
+            <button @click="upload">업로드</button>
           </div>
         </div>
-
-        <button @click="upload">베스트 컷 게시</button>
       </div>
     </div>
   </div>
@@ -48,12 +56,14 @@ const currentModal = computed(() => store.state.commonStore.currentModal);
 const resultImages = ref(currentModal.value.data[0]);
 const streamManager = ref(currentModal.value.data[1]);
 const room = ref(currentModal.value.data[2]);
-
 const api = apiInstance();
 
-const check = (index) => {
-  isChecked.value[index] = !isChecked.value[index];
-};
+const bestcutSaveReq = ref({
+  pinNumber: undefined,
+  sessionId: undefined,
+  gameTitle: undefined,
+  images: [],
+});
 const isChecked = ref([
   false,
   false,
@@ -66,7 +76,22 @@ const isChecked = ref([
   false,
   false,
 ]);
+const isCheckedCount = ref(0);
+const check = (index) => {
+  if (isChecked.value[index]) {
+    //원래 true였으면
+    isCheckedCount.value--;
+  } else {
+    //원래 false였으면
+    isCheckedCount.value++;
+  }
+  isChecked.value[index] = !isChecked.value[index];
+};
 const inputs = ref(["", "", "", "", "", "", "", "", "", ""]);
+const selectedIndex = ref(0);
+const updateSelectedIndex = (index) => {
+  selectedIndex.value = index;
+};
 
 const upload = () => {
   bestcutSaveReq.value.pinNumber = streamManager.value.session.sessionId;
@@ -93,32 +118,128 @@ const upload = () => {
       alert("업로드 실패");
     });
 };
-const bestcutSaveReq = ref({
-  pinNumber: undefined,
-  sessionId: undefined,
-  gameTitle: undefined,
-  images: [],
-});
 </script>
 
 <style scoped>
 #reportModal {
   background-color: white;
-  width: 1000px;
-  height: 500px;
+  width: 1130px;
+  height: 660px;
   border-radius: 10px;
   padding: 5px 0;
-  overflow: scroll;
+  display: flex;
 }
-
-.test {
-  width: 400px;
-  height: 400px;
-  border: 1px solid blue;
+#myImageSection {
+  /* border: 1px solid red; */
+  margin: 10px;
+  width: 250px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  height: 640px;
+  align-content: space-between;
 }
-.test img {
+#myImageSection > div {
+  width: 120px;
+  height: 120px;
+  position: relative;
+}
+#myImageSection img {
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
+}
+#myImageSection img:hover {
+  cursor: pointer;
+}
+#myImageSection span {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: 3px;
+  border: 1px solid black;
+}
+#myImageSection span:hover {
+  cursor: pointer;
+}
+.isNotChecked {
+  background-color: white;
+}
+.isChecked {
+  background-color: #ff6969;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-image: url("@/assets/images/checkbox.png");
+}
+
+#uploadSection {
+  margin: 10px;
+  /* border: 1px solid blue; */
+  width: 830px;
+  height: 640px;
+}
+#ImageCompareSection {
+  display: flex;
+  justify-content: space-between;
+}
+
+#uploadSection img {
+  width: 400px;
+  height: 400px;
+  object-fit: cover;
+  /* border: 1px solid salmon; */
+}
+#submitSection {
+  position: relative;
+  width: 100%;
+  height: 240px;
+}
+#bestCutTitleSection {
+  position: absolute;
+  top: 40px;
+  left: 15px;
+}
+#bestCutTitleSection > * {
+  margin: 0 5px;
+}
+#uploadButtonSection {
+  position: absolute;
+  bottom: 15px;
+  right: 15px;
+}
+#uploadButtonSection > * {
+  margin: 0 10px;
+}
+
+label {
+  font-size: 20px;
+}
+input[type="text"] {
+  outline: none;
+  border-radius: 5px;
+  border: 2px solid black;
+  font-size: 20px;
+  font-family: "NanumSquareRoundB";
+  padding: 0 10px;
+  height: 44px;
+  width: 500px;
+}
+#uploadButtonSection span {
+  font-size: 20px;
+}
+#uploadButtonSection button {
+  border-radius: 5px;
+  border: 2px solid black;
+  font-size: 20px;
+  font-family: "NanumSquareRoundB";
+  height: 48px;
+  background-color: #f08383;
+  color: white;
+  width: 120px;
+}
+#uploadButtonSection button:hover {
+  cursor: pointer;
 }
 </style>

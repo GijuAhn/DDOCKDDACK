@@ -12,10 +12,8 @@
         id="kakaoShareButton"
       />
       <span>공유하기</span>
-
-      <span id="subscribers-count">
-        참가자 : {{ openviduInfo.subscribers.length + 1 }}명</span
-      >
+      <!--우측 공간-->
+      <span></span>
     </div>
 
     <div id="main-container">
@@ -37,14 +35,25 @@
           </div>
 
           <div v-if="!isStart">
-            <button v-if="isHost" v-show="!isStart" @click="play">play</button>
-            대기중
+            <div id="gameWaitSection">
+              <button v-if="isHost" v-show="!isStart" @click="play">
+                play
+              </button>
+              <div id="waitDesc">
+                <span>잠시만 기다려주세요</span><br />
+                <span
+                  >{{ openviduInfo.subscribers.length + 1 }}명 참가중...</span
+                >
+              </div>
+            </div>
           </div>
 
           <div v-if="isEnd">
-            <button @click="setCurrentModalAsync(`bestcutUpload`)">
-              결과보기
-            </button>
+            <div id="gameResultSection">
+              <button @click="setCurrentModalAsync(`bestcutUpload`)">
+                내 사진 보기
+              </button>
+            </div>
           </div>
         </div>
 
@@ -425,20 +434,32 @@ const setCurrentModalAsync = (what) => {
   height: 50%;
   flex-direction: column;
   position: relative;
-  overflow: scroll;
 }
-#gameImageSection {
+#gameImageSection,
+#gameWaitSection,
+#gameResultSection {
+  border-radius: 20px;
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  bottom: 10px;
+  border: 1px solid #464646;
 }
 #gameImageSection img {
   height: 100%;
   width: 100%;
   object-fit: contain;
 }
+#gameWaitSection,
+#gameResultSection {
+  background-color: #d9d9d9;
+}
+#waitDesc > span {
+  color: black;
+  font-size: 50px;
+}
+
 #gameCurrentSection {
   position: absolute;
   top: 0;
