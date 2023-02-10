@@ -1,5 +1,6 @@
 <template>
   <div id="session">
+    <modal-frame v-if="currentModal.length !== 0" />
     <div>
       <result-modal v-if="resultMode" :round="round" :result="result" />
     </div>
@@ -14,10 +15,8 @@
         id="kakaoShareButton"
       />
       <span>공유하기</span>
-
-      <span id="subscribers-count">
-        참가자 : {{ openviduInfo.subscribers.length + 1 }}명</span
-      >
+      <!--우측 공간-->
+      <span></span>
     </div>
 
     <div id="main-container">
@@ -39,39 +38,24 @@
           </div>
 
           <div v-if="!isStart">
-            <button v-if="isHost" v-show="!isStart" @click="play">play</button>
-            대기중
+            <div id="gameWaitSection">
+              <button v-if="isHost" v-show="!isStart" @click="play">
+                play
+              </button>
+              <div id="waitDesc">
+                <span>잠시만 기다려주세요</span><br />
+                <span
+                  >{{ openviduInfo.subscribers.length + 1 }}명 참가중...</span
+                >
+              </div>
+            </div>
           </div>
 
           <div v-if="isEnd">
-            <button @click="getMyImages">결과보기</button>
-
-            <div v-if="isShow">
-              <div v-for="(image, index) in resultImages" :key="index">
-                <div>
-                  <input
-                    type="checkbox"
-                    :value="index"
-                    @change="check(index)"
-                  />체크박스
-                  <br />
-                  <input
-                    id="bestcutTitle"
-                    type="text"
-                    v-model="inputs[index]"
-                    placeholder="제목을 입력하세요"
-                  />
-                  <img
-                    :src="`${IMAGE_PATH}/${room.gameImages[index].gameImage}`"
-                  />
-                  <div class="test">
-                    <img :src="image" id="bestcutImg" />
-                  </div>
-                  <br />
-                </div>
-              </div>
-
-              <button @click="upload">베스트 컷 게시</button>
+            <div id="gameResultSection">
+              <button @click="setCurrentModalAsync(`bestcutUpload`)">
+                내 사진 보기
+              </button>
             </div>
           </div>
         </div>
@@ -112,14 +96,14 @@
     </div>
 
     <div id="button-container">
-      <button class="btn-video-control">
-        <svg-icon type="mdi" :path="path[0]" /> 음소거
-      </button>
-      <button class="btn-video-control">
-        <svg-icon type="mdi" :path="path[2]" /> 화면 중지
-      </button>
-      <button type="button" class="btn-close" @click="leaveSession">
-        <span class="icon-cross"></span>
+      <button class="btn-video-control">음소거</button>
+      <button class="btn-video-control">화면 중지</button>
+      <button class="btn-close" @click="leaveSession">
+        <img
+          :src="require(`@/assets/images/close.png`)"
+          width="18"
+          height="18"
+        />
       </button>
     </div>
   </div>
@@ -135,15 +119,11 @@ import CaptureVideo from "@/components/Gameroom/item/CaptureVideo.vue";
 import { useStore } from "vuex";
 import router from "@/router/index.js";
 import process from "process";
-import SvgIcon from "@jamescoyle/vue-icon";
+import ModalFrame from "@/components/common/ModalFrame";
 import ResultModal from "@/components/Gameroom/item/ResultModal.vue";
-import {
-  mdiMicrophone,
-  mdiMicrophoneOff,
-  mdiVideo,
-  mdiVideoOff,
-} from "@mdi/js";
 import html2canvas from "html2canvas";
+
+const currentModal = computed(() => store.state.commonStore.currentModal);
 const IMAGE_PATH = process.env.VUE_APP_IMAGE_PATH;
 const api = apiInstance();
 const route = useRoute();
@@ -175,29 +155,9 @@ const isHost = ref(false);
 const isEnd = ref(false);
 const resultMode = ref(false);
 const captureMode = ref(false);
-const path = ref([mdiMicrophone, mdiMicrophoneOff, mdiVideo, mdiVideoOff]);
 const result = ref([]);
 const resultImages = ref([]);
-const inputs = ref(["", "", "", "", "", "", "", "", "", ""]);
-const isChecked = ref([
-  false,
-  false,
-  false,
-  false,
-  false,
-  false,
-  false,
-  false,
-  false,
-  false,
-]);
-const isShow = ref(false);
-const bestcutSaveReq = ref({
-  pinNumber: undefined,
-  socketId: undefined,
-  gameTitle: undefined,
-  images: [],
-});
+
 onBeforeMount(() => {
   api
     .post(`/api/game-rooms/${route.params.pinNumber}`, {})
@@ -423,42 +383,11 @@ const capture = async (index) => {
     });
 };
 
-const getMyImages = () => {
-  isShow.value = true;
-};
-
-const check = (index) => {
-  isChecked.value[index] = !isChecked.value[index];
-};
-
-const upload = () => {
-  bestcutSaveReq.value.pinNumber =
-    openviduInfo.value.publisher.session.sessionId;
-  bestcutSaveReq.value.socketId =
-    openviduInfo.value.publisher.session.connection.connectionId;
-  bestcutSaveReq.value.gameTitle = room.value.gameTitle;
-  isChecked.value.forEach((element, index) => {
-    if (element) {
-      bestcutSaveReq.value.images.push({
-        bestcutIndex: index,
-        bestcutImgTitle: inputs.value[index],
-        gameImgUrl: room.value.gameImages[index].gameImage,
-        gameImgDesc: room.value.gameImages[index].gameImageDesc,
-      });
-    }
+const setCurrentModalAsync = (what) => {
+  store.dispatch("commonStore/setCurrentModalAsync", {
+    name: what,
+    data: [resultImages, openviduInfo.value.publisher, room],
   });
-  api
-    .post(`/api/bestcuts`, bestcutSaveReq.value, {
-      headers: {
-        "access-token": accessToken,
-      },
-    })
-    .then(() => {
-      alert("업로드가 완료 되었습니다.");
-    })
-    .catch(() => {
-      alert("업로드에 실패 하였습니다.");
-    });
 };
 </script>
 
@@ -478,14 +407,12 @@ const upload = () => {
 #session-header span {
   font-size: 20px;
 }
-#session-header span:first-child {
-}
 #session-header span:last-child {
   margin-left: auto;
 }
 #main-container {
   /* border: 1px solid red; */
-  height: calc(100vh - 100px);
+  height: calc(100vh - 105px);
   display: flex;
   position: relative;
 }
@@ -497,20 +424,32 @@ const upload = () => {
   height: 50%;
   flex-direction: column;
   position: relative;
-  overflow: scroll;
 }
-#gameImageSection {
+#gameImageSection,
+#gameWaitSection,
+#gameResultSection {
+  border-radius: 20px;
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  bottom: 10px;
+  border: 1px solid #464646;
 }
 #gameImageSection img {
   height: 100%;
   width: 100%;
   object-fit: contain;
 }
+#gameWaitSection,
+#gameResultSection {
+  background-color: #d9d9d9;
+}
+#waitDesc > span {
+  color: black;
+  font-size: 50px;
+}
+
 #gameCurrentSection {
   position: absolute;
   top: 0;
@@ -583,77 +522,7 @@ const upload = () => {
 #video-container > * {
   height: 100%;
 }
-#button-container {
-  height: 65px;
-  /* background-color: rgb(150, 216, 255); */
-  text-align: center;
-}
 
-.btn-video-control {
-  border-color: #ffffff;
-  color: white;
-  background-color: rgba(0, 0, 0, 0);
-  border-radius: 50px;
-  width: 150px;
-  font-size: 21px;
-}
-
-.btn-close {
-  border: 0;
-  background: #ff0000;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  display: inline;
-  flex-flow: column nowrap;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  transition: all 150ms;
-}
-.btn-close .icon-cross {
-  border: 0;
-  background: none;
-  position: absolute;
-  width: 10px;
-  height: 10px;
-}
-.btn-close .icon-cross:before,
-.btn-close .icon-cross:after {
-  content: "";
-  position: absolute;
-  top: 15px;
-  left: -10px;
-  right: 0;
-  height: 6px;
-  background: #fff;
-  border-radius: 6px;
-}
-.btn-close .icon-cross:before {
-  transform: rotate(45deg);
-}
-.btn-close .icon-cross:after {
-  transform: rotate(-45deg);
-}
-.btn-close .icon-cross span {
-  display: block;
-}
-.btn-close:hover,
-.btn-close:focus {
-  transform: rotateZ(90deg);
-  background: #ff0000;
-}
-
-.test {
-  width: 400px;
-  height: 400px;
-  border: 1px solid blue;
-}
-.test img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
 #kakaoShareButton {
   width: 30px;
   height: 30px;
@@ -663,5 +532,37 @@ const upload = () => {
 }
 .game-image {
   transform: scaleX(-1);
+}
+#button-container {
+  height: 70px;
+  /* background-color: rgb(150, 216, 255); */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.btn-video-control {
+  border: 1px solid #464646;
+  font-size: 18px;
+  font-family: "NanumSquareRoundB";
+  padding: 10px 0;
+  background: none;
+  color: white;
+  width: 140px;
+  height: 45px;
+  border-radius: 45px;
+}
+.btn-close {
+  border: 1px solid #db1f2e;
+  background-color: #db1f2e;
+  width: 45px;
+  height: 45px;
+  border-radius: 45px;
+}
+.btn-video-control:hover,
+.btn-close:hover {
+  cursor: pointer;
+}
+#button-container button {
+  margin: 0 10px;
 }
 </style>
