@@ -21,11 +21,9 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.PriorityQueue;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -126,11 +124,20 @@ public class GameRoomService {
      *
      * @param pinNumber
      */
+    @Transactional
     public void startGame(String pinNumber) throws JsonProcessingException {
-
+        // 현재 존재하는 게임 방인지 확징
         gameRoomRepository.findSessionByPinNumber(pinNumber).orElseThrow(() ->
                 new NotFoundException(ErrorCode.GAME_ROOM_NOT_FOUND));
 
+        Long gameId = gameRoomRepository.findById(pinNumber).get().getGameId();
+
+        // 존재하는 게임인지 확인
+        Game game = gameRepository.findById(gameId).orElseThrow(() ->
+                new NotFoundException(ErrorCode.GAME_NOT_FOUND));
+
+        // 게임 play count +1 증가
+        game.increasePlayCount();
         gameRoomRepository.updateGameRoom(pinNumber);
 
     }

@@ -58,4 +58,8 @@ public class Game {
         this.description = gameDesc;
     }
 
+    public void increasePlayCount() {
+        this.playCount++;
+    }
+
 }

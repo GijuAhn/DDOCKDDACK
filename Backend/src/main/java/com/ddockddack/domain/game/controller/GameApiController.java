@@ -4,7 +4,6 @@ import com.ddockddack.domain.game.request.GameModifyReq;
 import com.ddockddack.domain.game.request.GameSaveReq;
 import com.ddockddack.domain.game.response.GameDetailRes;
 import com.ddockddack.domain.game.response.GameRes;
-import com.ddockddack.domain.game.response.StarredGameRes;
 import com.ddockddack.domain.game.service.GameService;
 import com.ddockddack.domain.member.response.MemberAccessRes;
 import com.ddockddack.domain.report.entity.ReportType;
@@ -17,12 +16,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.Map;
-import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -40,7 +37,7 @@ public class GameApiController {
     public ResponseEntity<PageImpl<GameRes>> gameList(@ModelAttribute PageConditionReq pageConditionReq,
                                                       Authentication authentication) {
         Long memberId = null;
-        if(authentication != null) {
+        if (authentication != null) {
             memberId = ((MemberAccessRes) authentication.getPrincipal()).getId();
         }
         PageImpl<GameRes> allGames = gameService.findAllGames(memberId, pageConditionReq);
@@ -88,9 +85,10 @@ public class GameApiController {
             @ApiResponse(responseCode = "414", description = "지원 하지 않는 확장자")
     })
     public ResponseEntity gameModify(@ModelAttribute @Valid GameModifyReq gameModifyReq,
-                                     @RequestHeader(value = "access-token", required = false) String accessToken) {
+                                     Authentication authentication) {
 
-        gameService.modifyGame(1L, gameModifyReq);
+        Long memberId = ((MemberAccessRes) authentication.getPrincipal()).getId();
+        gameService.modifyGame(memberId, gameModifyReq);
         return ResponseEntity.ok().build();
 
     }
@@ -104,9 +102,10 @@ public class GameApiController {
             @ApiResponse(responseCode = "404", description = "존재 하지 않는 유저")
     })
     public ResponseEntity gameRemove(@PathVariable Long gameId,
-                                     @RequestHeader(value = "access-token", required = false) String accessToken) {
+                                     Authentication authentication) {
 
-        gameService.removeGame(1L, gameId);
+        Long memberId = ((MemberAccessRes) authentication.getPrincipal()).getId();
+        gameService.removeGame(memberId, gameId);
 
         return ResponseEntity.ok().build();
 
@@ -121,11 +120,11 @@ public class GameApiController {
             @ApiResponse(responseCode = "404", description = "존재 하지 않는 유저")
     })
     public ResponseEntity starredGame(@PathVariable Long gameId,
-                                      @RequestHeader(value = "access-token", required = false) String accessToken) {
+                                      Authentication authentication) {
 
 
-        // 나중에 토큰에서 꺼내올 memberId
-        gameService.starredGame(2L, gameId);
+        Long memberId = ((MemberAccessRes) authentication.getPrincipal()).getId();
+        gameService.starredGame(memberId, gameId);
         return ResponseEntity.ok().build();
     }
 
@@ -138,11 +137,11 @@ public class GameApiController {
             @ApiResponse(responseCode = "404", description = "존재 하지 않는 유저")
     })
     public ResponseEntity unStarredGame(@PathVariable Long gameId,
-                                        @RequestHeader(value = "access-token", required = false) String accessToken) {
+                                        Authentication authentication) {
 
 
-        // 나중에 토큰에서 꺼내올 memberId
-        gameService.unStarredGame(1L, gameId);
+        Long memberId = ((MemberAccessRes) authentication.getPrincipal()).getId();
+        gameService.unStarredGame(memberId, gameId);
         return ResponseEntity.ok().build();
 
     }
@@ -156,11 +155,11 @@ public class GameApiController {
             @ApiResponse(responseCode = "404", description = "존재 하지 않는 유저")
     })
     public ResponseEntity gameReport(@PathVariable Long gameId,
-                                     @RequestHeader(value = "access-token", required = false) String accessToken
-            , @RequestBody Map<String, String> body) {
+                                     @RequestBody Map<String, String> body,
+                                     Authentication authentication) {
 
-        // 나중에 토큰에서 꺼내올 memberId
-        gameService.reportGame(1L, gameId, ReportType.valueOf(body.get("reportType")));
+        Long memberId = ((MemberAccessRes) authentication.getPrincipal()).getId();
+        gameService.reportGame(memberId, gameId, ReportType.valueOf(body.get("reportType")));
         return ResponseEntity.ok().build();
 
     }
