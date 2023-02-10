@@ -68,7 +68,7 @@ import { useStore } from "vuex";
 
 const api = apiInstance();
 const store = useStore();
-const accessToken = computed(() => store.state.memberStore.accessToken);
+const accessToken = computed(() => store.state.memberStore.accessToken).value;
 const tabP = ref("on");
 const tabR = ref("off");
 
@@ -93,7 +93,7 @@ const callApi = () => {
         keyword: pageConditionReq.value.keyword,
         page: pageConditionReq.value.page,
       },
-      headers: { "access-token": accessToken.value },
+      headers: { "access-token": accessToken },
     })
     .then((response) => {
       bestcuts.value = response.data.content;
@@ -130,7 +130,11 @@ const changePage = (page) => {
 //베스트컷 좋아요
 const bestcutLike = (bestcutId) => {
   api
-    .post(`/api/bestcuts/like/${bestcutId}`, {})
+    .post(
+      `/api/bestcuts/like/${bestcutId}`,
+      {},
+      { headers: { "access-token": accessToken } }
+    )
     .then(() => {
       let bestcut = bestcuts.value.find((e) => e.bestcutId === bestcutId);
       bestcut.isLiked = true;
@@ -149,11 +153,15 @@ const bestcutDislike = (bestcutId) => {
     alert("로그인 후 이용해주세요.");
     return;
   }
-  api.delete(`/api/bestcuts/dislike/${bestcutId}`).then(() => {
-    let bestcut = bestcuts.value.find((e) => e.bestcutId === bestcutId);
-    bestcut.isLiked = false;
-    bestcut.popularity--;
-  });
+  api
+    .delete(`/api/bestcuts/dislike/${bestcutId}`, {
+      headers: { "access-token": accessToken },
+    })
+    .then(() => {
+      let bestcut = bestcuts.value.find((e) => e.bestcutId === bestcutId);
+      bestcut.isLiked = false;
+      bestcut.popularity--;
+    });
 };
 </script>
 

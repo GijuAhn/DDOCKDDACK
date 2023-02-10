@@ -22,12 +22,17 @@ import { apiInstance } from "@/api/index";
 const api = apiInstance();
 const store = useStore();
 const currentModal = computed(() => store.state.commonStore.currentModal);
+const accessToken = computed(() => store.state.memberStore.accessToken).value;
 
 const reportGame = (reportType) => {
   api
-    .post(`/api/games/report/${currentModal.value.data.gameId}`, {
-      reportType: reportType,
-    })
+    .post(
+      `/api/games/report/${currentModal.value.data.gameId}`,
+      {
+        reportType: reportType,
+      },
+      { headers: { "access-token": accessToken } }
+    )
     .then(() => {
       setCurrentModalAsync("then");
     })

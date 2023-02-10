@@ -156,7 +156,7 @@ const updateSearch = (option) => {
 
 const api = apiInstance();
 const store = useStore();
-const accessToken = computed(() => store.state.memberStore.accessToken);
+const accessToken = computed(() => store.state.memberStore.accessToken).value;
 
 let games = ref();
 let pageConditionReq = ref({
@@ -176,7 +176,7 @@ const callApi = () => {
         keyword: pageConditionReq.value.keyword,
         page: pageConditionReq.value.page,
       },
-      headers: { "access-token": accessToken.value },
+      headers: { "access-token": accessToken },
     })
     .then((response) => {
       console.log(response);

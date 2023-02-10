@@ -22,12 +22,17 @@ import { apiInstance } from "@/api/index";
 const api = apiInstance();
 const store = useStore();
 const currentModal = computed(() => store.state.commonStore.currentModal);
+const accessToken = computed(() => store.state.memberStore.accessToken).value;
 
 const reportBestcut = (reportType) => {
   api
-    .post(`/api/bestcuts/report/${currentModal.value.data.bestcutId}`, {
-      reportType: reportType,
-    })
+    .post(
+      `/api/bestcuts/report/${currentModal.value.data.bestcutId}`,
+      {
+        reportType: reportType,
+      },
+      { headers: { "access-token": accessToken } }
+    )
     .then(() => {
       setCurrentModalAsync("then");
     })
