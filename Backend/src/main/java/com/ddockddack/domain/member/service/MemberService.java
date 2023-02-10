@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @Service
@@ -81,10 +82,10 @@ public class MemberService {
     @Transactional
     public void modifyMemberProfileImg(Long memberId, MemberModifyImgReq modifyMember) {
         Member memberToModify = memberRepository.findById(memberId).get();
-        String fileName = UUID.randomUUID().toString() + modifyMember.getProfile().getOriginalFilename();
+        String fileName = UUID.randomUUID().toString() + modifyMember.getProfileImg().getOriginalFilename();
 
-        log.info("log! {}, {}", modifyMember.getProfile(), fileName);
-        if (!memberToModify.getProfile().equals(modifyMember.getProfile())) {
+        log.info("log! {}, {}", modifyMember, fileName);
+        if (!memberToModify.getProfile().equals(modifyMember)) {
             memberToModify.modifyProfile(fileName);
         }
 //        return memberRepository.save(memberToModify);

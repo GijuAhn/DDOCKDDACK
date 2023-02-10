@@ -92,23 +92,24 @@ public class MemberApiController {
     })
     @PutMapping("/profile")
     public ResponseEntity<?> modifyMemberProfileImg(
-        @ModelAttribute @Valid MemberModifyImgReq memberModifyImgReq
+        @ModelAttribute MemberModifyImgReq memberModifyImgReq
     ) {
+        log.info("#@#@#@ {}", memberModifyImgReq.toString());
         try {
             MemberAccessRes memberAccessRes = (MemberAccessRes) SecurityContextHolder.getContext()
                 .getAuthentication().getPrincipal();
             Optional<Member> member = memberService.getMemberById(memberAccessRes.getId());
-            if (member.isEmpty()) {
-                throw new NotFoundException(ErrorCode.MEMBER_NOT_FOUND);
-            }
+//            if (member.isEmpty()) {
+//                throw new NotFoundException(ErrorCode.MEMBER_NOT_FOUND);
+//            }
 
-//            log.info(memberModifyImgReq);
+            log.info("#@#@#@ {}", memberModifyImgReq.getProfileImg().getOriginalFilename());
 
             memberService.modifyMemberProfileImg(member.get().getId(), memberModifyImgReq);
 
 //            return ResponseEntity.ok(memberService.modifyMember(member.get().getId(), modifyMemberReq));
 
-            log.info("mereq {}", memberModifyImgReq);
+//            log.info("mereq {}", memberModifyImgReq);
 
             return ResponseEntity.ok("");
         } catch (Exception e) {

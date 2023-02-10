@@ -122,14 +122,12 @@ const imgUploadEvent = (e) => {
 let reg_img = ["jpg", "jpeg", "png"];
 const modifyProfileImg = (f) => {
   const modifyImgName = f[0].name;
-  const formData = new FormData();
-  formData.append("profileImg", f);
-  console.log(
-    "enterImg",
-    modifyImgName,
-    modifyImgName.split(".").pop().toLowerCase(),
-    f[0].size
-  );
+
+  let formData = new FormData();
+  formData.append("profileImg", f[0]);
+
+  console.log(formData);
+
   const ext = modifyImgName.split(".").pop().toLowerCase();
   if (reg_img.includes(ext) && f[0].size < maxSize) {
     console.log("OK!", name, " ", modifyImgName);
