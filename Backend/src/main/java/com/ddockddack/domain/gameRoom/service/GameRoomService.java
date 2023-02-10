@@ -189,4 +189,7 @@ public class GameRoomService {
     }
 
 
+    public void nextRound(String pinNumber) throws JsonProcessingException {
+        gameRoomRepository.nextRound(pinNumber);
+    }
 }

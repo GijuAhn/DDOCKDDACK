@@ -159,12 +159,9 @@ public class GameService {
             String imageExtension; // 이미지 확장자
             String contentType = gameImageModifyReq.getGameImage().getContentType();
 
-            if (contentType.contains("image/jpeg")) {
-                imageExtension = ".jpg";
-            } else {
+            if (!contentType.contains("image/jpeg")) {
                 throw new ImageExtensionException(ErrorCode.EXTENSION_NOT_ALLOWED);
             }
-
             String fileName = awsS3Service.multipartFileUpload(gameImageModifyReq.getGameImage());
 
             // 업데이트

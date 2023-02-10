@@ -4,28 +4,23 @@ import com.ddockddack.domain.bestcut.request.BestcutSaveReq;
 import com.ddockddack.domain.bestcut.response.BestcutRes;
 import com.ddockddack.domain.bestcut.service.BestcutLikeService;
 import com.ddockddack.domain.bestcut.service.BestcutService;
+import com.ddockddack.domain.member.response.MemberAccessRes;
 import com.ddockddack.domain.report.entity.ReportType;
 import com.ddockddack.global.error.ErrorCode;
 import com.ddockddack.global.error.exception.AccessDeniedException;
-import com.ddockddack.global.error.exception.NumberOfFileExceedException;
 import com.ddockddack.global.util.PageConditionReq;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import java.util.Map;
-import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -42,15 +37,12 @@ public class BestcutApiController {
             @ApiResponse(description = "필수 값 누락", responseCode = "400"),
             @ApiResponse(description = "로그인 필요", responseCode = "401"),
     })
-    public ResponseEntity bestcutSave(@RequestBody @Valid BestcutSaveReq saveReq,
-            @RequestHeader(value = "access-token", required = false) String accessToken) {
+    public ResponseEntity bestcutSave(@RequestBody @Valid BestcutSaveReq saveReq) {
 //        checkLogin(accessToken); 업로드 테스트를 위해 잠시 주석처리
-        Long memberId = getMemberId(accessToken);
-//        if(getMemberId(accessToken) != saveReq.getMemberId()){
-//            throw new AccessDeniedException(ErrorCode.NOT_AUTHORIZED);
-//        }
+        Long memberId = ((MemberAccessRes) SecurityContextHolder.getContext()
+                .getAuthentication().getPrincipal()).getId();
 
-        bestcutService.saveBestcut(1L, saveReq);
+        bestcutService.saveBestcut(memberId, saveReq);
         return ResponseEntity.ok().build();
     }
 
@@ -63,7 +55,7 @@ public class BestcutApiController {
             @ApiResponse(description = "존재하지 않는 멤버", responseCode = "404"),
     })
     public ResponseEntity bestcutDelete(@PathVariable Long bestcutId,
-            @RequestHeader(value = "access-token", required = false) String accessToken) {
+                                        @RequestHeader(value = "access-token", required = false) String accessToken) {
         Long memberId = getMemberId(accessToken);
         bestcutService.removeBestcut(bestcutId, memberId);
 
@@ -80,7 +72,7 @@ public class BestcutApiController {
             @ApiResponse(description = "존재하지 않는 멤버", responseCode = "404"),
     })
     public ResponseEntity bestcutLike(@PathVariable Long bestcutId,
-            @RequestHeader(value = "access-token", required = false) String accessToken) {
+                                      @RequestHeader(value = "access-token", required = false) String accessToken) {
         checkLogin(accessToken);
 
         Long memberId = getMemberId(accessToken);
@@ -98,7 +90,7 @@ public class BestcutApiController {
             @ApiResponse(description = "존재하지 않는 멤버", responseCode = "404"),
     })
     public ResponseEntity bestcutDislike(@PathVariable Long bestcutId,
-            @RequestHeader(value = "access-token", required = false) String accessToken) {
+                                         @RequestHeader(value = "access-token", required = false) String accessToken) {
         checkLogin(accessToken);
 
         Long memberId = getMemberId(accessToken);
@@ -117,8 +109,8 @@ public class BestcutApiController {
             @ApiResponse(description = "존재하지 않는 멤버", responseCode = "404"),
     })
     public ResponseEntity bescutReport(@PathVariable Long bestcutId,
-            @RequestHeader(value = "access-token", required = false) String accessToken,
-            @RequestBody Map<String, String> reportType) {
+                                       @RequestHeader(value = "access-token", required = false) String accessToken,
+                                       @RequestBody Map<String, String> reportType) {
         checkLogin(accessToken);
 
         Long memberId = getMemberId(accessToken);
@@ -148,7 +140,7 @@ public class BestcutApiController {
             @ApiResponse(description = "베스트컷 조회 성공", responseCode = "200"),
             @ApiResponse(description = "존재하지 않는 베스트컷", responseCode = "404")
     })
-    public ResponseEntity<BestcutRes> bestcutFind(@RequestHeader(value = "access-token", required = false) String accessToken, @PathVariable Long bestcutId){
+    public ResponseEntity<BestcutRes> bestcutFind(@RequestHeader(value = "access-token", required = false) String accessToken, @PathVariable Long bestcutId) {
         Long loginMemberId = getMemberId(accessToken);
         BestcutRes findBestcut = bestcutService.findOne(loginMemberId, bestcutId);
 

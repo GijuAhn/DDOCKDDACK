@@ -227,10 +227,7 @@ onBeforeMount(() => {
         setTimeout(() => {
           resultMode.value = false;
           if (round.value < 5) {
-            openviduInfo.value.session.signal({
-              data: ++round.value,
-              type: "roundStart",
-            });
+            api.get(`/api/game-rooms/${route.params.pinNumber}/round`);
           } else {
             isEnd.value = true;
           }
@@ -415,7 +412,11 @@ const upload = () => {
     }
   });
   api
-    .post("/api/bestcuts", bestcutSaveReq.value)
+    .post("/api/bestcuts", bestcutSaveReq.value, {
+      headers: {
+        "access-token": accessToken,
+      },
+    })
     .then(() => {
       alert("업로드가 완료 되었습니다.");
     })

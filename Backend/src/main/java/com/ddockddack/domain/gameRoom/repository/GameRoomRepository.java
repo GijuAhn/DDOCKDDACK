@@ -152,6 +152,13 @@ public class GameRoomRepository {
 
     }
 
+    public void nextRound(String pinNumber) throws JsonProcessingException {
+        GameRoom gameRoom = gameRooms.get(pinNumber);
+        String signal = createSignal(pinNumber, "signal:roundStart", String.valueOf(gameRoom.getRound()));
+        sendSignal(signal);
+
+    }
+
     private String createSignal(String pinNumber, String signalName, String data) throws JsonProcessingException {
         GameSignalReq req = GameSignalReq.builder()
                 .session(pinNumber)

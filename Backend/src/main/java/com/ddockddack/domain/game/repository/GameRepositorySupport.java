@@ -110,11 +110,13 @@ public class GameRepositorySupport {
                 .from(game)
                 .innerJoin(game.member, member)
                 .innerJoin(game.images, gameImage)
-                .join(starredGame.game).on(starredGame.game.id.eq(game.id),
-                        starredGame.member.id.eq(member.id))
-//                .where(starredGame.game.member.id.eq(memberId))
-                .groupBy(starredGame.id)
-                .having(starredGame.game.member.id.eq(memberId))
+                .where(member.id.eq(memberId))
+                .groupBy(game.id,
+                        game.category,
+                        game.title,
+                        game.description,
+                        game.member.nickname,
+                        game.playCount)
                 .orderBy(game.id.desc())
                 .fetch();
     }
