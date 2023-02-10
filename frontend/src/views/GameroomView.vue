@@ -436,19 +436,28 @@ const upload = () => {
   bestcutSaveReq.value.socketId =
     openviduInfo.value.publisher.session.connection.connectionId;
   bestcutSaveReq.value.gameTitle = room.value.gameTitle;
-  isChecked.value.forEach(
-    (element, index) => {
-      if (element) {
-        bestcutSaveReq.value.images.push({
-          bestcutIndex: index,
-          bestcutImgTitle: inputs.value[index],
-          gameImgUrl: room.value.gameImages[index].gameImage,
-          gameImgDesc: room.value.gameImages[index].gameImageDesc,
-        });
-      }
-    },
-    { immediate: true }
-  );
+  isChecked.value.forEach((element, index) => {
+    if (element) {
+      bestcutSaveReq.value.images.push({
+        bestcutIndex: index,
+        bestcutImgTitle: inputs.value[index],
+        gameImgUrl: room.value.gameImages[index].gameImage,
+        gameImgDesc: room.value.gameImages[index].gameImageDesc,
+      });
+    }
+  });
+  api
+    .post(`/api/bestcuts`, bestcutSaveReq.value, {
+      headers: {
+        "access-token": accessToken,
+      },
+    })
+    .then(() => {
+      alert("업로드가 완료 되었습니다.");
+    })
+    .catch(() => {
+      alert("업로드에 실패 하였습니다.");
+    });
 };
 </script>
 
