@@ -7,7 +7,6 @@ import com.ddockddack.domain.game.response.GameRes;
 import com.ddockddack.domain.game.response.StarredGameRes;
 import com.ddockddack.domain.game.service.GameService;
 import com.ddockddack.domain.member.entity.Member;
-import com.ddockddack.domain.member.request.MemberModifyImgReq;
 import com.ddockddack.domain.member.request.MemberModifyNameReq;
 import com.ddockddack.domain.member.response.MemberAccessRes;
 import com.ddockddack.domain.member.service.MemberService;
@@ -24,7 +23,6 @@ import java.util.Optional;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageImpl;
@@ -39,6 +37,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @Slf4j
@@ -72,9 +71,9 @@ public class MemberApiController {
             memberService.modifyMemberNickname(member.get().getId(), memberModifyNameReq);
 
 //            return ResponseEntity.ok(memberService.modifyMember(member.get().getId(), modifyMemberReq));
-            log.info("mereq {}", memberModifyNameReq);
+            log.info("memberModifyNameReq {}", memberModifyNameReq);
 
-            return ResponseEntity.ok("");
+            return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.status(500).body(e.getMessage());
         }
@@ -92,26 +91,24 @@ public class MemberApiController {
     })
     @PutMapping("/profile")
     public ResponseEntity<?> modifyMemberProfileImg(
-        @ModelAttribute MemberModifyImgReq memberModifyImgReq
+        @ModelAttribute MultipartFile profileImg
     ) {
-        log.info("#@#@#@ {}", memberModifyImgReq.toString());
         try {
             MemberAccessRes memberAccessRes = (MemberAccessRes) SecurityContextHolder.getContext()
                 .getAuthentication().getPrincipal();
             Optional<Member> member = memberService.getMemberById(memberAccessRes.getId());
-//            if (member.isEmpty()) {
-//                throw new NotFoundException(ErrorCode.MEMBER_NOT_FOUND);
-//            }
+            if (member.isEmpty()) {
+                throw new NotFoundException(ErrorCode.MEMBER_NOT_FOUND);
+            }
+            if (profileImg.isEmpty()) {
+                throw new NotFoundException(ErrorCode.MISSING_REQUIRED_VALUE);
+            }
 
-            log.info("#@#@#@ {}", memberModifyImgReq.getProfileImg().getOriginalFilename());
+            log.info("profileImg {}", profileImg.getOriginalFilename());
 
-            memberService.modifyMemberProfileImg(member.get().getId(), memberModifyImgReq);
+            memberService.modifyMemberProfileImg(member.get().getId(), profileImg);
 
-//            return ResponseEntity.ok(memberService.modifyMember(member.get().getId(), modifyMemberReq));
-
-//            log.info("mereq {}", memberModifyImgReq);
-
-            return ResponseEntity.ok("");
+            return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.status(500).body(e.getMessage());
         }

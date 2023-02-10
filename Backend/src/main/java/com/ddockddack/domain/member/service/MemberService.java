@@ -3,11 +3,12 @@ package com.ddockddack.domain.member.service;
 import com.ddockddack.domain.member.entity.Member;
 import com.ddockddack.domain.member.entity.Role;
 import com.ddockddack.domain.member.repository.MemberRepository;
-import com.ddockddack.domain.member.request.MemberModifyImgReq;
 import com.ddockddack.domain.member.request.MemberModifyNameReq;
 import com.ddockddack.domain.member.request.MemberModifyReq;
 import com.ddockddack.global.error.ErrorCode;
+import com.ddockddack.global.error.exception.ImageExtensionException;
 import com.ddockddack.global.error.exception.NotFoundException;
+import com.ddockddack.global.service.AwsS3Service;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -38,6 +39,7 @@ public class MemberService {
     private final Environment env;
     private final MemberRepository memberRepository;
     private final TokenService tokenService;
+    private final AwsS3Service awsS3Service;
     //    private final RedisTemplate redisTemplate;
     private RestTemplate rt;
 
@@ -69,26 +71,37 @@ public class MemberService {
         return null;
 //        return memberRepository.save(memberToModify);
     }
+
     @Transactional
-    public void modifyMemberNickname(Long memberId, MemberModifyNameReq modifyMember) {
-        Member memberToModify = memberRepository.findById(memberId).get();
-        log.info("log! {}, {}", modifyMember.getNickname(), modifyMember.getNickname().isEmpty());
-        if (!memberToModify.getNickname().equals(modifyMember.getNickname())) {
-            memberToModify.modifyNickname(modifyMember.getNickname());
+    public void modifyMemberNickname(Long memberId, MemberModifyNameReq modifyMemberNickname) {
+        Member member = memberRepository.findById(memberId).get();
+        log.info("log! {}, {}", modifyMemberNickname.getNickname(), modifyMemberNickname.getNickname().isEmpty());
+        if (!member.getNickname().equals(modifyMemberNickname.getNickname())) {
+            member.modifyNickname(modifyMemberNickname.getNickname());
         }
-//        return memberRepository.save(memberToModify);
+//        return memberRepository.save(member);
     }
 
     @Transactional
-    public void modifyMemberProfileImg(Long memberId, MemberModifyImgReq modifyMember) {
-        Member memberToModify = memberRepository.findById(memberId).get();
-        String fileName = UUID.randomUUID().toString() + modifyMember.getProfileImg().getOriginalFilename();
+    public void modifyMemberProfileImg(Long memberId, MultipartFile modifyProfileImg) {
+        Member member = memberRepository.findById(memberId).get();
 
-        log.info("log! {}, {}", modifyMember, fileName);
-        if (!memberToModify.getProfile().equals(modifyMember)) {
-            memberToModify.modifyProfile(fileName);
+        if (!(modifyProfileImg.getContentType().contains("image/jpg") ||
+            (modifyProfileImg.getContentType().contains("image/jpeg") ||
+                (modifyProfileImg.getContentType().contains("image/png"))))) {
+            throw new ImageExtensionException(ErrorCode.EXTENSION_NOT_ALLOWED);
         }
-//        return memberRepository.save(memberToModify);
+
+        log.info("modifyProfileImg contentType {}", modifyProfileImg.getContentType());
+
+        try {
+            String fileName = awsS3Service.multipartFileUpload(modifyProfileImg);
+            member.modifyProfile(fileName);
+            awsS3Service.deleteObject(member.getProfile());
+        } catch (Exception e) {
+          throw new RuntimeException("UPLOAD_FAILED"); //Exception 추가
+        }
+
     }
 
     /**
@@ -148,7 +161,6 @@ public class MemberService {
     public String getKaKaoAccessToken(String code) {
         //카카오 서버에 POST 방식으로 엑세스 토큰을 요청
         //RestTemplate를 이용
-        System.out.println(code + " ############");
 //        RestTemplate rt = new RestTemplate();
 
         rt = new RestTemplate();
@@ -156,9 +168,9 @@ public class MemberService {
         //HttpHeader 오브젝트 생성
         HttpHeaders headers = new HttpHeaders();
 
-        System.out.println("인가 코드 확인 :" + code);
-        System.out.println(env.getProperty("kakao.api_key"));
-        System.out.println(env.getProperty("kakao.login.redirect_uri"));
+//        System.out.println("인가 코드 확인 :" + code);
+//        System.out.println(env.getProperty("kakao.api_key"));
+//        System.out.println(env.getProperty("kakao.login.redirect_uri"));
 
         //HttpBody 오브젝트 생성
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
@@ -277,10 +289,10 @@ public class MemberService {
         return memberRepository.save(memberToModify);
     }
 
-    public LocalDate getReleaseDate(BanLevel banLevel){
+    public LocalDate getReleaseDate(BanLevel banLevel) {
         LocalDate today = LocalDate.now();
 
-        switch (banLevel){
+        switch (banLevel) {
             case oneWeek:
                 today.plusDays(7);
                 break;
