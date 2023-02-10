@@ -60,7 +60,7 @@ const api = apiInstance();
 const accessToken = computed(() => store.state.memberStore.accessToken).value;
 const bestcutSaveReq = ref({
   pinNumber: undefined,
-  sessionId: undefined,
+  socketId: undefined,
   gameTitle: undefined,
   images: [],
 });
@@ -95,7 +95,7 @@ const updateSelectedIndex = (index) => {
 
 const upload = () => {
   bestcutSaveReq.value.pinNumber = streamManager.value.session.sessionId;
-  bestcutSaveReq.value.sessionId =
+  bestcutSaveReq.value.socketId =
     streamManager.value.session.connection.connectionId;
   bestcutSaveReq.value.gameTitle = room.value.gameTitle;
   isChecked.value.forEach((element, index) => {
