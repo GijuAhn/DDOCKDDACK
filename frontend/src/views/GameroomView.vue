@@ -565,7 +565,4 @@ const setCurrentModalAsync = (what) => {
 #button-container button {
   margin: 0 10px;
 }
-.game-image {
-  transform: scaleX(-1);
-}
 </style>

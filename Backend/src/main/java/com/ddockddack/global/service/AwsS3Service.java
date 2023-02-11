@@ -14,7 +14,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
 
@@ -62,11 +61,7 @@ public class AwsS3Service {
         ObjectMetadata om = new ObjectMetadata();
         om.setContentType("image/jpg");
         String fileName = UUID.randomUUID().toString() + ".jpg";
-<<<<<<< HEAD
-        s3Client.putObject(new PutObjectRequest(bucket, fileName, new ByteArrayInputStream(byteImages), null).withCannedAcl(CannedAccessControlList.PublicRead));
-=======
         s3Client.putObject(new PutObjectRequest(bucket, fileName, new ByteArrayInputStream(byteImages), om).withCannedAcl(CannedAccessControlList.PublicRead));
->>>>>>> a3a6da1d8f02d3ffa9b97f427f0a885c7278f619
         return fileName;
     }
 
@@ -82,12 +77,9 @@ public class AwsS3Service {
         return bytes;
     }
 
-<<<<<<< HEAD
-=======
     public void deleteObject(String fileName){
         s3Client.deleteObject(new DeleteObjectRequest(bucket, fileName));
     }
 
->>>>>>> a3a6da1d8f02d3ffa9b97f427f0a885c7278f619
 
 }
