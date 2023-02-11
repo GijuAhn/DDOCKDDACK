@@ -60,8 +60,9 @@
       </div>
       <div>
         <input
+          @keyup.enter="callApi"
           type="text"
-          v-model="pageConditionReq.keyword"
+          v-model.trim="pageConditionReq.keyword"
           placeholder="검색어를 입력해주세요"
         />
         <button id="btn-s" @click="callApi">검색</button>
@@ -85,6 +86,9 @@
 </template>
 
 <script setup>
+import { apiInstance } from "@/api/index";
+import { ref, watch, computed } from "vue";
+import { useStore } from "vuex";
 import NormalGame from "@/components/GameList/item/NormalGame";
 import PageNav from "@/components/common/PageNav.vue";
 
@@ -94,9 +98,6 @@ const changePage = (page) => {
   pageConditionReq.value.page = page;
   callApi();
 };
-
-import { apiInstance } from "@/api/index";
-import { ref, watch } from "vue";
 
 const tabP = ref("on");
 const tabR = ref("off");
@@ -154,6 +155,9 @@ const updateSearch = (option) => {
 };
 
 const api = apiInstance();
+const store = useStore();
+const accessToken = computed(() => store.state.memberStore.accessToken).value;
+
 let games = ref();
 let pageConditionReq = ref({
   order: "POPULARITY",
@@ -172,6 +176,7 @@ const callApi = () => {
         keyword: pageConditionReq.value.keyword,
         page: pageConditionReq.value.page,
       },
+      headers: { "access-token": accessToken },
     })
     .then((response) => {
       console.log(response);

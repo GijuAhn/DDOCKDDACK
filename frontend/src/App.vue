@@ -1,5 +1,5 @@
 <template>
-  <navigation-bar />
+  <navigation-bar v-if="route.name !== `gameroom`" />
   <router-view />
   <modal-frame v-if="currentModal.length !== 0" />
 </template>

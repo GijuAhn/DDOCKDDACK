@@ -1,62 +1,109 @@
 <template>
   <div id="session">
-    <div id="main-container" class="container">
-      <div id="session-header">
-        <h3 id="session-title">
-          핀번호 : {{ room.pinNumber }} 인원 :
-          {{ openviduInfo.subscribers.length + 1 }}
-          <span v-show="!isEnd">/ 게임 라운드 : {{ round }}</span>
-          <button @click="linkShare">
-            <img
-              src="https://developers.kakao.com/assets/img/about/logos/kakaotalksharing/kakaotalk_sharing_btn_medium.png"
-              alt="카카오톡 공유 보내기 버튼"
-            />
-          </button>
-        </h3>
-        <h3 v-show="!isEnd">
-          남은 시간 : {{ timerCount }}
-          <button v-if="isHost" v-show="!isStart" @click="play">play</button>
-        </h3>
-      </div>
-      <div id="game-image">
-        <span v-if="isStart && !isEnd">
-          <img
-            class="game-image"
-            :src="`${IMAGE_PATH}/${room.gameImages[round - 1].gameImage}`"
+    <modal-frame v-if="currentModal.length !== 0" />
+    <div>
+      <result-modal v-if="resultMode" :round="round" :result="result" />
+    </div>
+
+    <div id="session-header">
+      <span id="session-title">
+        {{ room.gameTitle }} [방 코드 - {{ room.pinNumber }}]
+      </span>
+      <img
+        src="https://developers.kakao.com/assets/img/about/logos/kakaotalksharing/kakaotalk_sharing_btn_medium.png"
+        @click="linkShare"
+        id="kakaoShareButton"
+      />
+      <span>공유하기</span>
+      <!--우측 공간-->
+      <span></span>
+    </div>
+
+    <div id="main-container">
+      <capture-video id="main-video" :stream-manager="openviduInfo.publisher" />
+
+      <div id="left-section">
+        <div id="gameInfoSection">
+          <div v-if="isStart && !isEnd">
+            <div id="gameImageSection">
+              <img
+                class="game-image"
+                :src="`${IMAGE_PATH}/${room.gameImages[round - 1].gameImage}`"
+              />
+            </div>
+            <div id="gameCurrentSection">
+              <span v-show="!isEnd"> 게임 라운드 : {{ round }}</span>
+              <span v-show="!isEnd"> 남은 시간 : {{ timerCount }} </span>
+            </div>
+          </div>
+
+          <div v-if="!isStart">
+            <div id="gameWaitSection">
+              <button v-if="isHost" v-show="!isStart" @click="play">
+                play
+              </button>
+              <div id="waitDesc">
+                <span>잠시만 기다려주세요</span><br />
+                <span
+                  >{{ openviduInfo.subscribers.length + 1 }}명 참가중...</span
+                >
+              </div>
+            </div>
+          </div>
+
+          <div v-if="isEnd">
+            <div id="gameResultSection">
+              <button @click="setCurrentModalAsync(`bestcutUpload`)">
+                내 사진 보기
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div id="my-video">
+          <user-video
+            id="main-video"
+            :stream-manager="openviduInfo.publisher"
+            :captureMode="captureMode"
           />
-        </span>
+        </div>
       </div>
-      <div>
-        <user-video
-          id="main-video"
-          :stream-manager="openviduInfo.publisher"
-          :timerCount="timerCount"
-          :isEnd="isEnd"
-          :isStart="isStart"
-          :round="round"
-          :room="room"
-          :resultMode="resultMode"
-        />
-      </div>
-      <div id="video-container">
+      <div id="right-section">
         <div
-          v-for="sub in openviduInfo.subscribers"
-          :key="sub.stream.connection.connectionId"
+          id="video-container"
+          :class="{
+            grid1: 1 === openviduInfo.subscribers.length,
+            grid2: 2 === openviduInfo.subscribers.length,
+            grid3: 3 === openviduInfo.subscribers.length,
+            grid4: 4 === openviduInfo.subscribers.length,
+            grid5: 5 === openviduInfo.subscribers.length,
+            grid6: 6 === openviduInfo.subscribers.length,
+            grid7: 7 === openviduInfo.subscribers.length,
+            grid8: 8 === openviduInfo.subscribers.length,
+            grid9: 9 === openviduInfo.subscribers.length,
+            grid10: 10 === openviduInfo.subscribers.length,
+            grid11: 11 === openviduInfo.subscribers.length,
+            grid12: 12 === openviduInfo.subscribers.length,
+          }"
         >
-          <user-video :stream-manager="sub" />
+          <user-video
+            v-for="sub in openviduInfo.subscribers"
+            :key="sub.stream.connection.connectionId"
+            :stream-manager="sub"
+          />
         </div>
       </div>
     </div>
 
     <div id="button-container">
-      <button class="btn-video-control">
-        <svg-icon type="mdi" :path="path[0]" /> 음소거
-      </button>
-      <button class="btn-video-control">
-        <svg-icon type="mdi" :path="path[2]" /> 화면 중지
-      </button>
-      <button type="button" class="btn-close" @click="leaveSession">
-        <span class="icon-cross"></span>
+      <button class="btn-video-control">음소거</button>
+      <button class="btn-video-control">화면 중지</button>
+      <button class="btn-close" @click="leaveSession">
+        <img
+          :src="require(`@/assets/images/close.png`)"
+          width="18"
+          height="18"
+        />
       </button>
     </div>
   </div>
@@ -64,27 +111,19 @@
 
 <script setup>
 import { apiInstance } from "@/api/index";
-import {
-  computed,
-  onBeforeMount,
-  onMounted,
-  ref,
-  watch,
-} from "@vue/runtime-core";
+import { computed, onBeforeMount, ref } from "@vue/runtime-core";
 import { useRoute } from "vue-router";
 import { OpenVidu } from "openvidu-browser";
 import UserVideo from "@/components/Gameroom/item/UserVideo.vue";
+import CaptureVideo from "@/components/Gameroom/item/CaptureVideo.vue";
 import { useStore } from "vuex";
 import router from "@/router/index.js";
 import process from "process";
-import SvgIcon from "@jamescoyle/vue-icon";
-import {
-  mdiMicrophone,
-  mdiMicrophoneOff,
-  mdiVideo,
-  mdiVideoOff,
-} from "@mdi/js";
+import ModalFrame from "@/components/common/ModalFrame";
+import ResultModal from "@/components/Gameroom/item/ResultModal.vue";
+import html2canvas from "html2canvas";
 
+const currentModal = computed(() => store.state.commonStore.currentModal);
 const IMAGE_PATH = process.env.VUE_APP_IMAGE_PATH;
 const api = apiInstance();
 const route = useRoute();
@@ -110,13 +149,14 @@ const room = ref({
   gameImages: undefined,
 });
 const timerCount = ref(5);
-const timerEnabled = ref(false);
 const isStart = ref(false);
 const round = ref(1);
 const isHost = ref(false);
 const isEnd = ref(false);
 const resultMode = ref(false);
-const path = ref([mdiMicrophone, mdiMicrophoneOff, mdiVideo, mdiVideoOff]);
+const captureMode = ref(false);
+const result = ref([]);
+const resultImages = ref([]);
 
 onBeforeMount(() => {
   api
@@ -156,10 +196,42 @@ onBeforeMount(() => {
         console.warn(exception);
       });
 
-      openviduInfo.value.session.on("signal", () => {
-        timerEnabled.value = true;
-        isStart.value = true;
+      openviduInfo.value.session.on("signal:roundStart", (signal) => {
+        round.value = signal.data;
+        if (signal.data == 1) {
+          isStart.value = true;
+          console.log("게임 시작");
+        }
+
+        const timer = setInterval(() => {
+          timerCount.value--;
+          if (timerCount.value === 0) {
+            clearInterval(timer);
+            capture(signal.data - 1);
+            timerCount.value = 5;
+          }
+        }, 1000);
       });
+
+      openviduInfo.value.session.on("roundResult", (signal) => {
+        resultMode.value = true;
+        result.value = JSON.parse(signal.data);
+        setTimeout(() => {
+          resultMode.value = false;
+          if (round.value < 5 && isHost.value) {
+            openviduInfo.value.session.signal({
+              data: ++round.value,
+              type: "roundStart",
+            });
+          } else if (round.value == 5) {
+            isEnd.value = true;
+          }
+        }, 5000);
+      });
+
+      if (!accessToken) {
+        console.log(typeof res.data);
+      }
 
       openviduInfo.value.session
         .connect(res.data.token, {
@@ -213,27 +285,21 @@ onBeforeMount(() => {
         router.replace("/");
       }
       if (err.response.status === 401) {
-        console.log(err.response);
+        alert("중복 참가는 불가능 합니다.");
+        router.replace("/");
       }
     });
-});
-
-onMounted(() => {
-  timerCount.value = 5;
-  timerEnabled.value = false;
-  isStart.value = false;
-  round.value = 1;
 });
 
 const leaveSession = () => {
   // --- 7) Leave the session by calling 'disconnect' method over the Session object ---
   if (openviduInfo.value.session) {
-    let sessionId = openviduInfo.value.session.connection.connectionId;
+    let socketId = openviduInfo.value.session.connection.connectionId;
     // 방에 유저가 있는 경우 멤버삭제
     if (openviduInfo.value.subscribers.length) {
       api
         .delete(
-          `/api/game-rooms/${route.params.pinNumber}/sessions/${sessionId}`
+          `/api/game-rooms/${route.params.pinNumber}/sessions/${socketId}`
         )
         .catch((err) => {
           console.log(err);
@@ -260,33 +326,19 @@ const leaveSession = () => {
 const play = () => {
   api
     .put(`/api/game-rooms/${route.params.pinNumber}`)
-    .then(() => {
-      setTimeout(() => {
-        openviduInfo.value.session.signal({
-          data: "", // Any string (optional)
-        });
-      }, 1000);
-    })
+    .then()
     .catch(() => {
       alert("게임시작에 실패 하였습니다.");
     });
 };
 
 const linkShare = async () => {
-  const file = await convertURLtoFile(
-    `/static/images/${room.value.gameId}/${room.value.gameImages[0].gameImage}`
-  );
-  const files = [file];
-
-  let response = await window.Kakao.Share.uploadImage({
-    file: files,
-  });
   window.Kakao.Link.sendDefault({
     objectType: "feed",
     content: {
       title: `${room.value.gameTitle}`,
       description: `${room.value.gameDescription}`,
-      imageUrl: response.infos.original.url,
+      imageUrl: `${IMAGE_PATH}/${room.value.gameImages[0].gameImage}`,
       link: {
         mobileWebUrl: `http://localhost:8080/gameroom/${room.value.pinNumber}`,
         webUrl: `http://localhost:8080/gameroom/${room.value.pinNumber}`,
@@ -304,108 +356,214 @@ const linkShare = async () => {
   });
 };
 
-const convertURLtoFile = async (url) => {
-  const response = await fetch(url, {
-    mode: "no-cors",
-  });
-  const data = await response.blob();
-  const fileName = room.value.gameImages[0].gameImage;
-  const metadata = { type: "image/jpeg" };
-  return new File([data], fileName, metadata);
+const capture = async (index) => {
+  let me = document.getElementById("myVideo2");
+  captureMode.value = true;
+  setTimeout(() => {
+    captureMode.value = false;
+  }, 500);
+  html2canvas(me)
+    .then((canvas) => {
+      let myImg;
+      const socketId =
+        openviduInfo.value.publisher.session.connection.connectionId;
+      const pinNumber = openviduInfo.value.publisher.session.sessionId;
+      myImg = canvas.toDataURL("image/jpeg");
+      let byteString = myImg.replace("data:image/jpeg;base64,", "");
+
+      let param = {
+        gameImage: room.value.gameImages[index].gameImage,
+        memberGameImage: byteString,
+      };
+      api.post(`/api/game-rooms/${pinNumber}/${socketId}/images`, param);
+      resultImages.value.push(myImg);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 };
 
-watch(
-  timerEnabled,
-  () => {
-    timerCount.value--;
-  },
-  { immediate: true }
-);
-
-watch(
-  timerCount,
-  (value) => {
-    if (value > 0 && timerEnabled.value) {
-      setTimeout(() => {
-        timerCount.value--;
-      }, 1000);
-    }
-    if (round.value > 5) {
-      timerEnabled.value = false;
-      isEnd.value = true;
-    }
-    if (value === 0) {
-      resultMode.value = true;
-      setTimeout(() => {
-        round.value++;
-        timerCount.value = 5;
-        resultMode.value = false;
-      }, 500);
-    }
-  },
-  { immediate: true }
-);
+const setCurrentModalAsync = (what) => {
+  store.dispatch("commonStore/setCurrentModalAsync", {
+    name: what,
+    data: [resultImages, openviduInfo.value.publisher, room],
+  });
+};
 </script>
 
-<style>
+<style scoped>
 #session {
   background-color: black;
   color: #ffffff;
+  height: 100vh;
 }
-
-.btn-video-control {
-  border-color: #ffffff;
-  color: white;
-  background-color: rgba(0, 0, 0, 0);
-  border-radius: 50px;
-  width: 150px;
-  font-size: 21px;
-}
-
-.btn-close {
-  border: 0;
-  background: #ff0000;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  display: inline;
-  flex-flow: column nowrap;
-  justify-content: center;
+#session-header {
+  height: 35px;
+  /* background-color: rgb(255, 150, 150); */
+  display: flex;
   align-items: center;
+  padding: 0 10px;
+}
+#session-header span {
+  font-size: 20px;
+}
+#session-header span:last-child {
+  margin-left: auto;
+}
+#main-container {
+  /* border: 1px solid red; */
+  height: calc(100vh - 105px);
+  display: flex;
+  position: relative;
+}
+#left-section {
+  width: 50%;
+}
+#gameInfoSection {
+  /* background-color: rgb(104, 104, 0); */
+  height: 50%;
+  flex-direction: column;
+  position: relative;
+}
+#gameImageSection,
+#gameWaitSection,
+#gameResultSection {
+  border-radius: 20px;
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  bottom: 10px;
+  border: 1px solid #464646;
+}
+#gameImageSection img {
+  height: 100%;
+  width: 100%;
+  object-fit: contain;
+}
+#gameWaitSection,
+#gameResultSection {
+  background-color: #d9d9d9;
+}
+#waitDesc > span {
+  color: black;
+  font-size: 50px;
+}
+
+#gameCurrentSection {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+#my-video {
+  /* background-color: rgb(104, 0, 87); */
+  height: 50%;
+  flex-direction: column;
+}
+#my-video > * {
+  height: 100%;
+}
+#right-section {
+  width: 50%;
+  /* background-color: rgb(0, 0, 99); */
+}
+#video-container {
+  height: 100%;
+  display: grid;
+}
+.grid1 {
+  grid-template-columns: repeat(1, 1fr);
+  grid-template-rows: repeat(1, 1fr);
+}
+.grid2 {
+  grid-template-columns: repeat(1, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+}
+.grid3 {
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+}
+.grid4 {
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+}
+.grid5 {
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+}
+.grid6 {
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+}
+.grid7 {
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+}
+.grid8 {
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+}
+.grid9 {
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+}
+.grid10 {
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+}
+.grid11 {
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+}
+.grid12 {
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+}
+#video-container > * {
+  height: 100%;
+}
+
+#kakaoShareButton {
+  width: 30px;
+  height: 30px;
+}
+#kakaoShareButton:hover {
   cursor: pointer;
-  transition: all 150ms;
 }
-.btn-close .icon-cross {
-  border: 0;
+.game-image {
+  transform: scaleX(-1);
+}
+#button-container {
+  height: 70px;
+  /* background-color: rgb(150, 216, 255); */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.btn-video-control {
+  border: 1px solid #464646;
+  font-size: 18px;
+  font-family: "NanumSquareRoundB";
+  padding: 10px 0;
   background: none;
-  position: absolute;
-  width: 10px;
-  height: 10px;
+  color: white;
+  width: 140px;
+  height: 45px;
+  border-radius: 45px;
 }
-.btn-close .icon-cross:before,
-.btn-close .icon-cross:after {
-  content: "";
-  position: absolute;
-  top: 15px;
-  left: -10px;
-  right: 0;
-  height: 6px;
-  background: #fff;
-  border-radius: 6px;
+.btn-close {
+  border: 1px solid #db1f2e;
+  background-color: #db1f2e;
+  width: 45px;
+  height: 45px;
+  border-radius: 45px;
 }
-.btn-close .icon-cross:before {
-  transform: rotate(45deg);
+.btn-video-control:hover,
+.btn-close:hover {
+  cursor: pointer;
 }
-.btn-close .icon-cross:after {
-  transform: rotate(-45deg);
-}
-.btn-close .icon-cross span {
-  display: block;
-}
-.btn-close:hover,
-.btn-close:focus {
-  transform: rotateZ(90deg);
-  background: #ff0000;
+#button-container button {
+  margin: 0 10px;
 }
 .game-image {
   transform: scaleX(-1);

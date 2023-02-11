@@ -22,28 +22,32 @@
       v-if="currentModal.name === `bestcutReport`"
     />
     <login-modal class="modalContent" v-if="currentModal.name === `login`" />
+    <bestcut-upload-modal
+      class="modalContent"
+      v-if="currentModal.name === `bestcutUpload`"
+    />
   </div>
 </template>
 
 <script setup>
 import { useStore } from "vuex";
-
-const store = useStore();
-
-import { computed } from "vue";
-
-const currentModal = computed(() => store.state.commonStore.currentModal);
-
-const setCurrentModalAsync = () => {
-  store.dispatch("commonStore/setCurrentModalAsync", "");
-};
-
 import PreviewModal from "@/components/common/modal/PreviewModal";
 import ReportReasonModal from "@/components/common/modal/ReportReasonModal";
 import ReportCompleteModal from "@/components/common/modal/ReportCompleteModal";
 import BestcutDetailModal from "@/components/common/modal/BestcutDetailModal";
 import BestcutReportModal from "@/components/common/modal/BestcutReportModal";
 import LoginModal from "@/components/common/modal/LoginModal";
+import BestcutUploadModal from "@/components/common/modal/BestcutUploadModal";
+
+import { computed } from "vue";
+
+const store = useStore();
+
+const currentModal = computed(() => store.state.commonStore.currentModal);
+
+const setCurrentModalAsync = () => {
+  store.dispatch("commonStore/setCurrentModalAsync", "");
+};
 </script>
 
 <style scoped>

@@ -20,7 +20,7 @@ public class BestcutSaveReq {
     private String pinNumber;
 
     @NotNull(message = "sessionId can't be null")
-    private String sessionId;
+    private String socketId;
 
     @NotBlank(message = "gameTitle can't be blank")
     private String gameTitle;

@@ -6,11 +6,10 @@ const api = apiInstance();
 //   await api.post(`/user/login`, JSON.stringify(user)).then(success).catch(fail);
 // }
 
-async function findByAccessToken(userid, accessToken, success, fail) {
-  console.log(userid);
-  console.log(accessToken);
+async function findByAccessToken(accessToken, success, fail) {
+  // console.log(accessToken);
   await api
-    .get(`/api/members/${userid}`, {
+    .get(`/api/members/`, {
       headers: {
         "access-token": accessToken,
       },

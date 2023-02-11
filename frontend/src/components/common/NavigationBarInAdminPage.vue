@@ -1,20 +1,21 @@
 <template>
   <div id="navbar">
-    <my-profile />
     <div class="tab-info">
-      <span :class="tab1">
-        <router-link to="/admin/game">게임 신고</router-link></span
-      >
-      <span :class="tab2"
-        ><router-link to="/admin/bestcut">베스트컷 신고</router-link></span
-      >
+      <p :class="tab1">
+        <span>
+          <router-link to="/admin/game">게임 신고 관리</router-link>
+        </span>
+      </p>
+      <p :class="tab2">
+        <span>
+          <router-link to="/admin/bestcut">베스트컷 신고 관리</router-link>
+        </span>
+      </p>
     </div>
   </div>
 </template>
 
 <script setup>
-import MyProfile from "@/components/common/MyProfile";
-
 import { computed } from "vue";
 import { useStore } from "vuex";
 
@@ -27,7 +28,9 @@ const tab2 = computed(() => store.state.commonStore.tab.admin[1]);
 <style scoped>
 #navbar {
   background-color: #fdf8ec;
+  height: 90vh;
 }
+
 a {
   text-decoration: none;
   line-height: 70px;
@@ -39,22 +42,24 @@ a {
 .on {
   background-color: white;
   padding: 23px 0;
-  border-top-left-radius: 10px;
   border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
   border-top: 1px solid #c9c9c9;
-  border-left: 1px solid #c9c9c9;
+  border-left: 1px solid white;
   border-right: 1px solid #c9c9c9;
-  border-bottom: 1px solid white;
+  border-bottom: 1px solid #c9c9c9;
 }
 .off {
   background-color: #fdf8ec;
   padding: 23px 0;
 }
 .tab-info {
-  height: 69px;
   border-bottom: 1px solid #c9c9c9;
 }
-.tab-info span {
+.tab-info p {
+  text-align: right;
+}
+.tab-info > span {
   margin: 0 20px;
 }
 </style>

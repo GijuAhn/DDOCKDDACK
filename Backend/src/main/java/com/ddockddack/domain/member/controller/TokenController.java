@@ -24,6 +24,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
+
 @RequiredArgsConstructor
 @Slf4j
 @RestController
@@ -48,7 +50,7 @@ public class TokenController {
         @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @GetMapping("/refresh")
-    public String refreshAuth(HttpServletResponse response) {
+    public String refreshAuth(HttpServletResponse response) throws IOException {
         log.info("refresh 진입");
         try {
             MemberAccessRes memberAccessRes = (MemberAccessRes) SecurityContextHolder.getContext()

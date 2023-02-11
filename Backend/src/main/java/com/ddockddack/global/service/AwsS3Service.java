@@ -47,9 +47,11 @@ public class AwsS3Service {
     }
 
     public String multipartFileUpload(MultipartFile uploadFile) {
-        String fileName = UUID.randomUUID().toString() + ".jpg";
+        String fileName = UUID.randomUUID().toString() + uploadFile.getOriginalFilename();
         try {
-            s3Client.putObject(new PutObjectRequest(bucket, fileName, uploadFile.getInputStream(), null).withCannedAcl(CannedAccessControlList.PublicRead));
+            ObjectMetadata om = new ObjectMetadata();
+            om.setContentType(uploadFile.getContentType());
+            s3Client.putObject(new PutObjectRequest(bucket, fileName, uploadFile.getInputStream(), om).withCannedAcl(CannedAccessControlList.PublicRead));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -57,8 +59,14 @@ public class AwsS3Service {
     }
 
     public String InputStreamUpload(byte[] byteImages) {
+        ObjectMetadata om = new ObjectMetadata();
+        om.setContentType("image/jpg");
         String fileName = UUID.randomUUID().toString() + ".jpg";
+<<<<<<< HEAD
         s3Client.putObject(new PutObjectRequest(bucket, fileName, new ByteArrayInputStream(byteImages), null).withCannedAcl(CannedAccessControlList.PublicRead));
+=======
+        s3Client.putObject(new PutObjectRequest(bucket, fileName, new ByteArrayInputStream(byteImages), om).withCannedAcl(CannedAccessControlList.PublicRead));
+>>>>>>> a3a6da1d8f02d3ffa9b97f427f0a885c7278f619
         return fileName;
     }
 
@@ -74,5 +82,12 @@ public class AwsS3Service {
         return bytes;
     }
 
+<<<<<<< HEAD
+=======
+    public void deleteObject(String fileName){
+        s3Client.deleteObject(new DeleteObjectRequest(bucket, fileName));
+    }
+
+>>>>>>> a3a6da1d8f02d3ffa9b97f427f0a885c7278f619
 
 }

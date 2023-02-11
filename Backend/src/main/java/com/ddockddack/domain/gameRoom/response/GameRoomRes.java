@@ -2,12 +2,13 @@ package com.ddockddack.domain.gameRoom.response;
 
 import com.ddockddack.domain.game.response.GameImageRes;
 import com.ddockddack.domain.gameRoom.repository.GameRoom;
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter

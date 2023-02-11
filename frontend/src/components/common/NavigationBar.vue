@@ -20,10 +20,12 @@
 </template>
 
 <script setup>
+import { apiInstance } from "@/api/index";
 import { computed } from "vue";
 import { useStore } from "vuex";
 
 const store = useStore();
+const api = apiInstance();
 
 const view = computed(() => store.state.commonStore.view);
 const accessToken = computed(() => store.state.memberStore.accessToken);
@@ -36,7 +38,19 @@ const setCurrentModalAsync = (what) => {
 };
 
 const logout = () => {
-  localStorage.removeItem("access-token");
+  api
+    .get(`/api/members/logout`, {
+      headers: {
+        "access-token": accessToken.value, // 변수로 가지고있는 AccessToken
+      },
+    })
+    .then((response) => {
+      console.log(response);
+      window.location.assign(`/`);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
 };
 </script>
 
@@ -57,12 +71,16 @@ const logout = () => {
 .variant3 {
   background-color: #77a4cc;
 }
-.default a {
+.default a,
+.default span {
   color: black;
 }
 .variant1 a,
 .variant2 a,
-.variant3 a {
+.variant3 a,
+.variant1 span,
+.variant2 span,
+.variant3 span {
   color: white;
 }
 a {
@@ -70,6 +88,11 @@ a {
   line-height: 95px;
   margin: 40px;
 }
+
+span:hover {
+  cursor: pointer;
+}
+
 .left a {
   font-family: "Gugi-Regular";
   font-size: 48px;

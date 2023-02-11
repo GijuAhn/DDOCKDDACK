@@ -32,14 +32,15 @@
 
 <script setup>
 import { useStore } from "vuex";
-
 const store = useStore();
+const kakaoLoginUrl = process.env.VUE_APP_KAKAO_LOGIN_PATH;
+const googleLoginUrl = process.env.VUE_APP_GOOGLE_LOGIN_PATH;
 
 const kakaoLogin = () => {
-  window.location.replace("http://localhost:9999/oauth2/authorization/kakao");
+  window.location.replace(kakaoLoginUrl);
 };
 const googleLogin = () => {
-  window.location.replace("http://localhost:9999/oauth2/authorization/google");
+  window.location.replace(googleLoginUrl);
 };
 
 const setCurrentModalAsync = (value) => {

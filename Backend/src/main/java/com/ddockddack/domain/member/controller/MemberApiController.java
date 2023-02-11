@@ -7,30 +7,27 @@ import com.ddockddack.domain.game.response.GameRes;
 import com.ddockddack.domain.game.response.StarredGameRes;
 import com.ddockddack.domain.game.service.GameService;
 import com.ddockddack.domain.member.entity.Member;
-import com.ddockddack.domain.member.entity.Role;
 import com.ddockddack.domain.member.request.MemberModifyReq;
 import com.ddockddack.domain.member.response.MemberAccessRes;
-import com.ddockddack.domain.member.response.MemberInfoRes;
 import com.ddockddack.domain.member.service.MemberService;
 import com.ddockddack.global.error.ErrorCode;
 import com.ddockddack.global.error.exception.AccessDeniedException;
 import com.ddockddack.global.error.exception.NotFoundException;
 import com.ddockddack.global.util.PageConditionReq;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import java.util.Optional;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -39,7 +36,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -80,14 +76,14 @@ public class MemberApiController {
         @ApiResponse(responseCode = "200", description = "이력 조회 성공"),
         @ApiResponse(responseCode = "400", description = "파라미터 타입 오류"),
         @ApiResponse(responseCode = "404", description = "존재하지 않는 유저"),
-        @ApiResponse(responseCode = "5W00", description = "서버 오류")
+        @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @GetMapping()
     public ResponseEntity<?> getMemberInfo() {
         log.info("sec info {}",
             SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
-        MemberAccessRes memberAccessRes = (MemberAccessRes) SecurityContextHolder.getContext()
-            .getAuthentication().getPrincipal();
+        MemberAccessRes memberAccessRes = Optional.ofNullable((MemberAccessRes) SecurityContextHolder.getContext()
+                .getAuthentication().getPrincipal()).get();
         if (memberAccessRes.toString().equals("anonymousUser")) {
             throw new NotFoundException(ErrorCode.MEMBER_NOT_FOUND);
         }
@@ -129,7 +125,7 @@ public class MemberApiController {
     public ResponseEntity<?> getBestcuts(@PathVariable Long memberId,
         @ModelAttribute PageConditionReq pageCondition) {
         try {
-            log.info("bestcuts {}, {}",  memberId, pageCondition.toString());
+            log.info("bestcuts {}, {}", memberId, pageCondition.toString());
 
             PageImpl<BestcutRes> bestcutRes = bestcutService.findAll(true, memberId, pageCondition);
             log.info("bestcuts2 {}", bestcutRes);
@@ -203,15 +199,31 @@ public class MemberApiController {
         @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @GetMapping("/logout")
-    public ResponseEntity logoutUser(
-        @RequestHeader(value = "access-token", required = false) String accessToken,
-        @RequestHeader(value = "refresh-token", required = false) String refreshToken) {
-        if (accessToken == null) {
-            throw new AccessDeniedException(ErrorCode.NOT_AUTHORIZED);
+    public void
+    logoutUser(HttpServletRequest request, HttpServletResponse response) {
+        Cookie[] cookies = request.getCookies();
+        log.info("cokies {}", cookies);
+
+        String refreshToken = null;
+        if (cookies != null) {
+            for (Cookie cookie: cookies) {
+                log.info(String.valueOf(cookie.getName()));
+                if (cookie.getName().equals("refresh-token")) {
+                    refreshToken = cookie.getValue();
+                    break;
+                }
+            }
         }
-        log.info("logout 진입 {}, {}", accessToken, refreshToken);
-        memberService.logout(accessToken, refreshToken);
-        return ResponseEntity.ok("logout 성공!");
+
+        log.info("RT {}", refreshToken);
+        if (refreshToken != null) {
+            log.info("lgout {} ", refreshToken);
+            Cookie refreshTokenCookie = new Cookie("refresh-token", null);
+            refreshTokenCookie.setMaxAge(0);
+            refreshTokenCookie.setPath("/");
+            response.addCookie(refreshTokenCookie);
+            memberService.logout(refreshToken);
+        }
     }
 
     private void checkLogin(String accessToken) {

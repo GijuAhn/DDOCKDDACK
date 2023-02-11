@@ -2,8 +2,10 @@ package com.ddockddack.domain.gameRoom.service;
 
 import com.ddockddack.domain.game.entity.Game;
 import com.ddockddack.domain.game.repository.GameRepository;
+import com.ddockddack.domain.gameRoom.repository.GameMember;
 import com.ddockddack.domain.gameRoom.repository.GameRoom;
 import com.ddockddack.domain.gameRoom.repository.GameRoomRepository;
+import com.ddockddack.domain.gameRoom.response.GameMemberRes;
 import com.ddockddack.domain.gameRoom.response.GameRoomRes;
 import com.ddockddack.domain.member.entity.Member;
 import com.ddockddack.domain.member.repository.MemberRepository;
@@ -12,17 +14,16 @@ import com.ddockddack.global.error.ErrorCode;
 import com.ddockddack.global.error.exception.AccessDeniedException;
 import com.ddockddack.global.error.exception.NotFoundException;
 import com.ddockddack.global.service.AwsS3Service;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.openvidu.java.client.OpenViduHttpException;
 import io.openvidu.java.client.OpenViduJavaClientException;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.ddockddack.domain.similarity.service.EnsembleModel;
-
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -59,7 +60,7 @@ public class GameRoomService {
      * @throws OpenViduJavaClientException
      * @throws OpenViduHttpException
      */
-    public GameRoomRes joinRoom(String pinNumber, Long memberId, String nickname)
+    public GameRoomRes joinRoom(String pinNumber, Long memberId, String nickname, String clientIp)
             throws OpenViduJavaClientException, OpenViduHttpException {
         Member member = null;
         //로그인 한 유저면 memberId로 검색해서 넘겨줌
@@ -68,8 +69,17 @@ public class GameRoomService {
                     .orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
         }
 
-        String token = gameRoomRepository.join(pinNumber, member, nickname);
         GameRoom gameRoom = this.findGameRoom(pinNumber);
+
+        for(GameMember gameMember : gameRoom.getMembers().values()) {
+            if(clientIp.equals(gameMember.getClientIp())) {
+                throw new AccessDeniedException(ErrorCode.NOT_AUTHORIZED);
+            }
+        }
+
+        String token = gameRoomRepository.join(pinNumber, member, nickname, clientIp);
+
+
 
         if (gameRoom.isStarted()) {
             throw new AccessDeniedException(ErrorCode.ALREADY_STARTED_GAME);
@@ -114,8 +124,8 @@ public class GameRoomService {
      */
     public GameRoom findGameRoom(String pinNumber) {
 
-        return Optional.ofNullable(gameRoomRepository.findById(pinNumber)).orElseThrow(() ->
-                new NotFoundException(ErrorCode.GAME_ROOM_NOT_FOUND)).get();
+        return gameRoomRepository.findById(pinNumber).orElseThrow(() ->
+                new NotFoundException(ErrorCode.GAME_ROOM_NOT_FOUND));
     }
 
     /**
@@ -123,11 +133,20 @@ public class GameRoomService {
      *
      * @param pinNumber
      */
-    public void startGame(String pinNumber) {
+    @Transactional
+    public void startGame(String pinNumber) throws JsonProcessingException {
+        // 현재 존재하는 게임 방인지 확징
+        gameRoomRepository.findSessionByPinNumber(pinNumber).orElseThrow(() ->
+                new NotFoundException(ErrorCode.GAME_ROOM_NOT_FOUND));
 
-        Optional.ofNullable(gameRoomRepository.findSessionByPinNumber(pinNumber).orElseThrow(() ->
-                new NotFoundException(ErrorCode.GAME_ROOM_NOT_FOUND)));
+        Long gameId = gameRoomRepository.findById(pinNumber).get().getGameId();
 
+        // 존재하는 게임인지 확인
+        Game game = gameRepository.findById(gameId).orElseThrow(() ->
+                new NotFoundException(ErrorCode.GAME_NOT_FOUND));
+
+        // 게임 play count +1 증가
+        game.increasePlayCount();
         gameRoomRepository.updateGameRoom(pinNumber);
 
     }
@@ -139,8 +158,8 @@ public class GameRoomService {
      * @return
      */
     public Boolean isStartedGame(String pinNumber) {
-        GameRoom gameRoom = Optional.ofNullable(gameRoomRepository.findById(pinNumber).orElseThrow(() ->
-                new NotFoundException(ErrorCode.GAME_ROOM_NOT_FOUND))).get();
+        GameRoom gameRoom = gameRoomRepository.findById(pinNumber).orElseThrow(() ->
+                new NotFoundException(ErrorCode.GAME_ROOM_NOT_FOUND));
         return gameRoom.isStarted();
     }
 
@@ -152,20 +171,40 @@ public class GameRoomService {
      */
     @Async
     public void scoringImage(String pinNumber, String sessionId, Map<String, String> param) throws Exception {
-        long start = System.currentTimeMillis();
-        Optional.ofNullable(gameRoomRepository.findById(pinNumber).orElseThrow(() ->
-                new NotFoundException(ErrorCode.GAME_ROOM_NOT_FOUND)));
-        
+        gameRoomRepository.findById(pinNumber).orElseThrow(() ->
+                new NotFoundException(ErrorCode.GAME_ROOM_NOT_FOUND));
         byte[] byteGameImage = awsS3Service.getObject(param.get("gameImage"));
         byte[] byteImage = Base64.decodeBase64(param.get("memberGameImage"));
 
+        System.out.println();
+
         int score = EnsembleModel.CalculateSimilarity(byteGameImage, byteImage);
-        System.out.println("점수 : "+ score);
-        long end = System.currentTimeMillis();
-        System.out.println("걸린 시간 : " + (end - start)/1000.0);
 
         gameRoomRepository.saveScore(pinNumber, sessionId, byteImage, score);
-
     }
-    
+
+    /**
+     * 라운드 결과 조회
+     *
+     * @param pinNumber
+     * @param round
+     * @return
+     */
+    public List<GameMemberRes> findRoundResult(String pinNumber, int round) {
+        Map<String, GameMember> gameMembers = gameRoomRepository.findGameMembers(pinNumber);
+        List<GameMember> members = new ArrayList<>(gameMembers.values());
+        PriorityQueue<GameMember> pq = new PriorityQueue<>((a, b) -> b.getRoundScore() - a.getRoundScore());
+        pq.addAll(members);
+        List<GameMemberRes> result = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            if (pq.isEmpty()) break;
+            result.add(GameMemberRes.from(pq.poll(), round));
+        }
+        return result;
+    }
+
+
+    public void nextRound(String pinNumber) throws JsonProcessingException {
+        gameRoomRepository.nextRound(pinNumber);
+    }
 }
