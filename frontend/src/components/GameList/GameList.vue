@@ -77,6 +77,10 @@
         @updateProps="(value) => updateProps(value)"
       ></normal-game>
     </div>
+    <div id="ifTotalPagesIsZero" v-if="totalPages === 0">
+      <p>아직 제작된 게임이 없습니다.</p>
+      <p>첫 번째 게임의 제작자가 되어주세요!</p>
+    </div>
     <page-nav
       :totalPageCount="totalPages"
       :value="pageConditionReq.page"
@@ -363,13 +367,6 @@ input {
   background-color: white;
   color: black;
 }
-
-#list {
-  display: grid;
-  gap: 35px 0;
-  grid-template-columns: repeat(3, 1fr);
-  width: 1090px;
-}
 .arrow {
   /* border: 1px solid red; */
   background-size: contain;
@@ -387,6 +384,29 @@ input {
 }
 .search-radius-on .arrow {
   background-image: url("@/assets/images/down-arrow.png");
+}
+#list {
+  display: grid;
+  gap: 35px 0;
+  grid-template-columns: repeat(3, 1fr);
+  width: 1090px;
+}
+#ifTotalPagesIsZero {
+  top: 500px;
+  left: 50%;
+  transform: translate(-50%, 0);
+  position: absolute;
+  display: inline-block;
+  text-align: center;
+}
+#ifTotalPagesIsZero p {
+  margin: 10px;
+}
+#ifTotalPagesIsZero p:first-child {
+  font-size: 36px;
+}
+#ifTotalPagesIsZero p:last-child {
+  font-size: 24px;
 }
 #nav {
   position: absolute;
