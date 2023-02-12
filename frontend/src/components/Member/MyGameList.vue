@@ -7,6 +7,7 @@
         :key="game"
         :game="game"
       ></normal-game>
+      <span id="noItem" v-if="!myGames"> 게임을 등록 해주세요! </span>
     </div>
   </div>
 </template>
@@ -79,5 +80,9 @@ store.dispatch("commonStore/setMemberTabAsync", 2);
   grid-template-columns: repeat(3, 1fr);
   width: 1090px;
   margin: 2%;
+}
+
+#noItem {
+  font-size: 20px;
 }
 </style>
