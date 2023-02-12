@@ -176,6 +176,7 @@ const bestcutDislike = (bestcutId) => {
   transform: translate(-50%, 0);
   background-color: white;
   padding: 70px;
+  height: 1460px;
 }
 #searchBar {
   margin-bottom: 70px;
@@ -281,5 +282,11 @@ select:focus {
   gap: 35px 0;
   grid-template-columns: repeat(3, 1fr);
   width: 1090px;
+}
+#nav {
+  position: absolute;
+  bottom: 70px;
+  left: 50%;
+  transform: translate(-50%, 0);
 }
 </style>

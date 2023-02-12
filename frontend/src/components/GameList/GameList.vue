@@ -225,6 +225,7 @@ const updateProps = (value) => {
   transform: translate(-50%, 0);
   background-color: white;
   padding: 70px;
+  height: 1460px;
 }
 #searchBar {
   display: flex;
@@ -386,5 +387,11 @@ input {
 }
 .search-radius-on .arrow {
   background-image: url("@/assets/images/down-arrow.png");
+}
+#nav {
+  position: absolute;
+  bottom: 70px;
+  left: 50%;
+  transform: translate(-50%, 0);
 }
 </style>
