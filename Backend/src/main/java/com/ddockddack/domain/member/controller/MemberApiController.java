@@ -6,6 +6,8 @@ import com.ddockddack.domain.bestcut.service.BestcutService;
 import com.ddockddack.domain.game.response.GameRes;
 import com.ddockddack.domain.game.response.StarredGameRes;
 import com.ddockddack.domain.game.service.GameService;
+import com.ddockddack.domain.gameRoom.response.GameRoomHistoryRes;
+import com.ddockddack.domain.gameRoom.service.GameRoomService;
 import com.ddockddack.domain.member.entity.Member;
 import com.ddockddack.domain.member.request.MemberModifyNameReq;
 import com.ddockddack.domain.member.response.MemberAccessRes;
@@ -49,6 +51,7 @@ public class MemberApiController {
     private final MemberService memberService;
     private final BestcutService bestcutService;
     private final GameService gameService;
+    private final GameRoomService gameRoomService;
 
     @Operation(summary = "회원 nickname 수정", description = "회원 nickname 수정 메소드입니다.")
     @ApiResponses(value = {
@@ -207,7 +210,7 @@ public class MemberApiController {
     public ResponseEntity<?> getStarredGames(@PathVariable Long memberId) {
         try {
             List<StarredGameRes> starredGameResList = gameService.findAllStarredGames(
-                memberId); //member Response에 올려야 하나?
+                memberId);
             return ResponseEntity.ok(starredGameResList);
         } catch (Exception e) {
             return ResponseEntity.status(500).body(e);
@@ -225,8 +228,8 @@ public class MemberApiController {
     public ResponseEntity<?> getRecords(@PathVariable Long memberId,
         @RequestHeader(value = "access-token", required = false) String accessToken) {
         try {
-//            Member member = gameService.getRecordsById(memberId);
-            return ResponseEntity.ok("게임 이력 조회 성공");
+            List<GameRoomHistoryRes> roomHistory = gameRoomService.findAllRoomHistory(memberId);
+            return ResponseEntity.ok(roomHistory);
         } catch (Exception e) {
             return ResponseEntity.status(500).body(e);
         }

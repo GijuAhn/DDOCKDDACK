@@ -1,13 +1,24 @@
 <template>
   <div id="view">
-    <h1>최근 플레이 목록 입니다.</h1>
-    <div id="list">
-      <normal-game
-        v-for="game in recentGames"
-        :key="game"
-        :game="game"
-      ></normal-game>
-    </div>
+    <table>
+      <colgroup span="3" class="columns"></colgroup>
+      <thead>
+        <tr>
+          <th>게임 제목</th>
+          <th>내 순위</th>
+          <th>날짜</th>
+        </tr>
+      </thead>
+      <tr
+        v-for="recentGame in recentGames"
+        :key="recentGame"
+        :recentGame="recentGame"
+      >
+        <td>{{ recentGame.gameTitle }}</td>
+        <td>{{ recentGame.ranking }}</td>
+        <td>{{ recentGame.playedTime }}</td>
+      </tr>
+    </table>
   </div>
 </template>
 
@@ -18,37 +29,22 @@ import { ref, computed } from "vue";
 
 const store = useStore();
 
-let pageConditionReq = ref({
-  order: "RECENT",
-  period: "ALL",
-  search: "MEMBER",
-  keyword: "",
-  page: 1,
-});
-
 const api = apiInstance();
 const memberId = computed(() => store.state.memberStore.memberInfo.id).value;
 const accessToken = computed(() => store.state.memberStore.accessToken).value;
 
-const myGames = ref();
+const recentGames = ref();
 const callApi = () => {
   api
     .get(`/api/members/${memberId}/records`, {
-      params: {
-        //있어도 되고 없어도 됨.
-        order: pageConditionReq.value.order,
-        period: pageConditionReq.value.period,
-        search: pageConditionReq.value.search,
-        keyword: pageConditionReq.value.keyword,
-        page: pageConditionReq.value.page,
-      },
       headers: {
         "access-token": accessToken, // 변수로 가지고있는 AccessToken
       },
     })
     .then((response) => {
-      console.log("access-games: ", response.data.content);
-      myGames.value = response.data.content;
+      console.log("access-games: ", response.data);
+      recentGames.value = response.data;
+      console.log(recentGames.value);
     })
     .catch((error) => {
       console.log(error);
@@ -65,7 +61,6 @@ store.dispatch("commonStore/setMemberTabAsync", 0);
 
 <style scoped>
 #view {
-  border: 2px solid black;
   width: 1200px;
   position: relative;
   left: 50%;
@@ -77,7 +72,31 @@ store.dispatch("commonStore/setMemberTabAsync", 0);
   display: grid;
   gap: 35px 0;
   grid-template-columns: repeat(3, 1fr);
-  width: 1090px;
+  width: 500px;
   margin: 2%;
+}
+
+table {
+  width: 100%;
+  margin-top: 10px;
+  text-align: center;
+}
+
+thead {
+  font-size: 30px;
+}
+
+th {
+  height: 90px;
+}
+
+td {
+  height: 60px;
+}
+
+td,
+tr,
+th {
+  border-bottom: 1px solid #737373;
 }
 </style>

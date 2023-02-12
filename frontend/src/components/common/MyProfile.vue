@@ -49,6 +49,9 @@
       <div id="email">
         <span>{{ myProfile.email }}</span>
       </div>
+      <div id="deleteMember">
+        <span id="btn_withdrawal" @click="withdrawal">회원탈퇴</span>
+      </div>
       <!-- ${{ props.profile.gameId }}, ${{ props.profile.gameId }} -->
     </div>
   </div>
@@ -130,7 +133,6 @@ const modifyProfileImg = (f) => {
 
   const ext = modifyImgName.split(".").pop().toLowerCase();
   if (reg_img.includes(ext) && f[0].size < maxSize) {
-    console.log("OK!", name, " ", modifyImgName);
     api
       .put(`/api/members/profile`, formData, {
         headers: { "access-token": accessToken.value },
@@ -145,6 +147,10 @@ const modifyProfileImg = (f) => {
     alert("2MB이하의 jpg, jpeg, png 이미지만 가능합니다!");
     console.log("이미지 규칙에 맞게");
   }
+};
+
+const withdrawal = () => {
+  console.log("탈퇴!");
 };
 
 // console.log(myProfile.value);
@@ -181,7 +187,7 @@ const modifyProfileImg = (f) => {
 <style scoped>
 #image {
   border-radius: 75%;
-  border: 1px solid #c4c4c4;
+  box-shadow: 0 0px 3px #999;
   width: 150px;
   height: 150px;
   margin-left: auto;
@@ -231,5 +237,18 @@ const modifyProfileImg = (f) => {
 }
 #checkNickname {
   color: crimson;
+}
+
+#email {
+  padding-bottom: 5px;
+}
+
+#btn_withdrawal {
+  display: inline-block;
+  cursor: pointer;
+  color: #666666;
+  font-size: 13px;
+  padding-top: 5px;
+  /* padding: 12px 0px; */
 }
 </style>

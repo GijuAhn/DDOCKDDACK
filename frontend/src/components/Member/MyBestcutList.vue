@@ -6,6 +6,7 @@
         :key="bestcut"
         :bestcut="bestcut"
       ></normal-bestcut>
+      <span id="noItem" v-if="!myBestcuts"> 베스트컷을 등록 해주세요! </span>
     </div>
   </div>
 </template>
@@ -64,5 +65,8 @@ store.dispatch("commonStore/setMemberTabAsync", 3);
   grid-template-columns: repeat(3, 1fr);
   width: 1090px;
   margin: 2%;
+}
+#noItem {
+  font-size: 20px;
 }
 </style>
