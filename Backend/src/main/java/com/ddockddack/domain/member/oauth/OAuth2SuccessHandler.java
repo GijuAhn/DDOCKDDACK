@@ -3,15 +3,17 @@ package com.ddockddack.domain.member.oauth;
 import com.ddockddack.domain.member.entity.Member;
 import com.ddockddack.domain.member.entity.Role;
 import com.ddockddack.domain.member.repository.MemberRepository;
-import com.ddockddack.domain.member.response.MemberLoginPostRes;
+import com.ddockddack.domain.member.response.MemberInfoRes;
 import com.ddockddack.domain.member.service.TokenService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -25,6 +27,8 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
     private final TokenService tokenService;
     private final MemberRepository memberRepository;
+    @Value("${LOGIN_SUCCESS_URL}")
+    private String loginSuccessUrl;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -42,30 +46,28 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
             member = Member.builder()
                 .email((String) attributes.get("email"))
                 .nickname((String) attributes.get("nickname"))
-                .profile("")
+                .profile("default_profile_img.png")
                 .role(Role.MEMBER)
                 .build();
             memberRepository.save(member);
         }
+        log.info("Member Id {} {}", member.getId(), member.getEmail());
 
         Token token = tokenService.generateToken(member.getId(), "USER");
         log.info("JwT : {}", token);
-        writeTokenResponse(response, token, member.getId());
-    }
 
-    private void writeTokenResponse(HttpServletResponse response, Token token, Long id)
-        throws IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        Member member = memberRepository.getReferenceById(id);
-        MemberLoginPostRes memberLoginPostRes = new MemberLoginPostRes(token.getToken(),
-            token.getRefreshToken(), member.getId());
+        Cookie cookie = new Cookie("refresh-token", token.getRefreshToken());
+        // expires in 7 days
+        cookie.setMaxAge(60 * 60 * 24* 7);
 
-        log.info(" {} ", memberLoginPostRes);
+        // optional properties
+        cookie.setSecure(true);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
 
-        String json = new ObjectMapper().writeValueAsString(memberLoginPostRes);
+        // add cookie to response
+        response.addCookie(cookie);
 
-        response.setStatus(HttpStatus.OK.value());
-        response.getWriter().write(json);
-        response.flushBuffer();
+        response.sendRedirect(loginSuccessUrl+token.getToken());
     }
 }

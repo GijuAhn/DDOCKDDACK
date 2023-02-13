@@ -21,11 +21,12 @@ import com.ddockddack.domain.member.repository.MemberRepository;
 import com.ddockddack.domain.report.entity.ReportType;
 import com.ddockddack.domain.report.entity.ReportedGame;
 import com.ddockddack.domain.report.repository.ReportedGameRepository;
-import com.ddockddack.global.error.AccessDeniedException;
 import com.ddockddack.global.error.ErrorCode;
+import com.ddockddack.global.error.exception.AccessDeniedException;
 import com.ddockddack.global.error.exception.AlreadyExistResourceException;
 import com.ddockddack.global.error.exception.ImageExtensionException;
 import com.ddockddack.global.error.exception.NotFoundException;
+import com.ddockddack.global.service.AwsS3Service;
 import com.ddockddack.global.util.PageCondition;
 import com.ddockddack.global.util.PageConditionReq;
 import lombok.RequiredArgsConstructor;
@@ -39,8 +40,6 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -48,17 +47,12 @@ import java.util.UUID;
 public class GameService {
 
     private final GameRepository gameRepository;
-
     private final GameImageRepository gameImageRepository;
-
     private final MemberRepository memberRepository;
-
     private final StarredGameRepository starredGameRepository;
-
     private final ReportedGameRepository reportedGameRepository;
-
     private final GameRepositorySupport gameRepositorySupport;
-
+    private final AwsS3Service awsS3Service;
 
     /**
      * 게임 목록 조회
@@ -94,11 +88,11 @@ public class GameService {
      * @param gameSaveReq
      * @return gameId
      */
-    public Long saveGame(GameSaveReq gameSaveReq) {
+    public Long saveGame(Long memberId, GameSaveReq gameSaveReq) {
 
         // memberId로 member 조회. 조회 결과가 null 이면 NotFoundException 발생.
-        Member getMember = Optional.ofNullable(memberRepository.findById(gameSaveReq.getMemberId()).orElseThrow(() ->
-                new NotFoundException(ErrorCode.MEMBER_NOT_FOUND))).get();
+        Member getMember = memberRepository.findById(memberId).orElseThrow(() ->
+                new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
 
         // 게임 생성
         Game game = Game
@@ -112,15 +106,6 @@ public class GameService {
         Long gameId = gameRepository.save(game).getId();
 
         // 게임 이미지 업로드
-        String absolutePath = new File("").getAbsolutePath() + File.separator;
-
-        String path = "images" + File.separator + gameId;
-        File file = new File(path);
-
-        // 디렉토리가 존재 하지 않는 경우
-        if (!file.exists()) {
-            file.mkdirs();
-        }
 
         List<GameImage> gameImages = new ArrayList<>();
         for (GameImageParam gameImageParam : gameSaveReq.getImages()) {
@@ -130,34 +115,20 @@ public class GameService {
             // 이미지 확장자가 jpeg, png인 경우만 업로드 아닌경우 예외 발생
             if (contentType.contains("image/jpeg")) {
                 imageExtension = ".jpg";
-            } else if (contentType.contains("image/png")) {
-                imageExtension = ".png";
             } else {
-
-                // 해당 게임 이미지가 업로드 된 폴더 삭제
-                deleteDirectory(path);
-
                 throw new ImageExtensionException(ErrorCode.EXTENSION_NOT_ALLOWED);
             }
+            // 파일 업로드
+            String fileName = awsS3Service.multipartFileUpload(gameImageParam.getGameImage());
 
-            // UUID + 확장자, 중복을 피하기 위함
-            String fileName = UUID.randomUUID().toString() + imageExtension;
-
-            file = new File(absolutePath + path + File.separator + fileName);
-            try {
-                gameImageParam.getGameImage().transferTo(file);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            // gameImage 엔티티 생성
             GameImage gameImage = GameImage.builder()
                     .game(game)
                     .imageUrl(fileName)
                     .description(gameImageParam.getGameImageDesc())
                     .build();
-
             // 리스트에 추가
             gameImages.add(gameImage);
+
         }
 
         // 리스트 안에 담긴 gameImage 객체 모두 등록
@@ -181,10 +152,6 @@ public class GameService {
         // 게임 제목, 설명 수정
         getGame.updateGame(gameModifyReq.getGameTitle(), gameModifyReq.getGameDesc());
 
-        String absolutePath = new File("").getAbsolutePath() + File.separator;
-        String path = "images" + File.separator + getGame.getId();
-
-        File file = new File(path);
         List<String> tempImage = new ArrayList<>();
         for (GameImageModifyReq gameImageModifyReq : gameModifyReq.getImages()) {
             GameImage getGameImage = gameImageRepository.getReferenceById(gameImageModifyReq.getGameImageId());
@@ -192,38 +159,18 @@ public class GameService {
             String imageExtension; // 이미지 확장자
             String contentType = gameImageModifyReq.getGameImage().getContentType();
 
-            if (contentType.contains("image/jpeg")) {
-                imageExtension = ".jpg";
-            } else if (contentType.contains("image/png")) {
-                imageExtension = ".png";
-            } else {
-
-                // 여태 업로드 되었던 이미지들 하나 하나 전부 삭제
-                deleteImageFile(path, tempImage);
-
+            if (!contentType.contains("image/jpeg")) {
                 throw new ImageExtensionException(ErrorCode.EXTENSION_NOT_ALLOWED);
             }
+            String fileName = awsS3Service.multipartFileUpload(gameImageModifyReq.getGameImage());
 
-            String fileName = UUID.randomUUID().toString() + imageExtension;
-
-            file = new File(absolutePath + path + File.separator + fileName);
-            try {
-                gameImageModifyReq.getGameImage().transferTo(file);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            // 업로드 중 실패 시 여태 업로드 되었던 이미지들을 날리기 위해 임시저장 하는 리스트
-            tempImage.add(fileName);
-
-            // 이미지 원본 삭제
-            new File(absolutePath + path + File.separator + getGameImage.getImageUrl()).delete();
+            // 업데이트
             getGameImage.updateGameImage(fileName, gameImageModifyReq.getGameImageDesc());
 
         }
     }
 
     /**
-
      * 게임 삭제
      *
      * @param memberId
@@ -277,8 +224,8 @@ public class GameService {
         // 검증
         checkMemberAndGameValidation(memberId, gameId);
 
-        StarredGame getStarredGame = Optional.ofNullable(starredGameRepository.findByMemberIdAndGameId(memberId, gameId).orElseThrow(() ->
-                new NotFoundException(ErrorCode.STARREDGAME_NOT_FOUND))).get();
+        StarredGame getStarredGame = starredGameRepository.findByMemberIdAndGameId(memberId, gameId).orElseThrow(() ->
+                new NotFoundException(ErrorCode.STARREDGAME_NOT_FOUND));
 
         starredGameRepository.delete(getStarredGame);
     }
@@ -361,18 +308,18 @@ public class GameService {
     private void checkAccessValidation(Long memberId, Long gameId) {
 
         // 존재하는 유저인지 검증
-        Member getMember = Optional.ofNullable(memberRepository.findById(memberId).orElseThrow(() ->
-                new NotFoundException(ErrorCode.MEMBER_NOT_FOUND))).get();
+        Member getMember = memberRepository.findById(memberId).orElseThrow(() ->
+                new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
 
         // 존재하는 게임 인지 검증
-        Game getGame = Optional.ofNullable(gameRepository.findById(gameId).orElseThrow(() ->
-                new NotFoundException(ErrorCode.GAME_NOT_FOUND))).get();
+        Game getGame = gameRepository.findById(gameId).orElseThrow(() ->
+                new NotFoundException(ErrorCode.GAME_NOT_FOUND));
 
         // 관리자면 바로 리턴
         if (getMember.getRole().equals(Role.ADMIN)) {
             return;
         }
-        
+
         // 삭제 권한을 가진 유저인지 검증
         if ((memberId != getGame.getMember().getId())) {
             throw new AccessDeniedException(ErrorCode.NOT_AUTHORIZED);

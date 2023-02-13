@@ -3,8 +3,15 @@
     <div class="box">
       <div class="logo"><span>똑딱</span></div>
       <div class="form">
-        <input type="text" class="input" placeholder="게임 PIN" maxlength="6" />
-        <div class="button">입력</div>
+        <input
+          @keyup.enter="join(pinNumber)"
+          type="text"
+          v-model.trim="pinNumber"
+          class="input"
+          placeholder="게임 PIN"
+          maxlength="6"
+        />
+        <div class="button" @click="join(pinNumber)">입력</div>
       </div>
     </div>
     <div class="cirle">
@@ -17,9 +24,13 @@
 
 <script setup>
 import { useStore } from "vuex";
+import router from "@/router/index.js";
 
 const store = useStore();
 
+const join = (pinNumber) => {
+  router.replace(`/gameroom/${pinNumber}`);
+};
 store.dispatch("commonStore/setColorAsync", "default");
 </script>
 
@@ -38,7 +49,7 @@ store.dispatch("commonStore/setColorAsync", "default");
 }
 
 .logo {
-  font-family: "Gugi", cursive;
+  font-family: "Gugi-Regular";
   font-size: 96px;
   text-align: center;
 }

@@ -1,89 +1,285 @@
 <template>
   <div id="view">
-    끝까지 인간은 품었기 부패를 가치를 곧 쓸쓸하랴? 동산에는 사랑의 청춘
-    피어나기 인간이 유소년에게서 그들의 청춘에서만 있는가? 그들의 끓는 주며,
-    위하여, 열락의 이것이다. 이성은 청춘 많이 칼이다. 방지하는 착목한는 두손을
-    우리의 방황하여도, 말이다. 위하여서 못하다 목숨을 천고에 반짝이는 예가 같지
-    피가 끓는다. 피어나기 청춘의 눈이 전인 아니다. 위하여 가치를 앞이 그들의
-    것이다. 유소년에게서 웅대한 청춘에서만 천고에 이것이다. 아니한 아니더면,
-    작고 풍부하게 끝에 있다. 광야에서 대중을 우리의 얼음 못할 동산에는 무엇을
-    구하지 그리하였는가? 풍부하게 구할 사랑의 착목한는 지혜는 이상, 끓는 있다.
-    방황하여도, 품으며, 행복스럽고 천지는 아니더면, 주며, 쓸쓸하랴? 두기 천지는
-    방지하는 봄바람이다. 열락의 온갖 청춘이 트고, 것이다. 그들에게 대고, 남는
-    기쁘며, 피다. 거친 없으면, 과실이 것이다. 인간의 품으며, 천하를 때문이다.
-    끓는 것이다.보라, 풀이 봄바람이다. 원질이 없으면, 그들의 보라. 불어 할지니,
-    노년에게서 기관과 열락의 인생을 주며, 설산에서 따뜻한 황금시대다. 튼튼하며,
-    동력은 황금시대의 있는 가슴에 없으면, 그들의 심장은 두기 쓸쓸하랴? 천하를
-    행복스럽고 간에 품고 것은 희망의 피가 되려니와, 아니다. 시들어 되려니와,
-    원질이 하는 칼이다. 피가 그들의 인생의 이것은 되는 풀밭에 우리의 아니더면,
-    사막이다. 속에서 것이 구하지 역사를 천고에 속잎나고, 되려니와, 보이는
-    칼이다. 남는 천자만홍이 생명을 생생하며, 보이는 별과 이것은 꽃이 두기
-    것이다. 봄바람을 청춘의 군영과 있음으로써 듣는다. 그들의 얼음이 하였으며,
-    그들을 반짝이는 뛰노는 어디 방지하는 풀밭에 황금시대다. 구하지 두손을 얼음이
-    약동하다. 일월과 얼음에 황금시대를 돋고, 봄바람을 않는 그들의 끓는 사막이다.
-    투명하되 그들은 이상은 피부가 부패를 수 피고, 칼이다. 있는 그들은 크고
-    인류의 것은 있으랴? 내는 청춘의 것은 가지에 청춘을 청춘에서만 교향악이다.
-    듣기만 눈이 용감하고 그들에게 있을 별과 그들은 운다. 이상의 대중을 아니한
-    피고 튼튼하며, 구할 보내는 부패뿐이다. 이상은 그들은 풀이 위하여 우리의
-    보라. 그들의 싸인 고행을 곳으로 황금시대를 이성은 따뜻한 봄바람이다.
-    그들에게 내려온 내는 옷을 새 것이다. 목숨을 가치를 구하지 가슴에 이상,
-    아름다우냐? 하는 작고 때에, 하여도 사막이다. 때까지 튼튼하며, 새 물방아
-    인간의 천고에 있으랴? 바로 피고 인생에 날카로우나 얼음에 목숨을 반짝이는
-    교향악이다. 위하여 거친 우리의 피어나기 황금시대다. 인생을 산야에 끝에
-    칼이다. 수 않는 주며, 황금시대를 설레는 피어나기 하여도 안고, 부패뿐이다.
-    생생하며, 장식하는 소담스러운 때문이다. 방지하는 황금시대를 든 넣는 피에
-    만천하의 봄날의 뿐이다. 모래뿐일 가는 하는 청춘의 용기가 설산에서
-    교향악이다. 있는 무한한 봄바람을 보는 그들은 않는 그것은 우리의 것이다.
-    심장의 있는 든 역사를 위하여 그들의 간에 철환하였는가? 주는 낙원을 하여도
-    더운지라 가슴이 부패를 그림자는 피가 위하여, 봄바람이다. 희망의 끝까지
-    현저하게 뛰노는 바로 하여도 위하여서 것이다. 남는 충분히 지혜는 목숨을
-    것이다. 관현악이며, 같지 소금이라 것이 듣는다. 따뜻한 옷을 가슴이 희망의
-    운다. 크고 튼튼하며, 기관과 인간의 인생의 힘있다. 눈이 이는 뜨거운지라,
-    자신과 만물은 따뜻한 아니다. 품에 보이는 인생에 두손을 영원히 뿐이다. 구하기
-    곳이 같이, 실현에 피어나는 피고 교향악이다. 풍부하게 바이며, 우리의 인간이
-    있는 같이 우리 끓는 피다. 귀는 있는 것이다.보라, 쓸쓸하랴? 청춘은 이것은
-    품고 인간의 부패뿐이다. 할지라도 이것을 인생을 전인 반짝이는 노년에게서
-    봄바람이다. 있는 사랑의 것이 거선의 어디 온갖 같은 않는 있다. 풀이 생의
-    사람은 가치를 사막이다. 안고, 길지 이상의 인생을 없는 든 피고, 쓸쓸하랴?
-    하는 보배를 커다란 새 사는가 그것은 것이다. 무엇이 심장의 같지 있는 품에
-    그들의 영원히 이것이다. 수 스며들어 가는 인도하겠다는 모래뿐일 것이다.
-    미묘한 간에 따뜻한 이는 하는 그러므로 예수는 아니다. 피고 보이는 있음으로써
-    하였으며, 피에 것은 것은 것이다. 과실이 석가는 품고 두기 것이다. 인류의
-    그들은 소금이라 되는 말이다. 전인 있으며, 장식하는 피다. 고동을 영락과
-    얼마나 실현에 가는 있는 기관과 황금시대의 위하여 칼이다. 긴지라 심장의 싹이
-    웅대한 몸이 얼마나 날카로우나 어디 내려온 이것이다. 길지 그들은 황금시대의
-    가지에 동산에는 얼마나 기쁘며, 미묘한 품고 아니다. 같이, 가진 그들은
-    있음으로써 것이다. 하는 피고 사람은 운다. 오아이스도 구하지 살았으며, 용기가
-    수 열락의 간에 현저하게 인간이 것이다. 천자만홍이 이상은 거선의 이상은
-    그들의 그리하였는가? 인생의 안고, 것은 사라지지 것이다.보라, 꾸며 위하여서.
-    품으며, 이상은 청춘의 기관과 지혜는 방지하는 이상의 관현악이며, 평화스러운
-    있다. 바로 바이며, 사랑의 생생하며, 싸인 뼈 부패뿐이다. 노래하며 있는 그들은
-    인간이 황금시대의 고행을 뜨고, 무엇을 뼈 것이다. 품으며, 반짝이는 장식하는
-    예수는 있다. 위하여서, 웅대한 열락의 커다란 싶이 놀이 생명을 물방아
-    이것이다. 피가 무한한 눈이 끓는 얼마나 것이다. 이성은 이상의 주는 같은
-    자신과 힘있다. 청춘의 능히 우리 수 하는 새가 이상의 들어 전인 것이다. 품었기
-    아니더면, 우리의 능히 하였으며, 그들은 커다란 때에, 청춘을 철환하였는가?
-    이것이야말로 앞이 만천하의 싶이 아니더면, 이것이다. 이는 피가 할지니, 가치를
-    수 되는 그것을 우리의 것이다. 것이다.보라, 관현악이며, 생생하며, 이것이다.
-    커다란 가장 많이 용감하고 속에서 보배를 긴지라 사람은 말이다. 부패를 얼마나
-    풍부하게 밥을 놀이 불어 밝은 새가 하는 것이다. 기관과 품으며, 가지에 일월과
-    천자만홍이 대한 인간의 것이다. 피어나는 인생에 능히 싹이 사람은
-    그리하였는가? 몸이 없는 끓는 불어 하였으며, 그들의 품으며, 얼마나 용감하고
-    듣는다. 그들에게 천지는 인생에 할지니, 노래하며 피가 인간에 때문이다. 않는
-    실현에 용기가 더운지라 뿐이다.
+    <bestcut-detail
+      class="modal"
+      v-if="detailBestcut"
+      :bestcut="detailBestcut"
+      @bestcutLike="(bestcutId) => bestcutLike(bestcutId)"
+      @bestcutDislike="(bestcutId) => bestcutDislike(bestcutId)"
+      @openReportModal="(bestcutId) => openReportModal(bestcutId)"
+    ></bestcut-detail>
+    <div id="searchBar">
+      <span>
+        <button id="btn-p" :class="tabP" @click="sortGames('P')">인기순</button>
+        <button id="btn-r" :class="tabR" @click="sortGames('R')">최신순</button>
+      </span>
+      <span>
+        <select name="choice" v-model="pageConditionReq.period">
+          <option value="ALL" selected>전체기간</option>
+          <option value="DAY">1일</option>
+          <option value="WEEK">1주</option>
+          <option value="MONTH">1개월</option>
+          <option value="HALF_YEAR">6개월</option>
+        </select>
+      </span>
+      <span>
+        <select name="choice" v-model="pageConditionReq.search">
+          <option value="GAME" selected>게임 제목</option>
+          <option value="MEMBER">닉네임</option>
+        </select>
+      </span>
+      <span>
+        <input
+          @keyup.enter="callApi"
+          type="text"
+          placeholder="검색어를 입력해주세요"
+          v-model.trim="pageConditionReq.keyword"
+        />
+        <button id="btn-s" @click="callApi">검색</button>
+      </span>
+    </div>
+
+    <div id="list">
+      <normal-bestcut
+        v-for="bestcut in bestcuts"
+        :key="bestcut"
+        :bestcut="bestcut"
+        @bestcutDetail="detailBestcut = bestcut"
+        @bestcutLike="(bestcutId) => bestcutLike(bestcutId)"
+        @bestcutDislike="(bestcutId) => bestcutDislike(bestcutId)"
+        @openReportModal="(bestcutId) => openReportModal(bestcutId)"
+      ></normal-bestcut>
+    </div>
+    <page-nav
+      :totalPageCount="totalPages"
+      :value="pageConditionReq.page"
+      @change="(num) => changePage(num)"
+    ></page-nav>
   </div>
 </template>
 
-<script></script>
+<script setup>
+import PageNav from "@/components/common/PageNav.vue";
+import NormalBestcut from "@/components/BestcutList/item/NormalBestcut.vue";
+import BestcutDetail from "@/components/common/modal/BestcutDetailModal.vue";
+
+import { apiInstance } from "@/api/index";
+import { ref, computed } from "vue";
+import { useStore } from "vuex";
+
+const api = apiInstance();
+const store = useStore();
+const accessToken = computed(() => store.state.memberStore.accessToken).value;
+const tabP = ref("on");
+const tabR = ref("off");
+
+let bestcuts = ref();
+let pageConditionReq = ref({
+  order: "POPULARITY",
+  period: "MONTH",
+  search: "GAME",
+  keyword: "",
+  page: 1,
+});
+let totalPages = ref();
+let detailBestcut = ref();
+
+const callApi = () => {
+  api
+    .get(`/api/bestcuts`, {
+      params: {
+        order: pageConditionReq.value.order,
+        period: pageConditionReq.value.period,
+        search: pageConditionReq.value.search,
+        keyword: pageConditionReq.value.keyword,
+        page: pageConditionReq.value.page,
+      },
+      headers: { "access-token": accessToken },
+    })
+    .then((response) => {
+      bestcuts.value = response.data.content;
+      totalPages = response.data.totalPages;
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+};
+
+callApi();
+
+//정렬
+const sortGames = (option) => {
+  //변경 이벤트 발생시
+  if (option === "P") {
+    pageConditionReq.value.order = "POPULARITY";
+    tabP.value = "on";
+    tabR.value = "off";
+  } else {
+    pageConditionReq.value.order = "RECENT";
+    tabP.value = "off";
+    tabR.value = "on";
+  }
+  callApi();
+};
+
+//페이징 이동
+const changePage = (page) => {
+  pageConditionReq.value.page = page;
+  callApi();
+};
+
+//베스트컷 좋아요
+const bestcutLike = (bestcutId) => {
+  api
+    .post(
+      `/api/bestcuts/like/${bestcutId}`,
+      {},
+      { headers: { "access-token": accessToken } }
+    )
+    .then(() => {
+      let bestcut = bestcuts.value.find((e) => e.bestcutId === bestcutId);
+      bestcut.isLiked = true;
+      bestcut.popularity++;
+    })
+    .catch((err) => {
+      if (err.response.status === 401) {
+        alert("로그인 후 이용해주세요.");
+      }
+    });
+};
+
+//베스트컷 좋아요 취소
+const bestcutDislike = (bestcutId) => {
+  if (!accessToken.value) {
+    alert("로그인 후 이용해주세요.");
+    return;
+  }
+  api
+    .delete(`/api/bestcuts/dislike/${bestcutId}`, {
+      headers: { "access-token": accessToken },
+    })
+    .then(() => {
+      let bestcut = bestcuts.value.find((e) => e.bestcutId === bestcutId);
+      bestcut.isLiked = false;
+      bestcut.popularity--;
+    });
+};
+</script>
 
 <style scoped>
 #view {
   border: 2px solid black;
-  width: 1200px;
+  width: 1060px;
   position: relative;
   top: -320px;
   left: 50%;
   transform: translate(-50%, 0);
   background-color: white;
+  padding: 70px;
+}
+#searchBar {
+  margin-bottom: 70px;
+}
+#searchBar > span {
+  margin: 0 15px;
+}
+#btn-p {
+  margin-left: -15px;
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+  border-top: 2px solid black;
+  border-left: 2px solid black;
+  border-bottom: 2px solid black;
+  border-right: none;
+  font-size: 20px;
+  font-family: "NanumSquareRoundB";
+  display: inline-block;
+  height: 48px;
+  width: 99px;
+}
+#btn-p:hover {
+  cursor: pointer;
+}
+#btn-r {
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+  border-top: 2px solid black;
+  border-left: 2px solid black;
+  border-bottom: 2px solid black;
+  border-right: 2px solid black;
+  font-size: 20px;
+  font-family: "NanumSquareRoundB";
+  display: inline-block;
+  height: 48px;
+  width: 101px;
+}
+#btn-r:hover {
+  cursor: pointer;
+}
+
+input {
+  outline: none;
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+  border-top: 2px solid black;
+  border-left: 2px solid black;
+  border-bottom: 2px solid black;
+  border-right: none;
+  font-size: 20px;
+  font-family: "NanumSquareRoundB";
+  padding: 0 10px;
+  height: 44px;
+  width: 365px;
+}
+
+#btn-s {
+  background-color: white;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+  border-top: 2px solid black;
+  border-left: 2px solid black;
+  border-bottom: 2px solid black;
+  border-right: 2px solid black;
+  font-size: 20px;
+  font-family: "NanumSquareRoundB";
+  display: inline-block;
+  height: 48px;
+  background-color: #77a4cc;
+  color: white;
+  width: 80px;
+  margin-right: -15px;
+}
+#btn-s:hover {
+  cursor: pointer;
+}
+
+select {
+  width: 150px;
+  border: 2px solid black;
+  font-size: 20px;
+  font-family: "NanumSquareRoundB";
+  display: inline-block;
+  height: 48px;
+  border-radius: 5px;
+  text-align: center;
+}
+select:focus {
+  border-radius: 5px 5px 0 0;
+}
+
+.on {
+  background-color: #77a4cc;
+  color: white;
+}
+.off {
+  background-color: white;
+  color: black;
+}
+
+#list {
+  display: grid;
+  gap: 35px 0;
+  grid-template-columns: repeat(3, 1fr);
+  width: 1090px;
 }
 </style>

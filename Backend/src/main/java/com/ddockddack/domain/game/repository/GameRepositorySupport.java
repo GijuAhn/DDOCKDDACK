@@ -1,7 +1,7 @@
 package com.ddockddack.domain.game.repository;
 
 import com.ddockddack.domain.game.response.*;
-import com.ddockddack.global.util.OrderCondition;
+import com.ddockddack.domain.report.repository.ReportedGameRepository;
 import com.ddockddack.global.util.PageCondition;
 import com.ddockddack.global.util.PeriodCondition;
 import com.ddockddack.global.util.SearchCondition;
@@ -35,6 +35,7 @@ import static com.querydsl.jpa.JPAExpressions.select;
 public class GameRepositorySupport {
 
     private final JPAQueryFactory jpaQueryFactory;
+    private final ReportedGameRepository reportedGameRepository;
 
     // 검색 목록 조회
     public PageImpl<GameRes> findAllGameBySearch(Long memberId, PageCondition pageCondition) {
@@ -48,7 +49,7 @@ public class GameRepositorySupport {
                                 isStarred(memberId),
                                 getStarredCnt(),
                                 game.playCount.as("popularity"),
-                                gameImage.imageUrl.as("gameImageUrl")
+                                gameImage.imageUrl.min().as("thumbnail")
                         ))
                 .from(game)
                 .innerJoin(game.member, member)
@@ -56,7 +57,12 @@ public class GameRepositorySupport {
                 .where(searchCond(pageCondition.getSearchCondition(), pageCondition), periodCond(pageCondition.getPeriodCondition()))
                 .offset(pageCondition.getPageable().getOffset())
                 .limit(pageCondition.getPageable().getPageSize())
-                .groupBy(game.id)
+                .groupBy(game.id,
+                        game.category,
+                        game.title,
+                        game.description,
+                        game.member.nickname,
+                        game.playCount)
                 .orderBy(orderCond(pageCondition.getPageable()))
                 .fetch();
 
@@ -64,12 +70,13 @@ public class GameRepositorySupport {
         return new PageImpl<>(list, pageCondition.getPageable(), getTotalPageCount(memberId, pageCondition));
     }
 
+//
     private long getTotalPageCount(Long memberId, PageCondition pageCondition) {
-        return jpaQueryFactory.select(Wildcard.count)
+        return jpaQueryFactory.selectDistinct(game.id)
                 .from(game)
                 .innerJoin(game.member, member)
                 .innerJoin(game.images, gameImage)
-                .where(searchCond(pageCondition.getSearchCondition(), pageCondition), periodCond(pageCondition.getPeriodCondition())).fetch().get(0);
+                .where(searchCond(pageCondition.getSearchCondition(), pageCondition), periodCond(pageCondition.getPeriodCondition())).fetch().size();
     }
 
     // 게임 상세 조회
@@ -100,13 +107,18 @@ public class GameRepositorySupport {
                                 isStarred(memberId),
                                 getStarredCnt(),
                                 game.playCount.as("popularity"),
-                                gameImage.imageUrl.as("gameImageUrl")
+                                gameImage.imageUrl.min().as("thumbnail")
                         ))
                 .from(game)
                 .innerJoin(game.member, member)
                 .innerJoin(game.images, gameImage)
-                .where(game.member.id.eq(memberId))
-                .groupBy(game.id)
+                .where(member.id.eq(memberId))
+                .groupBy(game.id,
+                        game.category,
+                        game.title,
+                        game.description,
+                        game.member.nickname,
+                        game.playCount)
                 .orderBy(game.id.desc())
                 .fetch();
     }
@@ -122,14 +134,22 @@ public class GameRepositorySupport {
                         game.createdAt.as("regDate").stringValue(),
                         isStarred(memberId),
                         game.playCount.as("popularity"),
-                        gameImage.imageUrl.as("gameImageUrl")
+                        gameImage.imageUrl.min().as("thumbnail")
                 ))
                 .from(game)
                 .innerJoin(game.member, member)
                 .innerJoin(game.images, gameImage)
                 .join(starredGame).on(starredGame.game.id.eq(game.id)
-                        .and(starredGame.member.id.eq(memberId)))
-                .groupBy(game.id)
+                        .and(starredGame.member.id.eq(member.id)))
+                .where(starredGame.member.id.eq(memberId))
+                .groupBy(
+                        starredGame.id,
+                        game.id,
+                        game.category,
+                        game.title,
+                        game.member.nickname,
+                        game.createdAt,
+                        game.playCount)
                 .orderBy(starredGame.id.desc())
                 .fetch();
 
@@ -143,7 +163,10 @@ public class GameRepositorySupport {
                         reportedGame.reportMember.id.as("reportMemberId"),
                         reportedGame.reportedMember.id.as("reportedMemberId"),
                         reportedGame.game.id.as("gameId"),
-                        reportedGame.reportType.as("reason").stringValue()
+                        reportedGame.reportType.as("reason").stringValue(),
+                        reportedGame.game.title.as("gameTitle"),
+                        reportedGame.reportMember.nickname.as("reportMemberNickname"),
+                        reportedGame.reportedMember.nickname.as("reportedMemberNickname")
                 ))
                 .from(reportedGame)
                 .innerJoin(reportedGame.reportMember, member)
@@ -152,12 +175,20 @@ public class GameRepositorySupport {
                 .fetch();
     }
 
+    /**
+     * 신고된 게임 삭제
+     *
+     * @param reportId
+     */
+    public void removeReportedGame(Long reportId) {
+        reportedGameRepository.deleteById(reportId);
+    }
 
     // 나만 쓸 거야
     // 정렬
     private OrderSpecifier orderCond(Pageable pageable) {
         Sort.Order order = pageable.getSort().iterator().next();
-        if(order.getProperty().equals("createdDate")) {
+        if (order.getProperty().equals("createdDate")) {
             return game.id.desc();
         } else {
             return game.playCount.desc();
@@ -209,7 +240,7 @@ public class GameRepositorySupport {
         }
 
         return game.createdAt.goe(
-                LocalDateTime.now().minusDays((long) periodCondition.getPeriod()));
+                LocalDateTime.now().minusDays(periodCondition.getPeriod()));
     }
 
 }

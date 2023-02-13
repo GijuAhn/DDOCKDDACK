@@ -12,8 +12,8 @@ import javax.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.env.Environment;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
+//import org.springframework.data.redis.core.RedisTemplate;
+//import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -22,7 +22,7 @@ import org.springframework.stereotype.Service;
 public class TokenService {
 
     private final Environment env;
-    private final RedisTemplate redisTemplate;
+//    private final RedisTemplate redisTemplate;
     private String secretKey;
 
     @PostConstruct
@@ -56,6 +56,24 @@ public class TokenService {
                 .compact());
     }
 
+    public Token reGenerateAccessToken(Long uid, String role, String refreshToken) {
+        long tokenPeriod = Long.parseLong(
+                env.getProperty("jwt.access-token.expire-length")); // 15 min
+
+        Claims claims = Jwts.claims().setSubject(uid.toString());
+        claims.put("role", role);
+
+        Date now = new Date();
+        return new Token(
+                Jwts.builder()
+                        .setClaims(claims)
+                        .setIssuedAt(now)
+                        .setExpiration(new Date(now.getTime() + tokenPeriod))
+                        .signWith(SignatureAlgorithm.HS256, secretKey)
+                        .compact(),
+                refreshToken);
+    }
+
     public boolean verifyToken(String token) {
         try {
             Jws<Claims> claims = Jwts.parser()
@@ -64,18 +82,18 @@ public class TokenService {
             log.info("claims {}", Jwts.parser()
                 .setSigningKey(secretKey)
                 .parseClaimsJws(token));
-            log.info("token verify {}", redisTemplate.opsForValue().get(token));
-            ValueOperations<String, String> logoutValueOperations = redisTemplate.opsForValue();
+//            log.info("token verify {}", redisTemplate.opsForValue().get(token));
+//            ValueOperations<String, String> logoutValueOperations = redisTemplate.opsForValue();
 
-            if (logoutValueOperations.get(token) != null) {
-                log.info("로그아웃 된 토큰입니다.");
-                return false;
-            }
+//            if (logoutValueOperations.get(token) != null) {
+//                log.info("로그아웃 된 토큰입니다.");
+//                return false;
+//            }
             return claims.getBody()
                 .getExpiration()
                 .after(new Date());
         } catch (Exception e) {
-            log.info("Err {}", e);
+            log.info("Err {}", "access 만료");
             return false;
         }
     }

@@ -16,8 +16,11 @@ import lombok.Setter;
 @NoArgsConstructor
 public class BestcutSaveReq {
 
-    @NotNull(message = "memberId can't be null")
-    private Long memberId;
+    @NotNull(message = "pinNumber can't be null")
+    private String pinNumber;
+
+    @NotNull(message = "sessionId can't be null")
+    private String socketId;
 
     @NotBlank(message = "gameTitle can't be blank")
     private String gameTitle;

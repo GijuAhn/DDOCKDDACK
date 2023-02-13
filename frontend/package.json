@@ -1,16 +1,23 @@
 {
-  "name": "frontend",
-  "version": "0.1.0",
+  "name": "ddockddack",
+  "version": "0.6.0",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve --port 8080",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "prod": "vue-cli-service build --mode production"
   },
   "dependencies": {
+    "@jamescoyle/vue-icon": "^0.1.2",
+    "@mdi/js": "^7.1.96",
     "axios": "^1.2.5",
     "core-js": "^3.8.3",
+    "html2canvas": "^1.4.1",
+    "openvidu-browser": "^2.25.0",
+    "process": "^0.11.10",
     "vue": "^3.2.13",
+    "vue-click-outside-element": "^3.1.2",
     "vue-router": "^4.0.3",
     "vuex": "^4.0.0"
   },
