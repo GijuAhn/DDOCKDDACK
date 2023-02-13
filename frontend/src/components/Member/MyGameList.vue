@@ -8,8 +8,10 @@
         :game="game"
       ></normal-game>
     </div>
-    <span id="imgLoading" v-if="loading"> 이미지 로딩 중 </span>
-    <span id="noItem" v-else-if="!myGames && !loading">
+    <loading-spinner id="imgLoading" v-if="isLoading">
+      <!-- 이미지 로딩 중 -->
+    </loading-spinner>
+    <span id="noItem" v-else-if="!myGames && !isLoading">
       게임을 등록 해주세요!
     </span>
   </div>
@@ -20,6 +22,7 @@ import NormalGame from "@/components/GameList/item/NormalGame";
 import { apiInstance } from "@/api/index";
 import { useStore } from "vuex";
 import { ref, computed } from "vue";
+import LoadingSpinner from "./item/LoadingSpinner.vue";
 
 const store = useStore();
 
@@ -27,10 +30,9 @@ const api = apiInstance();
 const memberId = computed(() => store.state.memberStore.memberInfo.id).value;
 const accessToken = computed(() => store.state.memberStore.accessToken).value;
 
-let loading = ref();
-loading = true;
-
+const isLoading = ref(true);
 const myGames = ref();
+
 const callApi = () => {
   api
     .get(`/api/members/${memberId}/games`, {
@@ -39,16 +41,17 @@ const callApi = () => {
       },
     })
     .then((response) => {
-      // console.log("access-games: ", response.data.content);
-      loading = false;
-      myGames.value = response.data.content;
+      console.log("access-games: ", response.data);
+      myGames.value = response.data;
     })
     .catch((error) => {
-      loading = false;
       console.log(error);
       // if (error.response.status == 401) {
       //   getAccessTokenByRefreshToken(); // refresh 토큰으로 다시
       // }
+    })
+    .finally(() => {
+      isLoading.value = false;
     });
 };
 
@@ -77,6 +80,7 @@ store.dispatch("commonStore/setMemberTabAsync", 2);
 
 #noItem {
   font-size: 20px;
+  margin-left: 25%;
 }
 
 #imgLoading {

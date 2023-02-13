@@ -7,9 +7,11 @@
         :game="game"
       ></normal-game>
     </div>
-    <span id="imgLoading" v-show="loading"> 이미지 로딩 중 </span>
-    <span id="noItem" v-show="!starredGames && !loading">
-      즐겨찾기된 게임이 없습니다!
+    <loading-spinner id="imgLoading" v-if="isLoading">
+      <!-- 이미지 로딩 중 -->
+    </loading-spinner>
+    <span id="noItem" v-show="!starredGames && !isLoading">
+      즐겨찾기한 게임이 없습니다!
     </span>
   </div>
 </template>
@@ -19,18 +21,17 @@ import NormalGame from "@/components/GameList/item/NormalGame";
 import { apiInstance } from "@/api/index";
 import { useStore } from "vuex";
 import { ref, computed } from "vue";
+import LoadingSpinner from "./item/LoadingSpinner.vue";
 
 const store = useStore();
 
 const api = apiInstance();
 const memberId = computed(() => store.state.memberStore.memberInfo.id).value;
 const accessToken = computed(() => store.state.memberStore.accessToken).value;
-
-let loading = ref();
+const isLoading = ref(true);
 
 const starredGames = ref();
 const callApi = async () => {
-  loading = true;
   await api
     .get(`/api/members/${memberId}/starred`, {
       headers: {
@@ -38,7 +39,6 @@ const callApi = async () => {
       },
     })
     .then((response) => {
-      loading = false;
       console.log("access-star: ", response.data);
       if (response.data.length > 0) {
         starredGames.value = response.data;
@@ -46,11 +46,13 @@ const callApi = async () => {
       console.log(starredGames.value == undefined);
     })
     .catch((error) => {
-      loading = false;
       console.log(error);
       // if (error.response.status == 401) {
       //   getAccessTokenByRefreshToken(); // refresh 토큰으로 다시
       // }
+    })
+    .finally(() => {
+      isLoading.value = false;
     });
 };
 
@@ -77,6 +79,7 @@ store.dispatch("commonStore/setMemberTabAsync", 1);
 }
 #noItem {
   font-size: 20px;
+  margin-left: 25%;
 }
 #imgLoading {
   margin-left: 30%;

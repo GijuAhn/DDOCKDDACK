@@ -3,11 +3,7 @@
   <div class="user-info">
     <div id="profile">
       <div id="profileImg" style="float: left">
-        <img
-          :src="`${IMAGE_PATH}/${myProfile.profile}`"
-          alt="대표사진"
-          id="image"
-        />
+        <img :src="`${IMAGE_PATH}/${myProfile.profile}`" alt="" id="image" />
         <div id="div_modifyImg">
           <input
             type="file"
@@ -19,7 +15,6 @@
           <label for="imgInput">
             <img
               :src="require(`@/assets/images/modify-profile-img.png`)"
-              alt="대표사진"
               id="modifyProfile"
             />
           </label>
