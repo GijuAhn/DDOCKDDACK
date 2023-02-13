@@ -154,5 +154,12 @@ public class GameRoomApiController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("{pinNumber}/final")
+    @Operation(summary = "최종 결과 반환")
+    public ResponseEntity finalResult(@PathVariable("pinNumber") String pinNumber) throws JsonProcessingException {
+        gameRoomService.finalResult(pinNumber);
+        return ResponseEntity.ok().build();
+    }
+
 
 }

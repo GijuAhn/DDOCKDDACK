@@ -2,7 +2,14 @@
   <div id="session">
     <modal-frame v-if="currentModal.length !== 0" />
     <div>
-      <result-modal v-if="resultMode" :round="round" :result="result" />
+      <result-modal
+        v-if="resultMode"
+        :round="round"
+        :result="result"
+        :isEnd="isEnd"
+        :winner="winner"
+        :publisher="openviduInfo.publisher"
+      />
     </div>
 
     <div id="session-header">
@@ -24,6 +31,9 @@
 
       <div id="left-section">
         <div id="gameInfoSection">
+          <div v-if="intro" id="introSection">
+            <span id="intro">게임 시작!</span>
+          </div>
           <div v-if="isStart && !isEnd">
             <div id="gameImageSection">
               <img
@@ -31,13 +41,14 @@
                 :src="`${IMAGE_PATH}/${room.gameImages[round - 1].gameImage}`"
               />
             </div>
+
             <div id="gameCurrentSection">
               <span v-show="!isEnd"> 게임 라운드 : {{ round }}</span>
               <span v-show="!isEnd"> 남은 시간 : {{ timerCount }} </span>
             </div>
           </div>
 
-          <div v-if="!isStart">
+          <div v-if="!isStart && !intro">
             <div id="gameWaitSection">
               <button v-if="isHost" v-show="!isStart" @click="play">
                 play
@@ -157,6 +168,8 @@ const resultMode = ref(false);
 const captureMode = ref(false);
 const result = ref([]);
 const resultImages = ref([]);
+const winner = ref([]);
+const intro = ref(false);
 
 // 뒤로가기 이벤트 감지
 onBeforeRouteLeave(() => {
@@ -214,33 +227,65 @@ onBeforeMount(() => {
         console.warn(exception);
       });
 
-      openviduInfo.value.session.on("signal:roundStart", (signal) => {
+      openviduInfo.value.session.on("roundStart", async (signal) => {
         round.value = signal.data;
         if (signal.data == 1) {
-          isStart.value = true;
-          console.log("게임 시작");
+          intro.value = true;
+          setTimeout(() => {
+            intro.value = false;
+            isStart.value = true;
+            const timer = setInterval(() => {
+              timerCount.value--;
+              if (timerCount.value === 0) {
+                clearInterval(timer);
+                capture(signal.data - 1);
+                timerCount.value = 5;
+                resultMode.value = true;
+              }
+            }, 1000);
+          }, 3000);
+        } else {
+          const timer = setInterval(() => {
+            timerCount.value--;
+            if (timerCount.value === 0) {
+              clearInterval(timer);
+              capture(signal.data - 1);
+              timerCount.value = 5;
+              resultMode.value = true;
+            }
+          }, 1000);
         }
-
-        const timer = setInterval(() => {
-          timerCount.value--;
-          if (timerCount.value === 0) {
-            clearInterval(timer);
-            capture(signal.data - 1);
-            timerCount.value = 5;
-          }
-        }, 1000);
       });
 
       openviduInfo.value.session.on("roundResult", (signal) => {
-        resultMode.value = true;
         result.value = JSON.parse(signal.data);
         setTimeout(() => {
           resultMode.value = false;
+          result.value.length = 0;
           if (round.value < 5 && isHost.value) {
             api.get(`/api/game-rooms/${route.params.pinNumber}/round`);
-          } else if (round.value == 5) {
-            isEnd.value = true;
+          } else if (isHost.value) {
+            api.get(`/api/game-rooms/${route.params.pinNumber}/final`);
           }
+        }, 5000);
+      });
+
+      openviduInfo.value.session.on("finalResult", async (signal) => {
+        resultMode.value = true;
+        isEnd.value = true;
+        const result = await JSON.parse(signal.data);
+        result.forEach((id, index) => {
+          if (openviduInfo.value.session.connection.connectionId === id) {
+            winner.value.splice(index, 0, openviduInfo.value.publisher);
+          } else {
+            const sub = openviduInfo.value.subscribers.find(
+              (s) => s.stream.connection.connectionId === id
+            );
+            winner.value.splice(index, 0, sub);
+          }
+        });
+        setTimeout(() => {
+          resultMode.value = false;
         }, 5000);
       });
 
@@ -345,13 +390,15 @@ const leaveSession = () => {
 };
 
 const throwHost = () => {
-  const nextHost =
-    openviduInfo.value.subscribers[0].stream.connection.connectionId;
-  openviduInfo.value.session.signal({
-    data: "",
-    to: [nextHost],
-    type: "host",
-  });
+  if (openviduInfo.value.subscribers.length) {
+    const nextHost =
+      openviduInfo.value.subscribers[0].stream.connection.connectionId;
+    openviduInfo.value.session.signal({
+      data: "",
+      to: [nextHost],
+      type: "host",
+    });
+  }
 };
 
 const play = () => {
@@ -466,6 +513,14 @@ const setCurrentModalAsync = (what) => {
   right: 10px;
   bottom: 10px;
   border: 1px solid #464646;
+}
+#intro {
+  color: white;
+  font-family: "Gugi-Regular";
+  font-size: 80px;
+  position: absolute;
+  top: 150px;
+  left: 300px;
 }
 #gameImageSection img {
   height: 100%;

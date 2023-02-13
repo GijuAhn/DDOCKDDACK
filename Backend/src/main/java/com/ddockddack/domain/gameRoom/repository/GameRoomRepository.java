@@ -131,14 +131,14 @@ public class GameRoomRepository {
         GameRoom gameRoom = this.gameRooms.get(pinNumber);
         gameRoom.start();
 
-        String signal = createSignal(pinNumber, "signal:roundStart", String.valueOf(gameRoom.getRound()));
+        String signal = createSignal(pinNumber, "roundStart", String.valueOf(gameRoom.getRound()));
         sendSignal(signal);
     }
 
     public void nextRound(String pinNumber) throws JsonProcessingException{
         GameRoom gameRoom = this.gameRooms.get(pinNumber);
 
-        String signal = createSignal(pinNumber, "signal:roundStart", String.valueOf(gameRoom.getRound()));
+        String signal = createSignal(pinNumber, "roundStart", String.valueOf(gameRoom.getRound()));
         sendSignal(signal);
     }
 
@@ -158,20 +158,16 @@ public class GameRoomRepository {
             gameRoom.resetScoreCnt();
             gameRoom.increaseRound();
         }
-
     }
 
-    public void finalResult(String pinNumber){
+    public void finalResult(String pinNumber) throws JsonProcessingException {
         GameRoom gameRoom = this.gameRooms.get(pinNumber);
-        List<GameMember> members = new ArrayList<>(gameRoom.getMembers().values());
-        PriorityQueue<GameMember> pq = new PriorityQueue<>((a, b) -> b.getRoundScore() - a.getRoundScore());
-        pq.addAll(members);
-        List<GameMemberRes> result = new ArrayList<>();
-        for (int i = 0; i < 3; i++) {
-            if (pq.isEmpty()) break;
-            result.add(GameMemberRes.from(pq.poll(), gameRoom.getRound()));
-        }
+
+        String resultData = mapper.writeValueAsString(findFinalResult(gameRoom));
+        String signal = createSignal(pinNumber, "finalResult", resultData);
+        sendSignal(signal);
     }
+
 
 
     private String createSignal(String pinNumber, String signalName, String data) throws JsonProcessingException {
@@ -220,6 +216,20 @@ public class GameRoomRepository {
             result.add(GameMemberRes.from(pq.poll(), gameRoom.getRound()-1));
         }
         return result;
+    }
+
+
+    public List<String> findFinalResult(GameRoom gameRoom){
+        List<GameMember> members = new ArrayList<>(gameRoom.getMembers().values());
+        PriorityQueue<GameMember> pq = new PriorityQueue<>((a, b) -> b.getTotalScore() - a.getTotalScore());
+        pq.addAll(members);
+        List<String> finalResult = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            if (pq.isEmpty()) break;
+            finalResult.add(pq.poll().getSocketId());
+        }
+
+        return finalResult;
     }
 
 }

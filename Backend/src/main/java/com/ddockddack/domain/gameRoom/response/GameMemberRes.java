@@ -26,4 +26,11 @@ public class GameMemberRes {
                 .roundScore(gameMember.getRoundScore())
                 .build();
     }
+
+    public static GameMemberRes from(GameMember gameMember){
+        return GameMemberRes.builder()
+                .socketId(gameMember.getSocketId())
+                .roundScore(gameMember.getTotalScore())
+                .build();
+    }
 }
