@@ -9,18 +9,17 @@
       <span id="session-title">
         {{ room.gameTitle }} [방 코드 - {{ room.pinNumber }}]
       </span>
-      <img
-        src="https://developers.kakao.com/assets/img/about/logos/kakaotalksharing/kakaotalk_sharing_btn_medium.png"
-        @click="linkShare"
-        id="kakaoShareButton"
-      />
-      <span>공유하기</span>
-      <!--우측 공간-->
-      <span></span>
+      <span @click="linkShare">
+        <img
+          src="https://developers.kakao.com/assets/img/about/logos/kakaotalksharing/kakaotalk_sharing_btn_medium.png"
+          id="kakaoShareButton"
+        />
+        <span> 공유하기</span></span
+      >
     </div>
 
     <div id="main-container">
-      <capture-video id="main-video" :stream-manager="openviduInfo.publisher" />
+      <capture-video :stream-manager="openviduInfo.publisher" />
 
       <div id="left-section">
         <div id="gameInfoSection">
@@ -32,15 +31,15 @@
               />
             </div>
             <div id="gameCurrentSection">
-              <span v-show="!isEnd"> 게임 라운드 : {{ round }}</span>
-              <span v-show="!isEnd"> 남은 시간 : {{ timerCount }} </span>
+              <span v-show="!isEnd"> {{ round }}/10</span>
+              <span v-show="!isEnd"> {{ timerCount }} </span>
             </div>
           </div>
 
           <div v-if="!isStart">
             <div id="gameWaitSection">
               <button v-if="isHost" v-show="!isStart" @click="play">
-                play
+                시작하기!
               </button>
               <div id="waitDesc">
                 <span>잠시만 기다려주세요</span><br />
@@ -56,13 +55,13 @@
               <button @click="setCurrentModalAsync(`bestcutUpload`)">
                 내 사진 보기
               </button>
+              <button>최종 결과</button>
             </div>
           </div>
         </div>
 
         <div id="my-video">
           <user-video
-            id="main-video"
             :stream-manager="openviduInfo.publisher"
             :captureMode="captureMode"
           />
@@ -401,14 +400,18 @@ const setCurrentModalAsync = (what) => {
   height: 35px;
   /* background-color: rgb(255, 150, 150); */
   display: flex;
-  align-items: center;
-  padding: 0 10px;
+  align-items: flex-end;
+  padding: 0 12px;
 }
 #session-header span {
-  font-size: 20px;
+  font-size: 18px;
+  font-family: "NanumSquareRoundR";
 }
 #session-header span:last-child {
   margin-left: auto;
+}
+#session-header span:last-child:hover {
+  cursor: pointer;
 }
 #main-container {
   /* border: 1px solid red; */
@@ -428,7 +431,7 @@ const setCurrentModalAsync = (what) => {
 #gameImageSection,
 #gameWaitSection,
 #gameResultSection {
-  border-radius: 20px;
+  border-radius: 10px;
   position: absolute;
   top: 10px;
   left: 10px;
@@ -443,8 +446,23 @@ const setCurrentModalAsync = (what) => {
 }
 #gameWaitSection,
 #gameResultSection {
-  background-color: #d9d9d9;
+  background-color: #fdf8ec;
 }
+
+#gameWaitSection button {
+  border-radius: 5px;
+  border: 2px solid black;
+  font-size: 20px;
+  font-family: "NanumSquareRoundB";
+  height: 48px;
+  background-color: #f08383;
+  color: white;
+  width: 120px;
+}
+#gameWaitSection button:hover {
+  cursor: pointer;
+}
+
 #waitDesc > span {
   color: black;
   font-size: 50px;
@@ -452,8 +470,46 @@ const setCurrentModalAsync = (what) => {
 
 #gameCurrentSection {
   position: absolute;
-  top: 0;
-  left: 0;
+  top: 25px;
+  left: 25px;
+  display: flex;
+  width: calc(100% - 50px);
+}
+#gameCurrentSection span:first-child {
+  border: 2px solid white;
+  background-color: black;
+  font-size: 24px;
+  color: white;
+  border-radius: 24px;
+  width: 80px;
+  height: 36px;
+  text-align: center;
+  line-height: 36px;
+}
+#gameCurrentSection span:last-child {
+  border: 2px solid white;
+  background-color: black;
+  font-size: 24px;
+  color: white;
+  border-radius: 24px;
+  width: 36px;
+  height: 36px;
+  text-align: center;
+  line-height: 36px;
+  margin-left: auto;
+}
+#gameResultSection button {
+  border-radius: 5px;
+  border: 2px solid black;
+  font-size: 20px;
+  font-family: "NanumSquareRoundB";
+  height: 48px;
+  background-color: #f08383;
+  color: white;
+  width: 140px;
+}
+#gameResultSection button:hover {
+  cursor: pointer;
 }
 #my-video {
   /* background-color: rgb(104, 0, 87); */
@@ -524,12 +580,11 @@ const setCurrentModalAsync = (what) => {
 }
 
 #kakaoShareButton {
-  width: 30px;
-  height: 30px;
+  width: 24px;
+  height: 24px;
+  vertical-align: middle;
 }
-#kakaoShareButton:hover {
-  cursor: pointer;
-}
+
 .game-image {
   transform: scaleX(-1);
 }
@@ -543,7 +598,7 @@ const setCurrentModalAsync = (what) => {
 .btn-video-control {
   border: 1px solid #464646;
   font-size: 18px;
-  font-family: "NanumSquareRoundB";
+  font-family: "NanumSquareRoundR";
   padding: 10px 0;
   background: none;
   color: white;

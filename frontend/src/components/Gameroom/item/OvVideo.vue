@@ -22,7 +22,7 @@ onMounted(() => {
   position: relative;
 }
 #myVideo1 {
-  border-radius: 20px;
+  border-radius: 10px;
   border: 1px solid #464646;
   /* box-shadow: 0 0 0 1px aqua inset; */
   /* visibility: hidden; */
