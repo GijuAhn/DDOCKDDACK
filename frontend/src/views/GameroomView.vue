@@ -49,24 +49,41 @@
 
           <div v-if="!isStart && !intro">
             <div id="gameWaitSection">
-              <button v-if="isHost" v-show="!isStart" @click="play">
-                시작하기!
-              </button>
-              <div id="waitDesc">
-                <span>잠시만 기다려주세요</span><br />
-                <span
-                  >{{ openviduInfo.subscribers.length + 1 }}명 참가중...</span
-                >
+              <div id="relative">
+                <img src="@/assets/images/gameWait.png" />
+                <div id="waitDesc">
+                  <span id="largeFont">잠시만 기다려주세요</span>
+                  <br />
+                  <br />
+                  <span id="smallFont">
+                    {{ openviduInfo.subscribers.length + 1 }}명 참가중...
+                  </span>
+                  <br />
+                  <br />
+                  <div>
+                    <button
+                      v-if="isHost"
+                      v-show="!isStart"
+                      @click="play"
+                      style="float: right"
+                    >
+                      시작하기!
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
 
           <div v-if="isEnd">
             <div id="gameResultSection">
-              <button @click="setCurrentModalAsync(`bestcutUpload`)">
-                내 사진 보기
-              </button>
-              <button>최종 결과</button>
+              <div id="relative">
+                <img src="@/assets/images/gameResult.png" />
+                <button @click="setCurrentModalAsync(`bestcutUpload`)">
+                  내 사진 보기
+                </button>
+                <button>최종 결과</button>
+              </div>
             </div>
           </div>
         </div>
@@ -542,6 +559,7 @@ const pubAudioOff = (video) => {
   width: 100%;
   object-fit: contain;
 }
+
 #gameWaitSection,
 #gameResultSection {
   background-color: #fdf8ec;
@@ -561,9 +579,34 @@ const pubAudioOff = (video) => {
   cursor: pointer;
 }
 
-#waitDesc > span {
+#relative {
+  height: 100%;
+  width: 100%;
+  position: relative;
+}
+
+#waitDesc {
+  float: left;
+  top: 50%;
+  left: 45%;
+  position: absolute;
+  transform: translate(0, -50%);
+}
+
+#relative img {
+  top: 50%;
+  position: absolute;
+  transform: translate(10%, -50%);
+}
+
+#largeFont {
   color: black;
   font-size: 50px;
+}
+
+#smallFont {
+  color: black;
+  font-size: 30px;
 }
 
 #gameCurrentSection {
