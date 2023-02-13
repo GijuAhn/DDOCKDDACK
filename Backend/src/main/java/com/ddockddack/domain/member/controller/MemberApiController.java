@@ -85,7 +85,8 @@ public class MemberApiController {
     public ResponseEntity<?> getMemberInfo() {
         log.info("sec info {}",
             SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
-        MemberAccessRes memberAccessRes = Optional.ofNullable((MemberAccessRes) SecurityContextHolder.getContext()
+        MemberAccessRes memberAccessRes = Optional.ofNullable(
+            (MemberAccessRes) SecurityContextHolder.getContext()
                 .getAuthentication().getPrincipal()).get();
         if (memberAccessRes.toString().equals("anonymousUser")) {
             throw new NotFoundException(ErrorCode.MEMBER_NOT_FOUND);
@@ -108,7 +109,8 @@ public class MemberApiController {
         @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @DeleteMapping()
-    public ResponseEntity<?> deleteMember(@PathVariable Long memberId) {
+    public ResponseEntity<?> deleteMember(HttpServletRequest request,
+        HttpServletResponse response) {
         try {
             Cookie[] cookies = request.getCookies();
             log.info("cokies {}", cookies);
@@ -137,6 +139,10 @@ public class MemberApiController {
                 refreshTokenCookie.setMaxAge(0);
                 refreshTokenCookie.setPath("/");
                 response.addCookie(refreshTokenCookie);
+
+                return ResponseEntity.ok().build();
+            } else {
+                return ResponseEntity.status(401).body("refresh-token Error");
             }
         } catch (Exception e) {
             return ResponseEntity.status(500).body(e);
@@ -235,7 +241,7 @@ public class MemberApiController {
 
         String refreshToken = null;
         if (cookies != null) {
-            for (Cookie cookie: cookies) {
+            for (Cookie cookie : cookies) {
                 log.info(String.valueOf(cookie.getName()));
                 if (cookie.getName().equals("refresh-token")) {
                     refreshToken = cookie.getValue();
