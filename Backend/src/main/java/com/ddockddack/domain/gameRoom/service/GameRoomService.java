@@ -80,8 +80,6 @@ public class GameRoomService {
 
         String token = gameRoomRepository.join(pinNumber, member, nickname, clientIp);
 
-
-
         if (gameRoom.isStarted()) {
             throw new AccessDeniedException(ErrorCode.ALREADY_STARTED_GAME);
         }
@@ -112,6 +110,7 @@ public class GameRoomService {
     public void removeGameRoom(String pinNumber) {
         gameRoomRepository.findSessionByPinNumber(pinNumber).orElseThrow(() ->
                 new NotFoundException(ErrorCode.GAME_ROOM_NOT_FOUND));
+
 
         // 게임 삭제 콬드
         gameRoomRepository.deleteById(pinNumber);
@@ -204,8 +203,23 @@ public class GameRoomService {
         return result;
     }
 
-
+    /**
+     * 다음 라운드로 진행
+     *
+     * @param pinNumber
+     * @return
+     */
     public void nextRound(String pinNumber) throws JsonProcessingException {
         gameRoomRepository.nextRound(pinNumber);
+    }
+
+    /**
+     * 최종 결과
+     *
+     * @param pinNumber
+     * @return
+     */
+    public void finalResult(String pinNumber) throws JsonProcessingException {
+        gameRoomRepository.finalResult(pinNumber);
     }
 }
