@@ -43,7 +43,7 @@ public class Game {
     @Column(columnDefinition = "DATETIME default now()")
     private LocalDateTime createdAt;
 
-    @OneToMany(mappedBy = "game", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "game", fetch = FetchType.LAZY)
     private List<GameImage> images;
 
     @OneToMany(mappedBy = "game", fetch = FetchType.LAZY, cascade = CascadeType.ALL)

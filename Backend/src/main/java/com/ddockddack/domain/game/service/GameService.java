@@ -180,7 +180,7 @@ public class GameService {
 
         // 검증
         checkAccessValidation(memberId, gameId);
-
+        gameImageRepository.deleteByGameId(gameId);
         gameRepository.deleteById(gameId);
 
     }
