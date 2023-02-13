@@ -29,7 +29,7 @@
 import { useStore } from "vuex";
 import { ref, computed } from "vue";
 import { apiInstance } from "@/api/index";
-import reportedGame from "@/components/Admin/item/reportedGame.vue";
+import reportedGame from "./item/reportedGame.vue";
 
 const api = apiInstance();
 const store = useStore();
