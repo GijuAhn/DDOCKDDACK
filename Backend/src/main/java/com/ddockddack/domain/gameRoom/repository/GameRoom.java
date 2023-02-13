@@ -26,7 +26,7 @@ public class GameRoom {
     private boolean isStarted;
 
     private int scoreCount = 0;
-    private int round = 0;
+    private int round = 1;
 
     private Map<String, GameMember> members = new ConcurrentHashMap<>();
 
