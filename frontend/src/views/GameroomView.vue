@@ -75,6 +75,8 @@
           <user-video
             :stream-manager="openviduInfo.publisher"
             :captureMode="captureMode"
+            :isHost="isHost"
+            :isSub="false"
           />
         </div>
       </div>
@@ -100,14 +102,25 @@
             v-for="sub in openviduInfo.subscribers"
             :key="sub.stream.connection.connectionId"
             :stream-manager="sub"
+            :isSub="true"
           />
         </div>
       </div>
     </div>
 
     <div id="button-container">
-      <button class="btn-video-control">음소거</button>
-      <button class="btn-video-control">화면 중지</button>
+      <button
+        class="btn-video-control"
+        @click="pubAudioOff(openviduInfo.publisher)"
+      >
+        음소거
+      </button>
+      <button
+        class="btn-video-control"
+        @click="pubVideoOff(openviduInfo.publisher)"
+      >
+        화면 중지
+      </button>
       <button class="btn-close" @click="leaveSession">
         <img
           :src="require(`@/assets/images/close.png`)"
@@ -169,7 +182,8 @@ const result = ref([]);
 const resultImages = ref([]);
 const winner = ref([]);
 const intro = ref(false);
-
+const isPubVideoEnable = ref(true);
+const isPubAudioEnable = ref(true);
 onBeforeMount(() => {
   api
     .post(`/api/game-rooms/${route.params.pinNumber}`, {})
@@ -320,7 +334,6 @@ onBeforeMount(() => {
             error.message
           );
         });
-      console.log(window);
       window.addEventListener("beforeunload", leaveSession);
     })
     .catch((err) => {
@@ -454,6 +467,16 @@ const setCurrentModalAsync = (what) => {
     name: what,
     data: [resultImages, openviduInfo.value.publisher, room],
   });
+};
+
+const pubVideoOff = (video) => {
+  isPubVideoEnable.value = !isPubVideoEnable.value;
+  video.publishVideo(isPubVideoEnable.value);
+};
+
+const pubAudioOff = (video) => {
+  isPubAudioEnable.value = !isPubAudioEnable.value;
+  video.publishAudio(isPubAudioEnable);
 };
 </script>
 
