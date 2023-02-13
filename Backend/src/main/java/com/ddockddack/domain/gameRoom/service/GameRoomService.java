@@ -71,11 +71,11 @@ public class GameRoomService {
 
         GameRoom gameRoom = this.findGameRoom(pinNumber);
 
-//        for(GameMember gameMember : gameRoom.getMembers().values()) {
-//            if(clientIp.equals(gameMember.getClientIp())) {
-//                throw new AccessDeniedException(ErrorCode.NOT_AUTHORIZED);
-//            }
-//        }
+        for(GameMember gameMember : gameRoom.getMembers().values()) {
+            if(clientIp.equals(gameMember.getClientIp())) {
+                throw new AccessDeniedException(ErrorCode.NOT_AUTHORIZED);
+            }
+        }
 
         String token = gameRoomRepository.join(pinNumber, member, nickname, clientIp);
 
