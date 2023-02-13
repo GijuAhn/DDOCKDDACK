@@ -13,14 +13,14 @@
           <th>처리</th>
         </tr>
       </thead>
-      <tfoot v-if="reportedGames">
+      <tbody v-if="reportedGames">
         <reported-game
           v-for="reportedGame in reportedGames"
           :key="reportedGame"
           :reportedGame="reportedGame"
           @deleteProps="(target) => deleteProps(target)"
         ></reported-game>
-      </tfoot>
+      </tbody>
     </table>
   </div>
 </template>
