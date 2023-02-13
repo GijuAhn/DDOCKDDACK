@@ -77,21 +77,20 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 Authentication auth = getAuthentication(memberAccessRes);
                 SecurityContextHolder.getContext().setAuthentication(auth);
 
-                filterChain.doFilter(request, response);
+                // 정상 진행
 
-            } else if ((request.getMethod().equals("POST") || request.getMethod().equals("PUT"))
-                    && request.getRequestURI().contains("api/game-room")){
+            } else if (request.getRequestURI().contains("api/game-room")){
 
-                    filterChain.doFilter(request, response);
-
-            } else if (!request.getMethod().equals("GET")){
-
-                log.info(String.valueOf(ErrorCode.EXPIRED_ACCESSTOKEN));
-                throw new AccessDeniedException(ErrorCode.EXPIRED_ACCESSTOKEN);
+                // 정상 진행
 
             } else if (request.getMethod().equals("GET")){
 
-                filterChain.doFilter(request, response);
+                // 정상 진행
+
+            } else {
+
+                log.info(String.valueOf(ErrorCode.EXPIRED_ACCESSTOKEN));
+                throw new AccessDeniedException(ErrorCode.EXPIRED_ACCESSTOKEN);
 
             }
 
@@ -110,10 +109,18 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 Authentication auth = getAuthentication(memberAccessRes);
                 SecurityContextHolder.getContext().setAuthentication(auth);
 
-                filterChain.doFilter(request, response);
+                // 정상 진행
+
+            } else {
+
+                log.info(String.valueOf(ErrorCode.EXPIRED_ACCESSTOKEN));
+                throw new AccessDeniedException(ErrorCode.EXPIRED_ACCESSTOKEN);
 
             }
+
         }
+
+        filterChain.doFilter(request, response);
 
     }
 
