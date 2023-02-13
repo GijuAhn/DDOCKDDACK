@@ -346,7 +346,9 @@ const leaveSession = () => {
   // --- 7) Leave the session by calling 'disconnect' method over the Session object ---
   if (openviduInfo.value.session) {
     let socketId = openviduInfo.value.session.connection.connectionId;
-    throwHost();
+    if (isHost.value) {
+      throwHost();
+    }
     // 방에 유저가 있는 경우 멤버삭제
     if (openviduInfo.value.subscribers.length) {
       api
