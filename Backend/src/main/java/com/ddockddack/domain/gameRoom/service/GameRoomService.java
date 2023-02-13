@@ -204,8 +204,23 @@ public class GameRoomService {
         return result;
     }
 
-
+    /**
+     * 다음 라운드로 진행
+     *
+     * @param pinNumber
+     * @return
+     */
     public void nextRound(String pinNumber) throws JsonProcessingException {
         gameRoomRepository.nextRound(pinNumber);
+    }
+
+    /**
+     * 최종 결과
+     *
+     * @param pinNumber
+     * @return
+     */
+    public void finalResult(String pinNumber) throws JsonProcessingException {
+        gameRoomRepository.finalResult(pinNumber);
     }
 }
