@@ -13,6 +13,7 @@ import com.ddockddack.domain.gameRoom.response.GameRoomHistoryRes;
 import com.ddockddack.domain.gameRoom.response.GameRoomRes;
 import com.ddockddack.domain.member.entity.Member;
 import com.ddockddack.domain.member.repository.MemberRepository;
+import com.ddockddack.domain.report.repository.ReportedGameRepository;
 import com.ddockddack.domain.similarity.service.EnsembleModel;
 import com.ddockddack.global.error.ErrorCode;
 import com.ddockddack.global.error.exception.AccessDeniedException;
@@ -40,7 +41,6 @@ public class GameRoomService {
     private final GameRepository gameRepository;
     private final MemberRepository memberRepository;
     private final AwsS3Service awsS3Service;
-
     private final GameRoomHistoryRepository gameRoomHistoryRepository;
 
     /**
@@ -81,11 +81,11 @@ public class GameRoomService {
         GameRoom gameRoom = this.findGameRoom(pinNumber);
 
         //중복 접속 방지 (허용하려면 주석처리)
-        for(GameMember gameMember : gameRoom.getMembers().values()) {
-            if(clientIp.equals(gameMember.getClientIp())) {
-                throw new AccessDeniedException(ErrorCode.NOT_AUTHORIZED);
-            }
-        }
+//        for(GameMember gameMember : gameRoom.getMembers().values()) {
+//            if(clientIp.equals(gameMember.getClientIp())) {
+//                throw new AccessDeniedException(ErrorCode.NOT_AUTHORIZED);
+//            }
+//        }
 
         String token = gameRoomRepository.join(pinNumber, member, nickname, clientIp);
 
