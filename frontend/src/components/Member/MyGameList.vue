@@ -7,8 +7,11 @@
         :key="game"
         :game="game"
       ></normal-game>
-      <span id="noItem" v-if="!myGames"> 게임을 등록 해주세요! </span>
     </div>
+    <span id="imgLoading" v-if="loading"> 이미지 로딩 중 </span>
+    <span id="noItem" v-else-if="!myGames && !loading">
+      게임을 등록 해주세요!
+    </span>
   </div>
 </template>
 
@@ -24,6 +27,9 @@ const api = apiInstance();
 const memberId = computed(() => store.state.memberStore.memberInfo.id).value;
 const accessToken = computed(() => store.state.memberStore.accessToken).value;
 
+let loading = ref();
+loading = true;
+
 const myGames = ref();
 const callApi = () => {
   api
@@ -34,9 +40,11 @@ const callApi = () => {
     })
     .then((response) => {
       // console.log("access-games: ", response.data.content);
+      loading = false;
       myGames.value = response.data.content;
     })
     .catch((error) => {
+      loading = false;
       console.log(error);
       // if (error.response.status == 401) {
       //   getAccessTokenByRefreshToken(); // refresh 토큰으로 다시
@@ -69,5 +77,9 @@ store.dispatch("commonStore/setMemberTabAsync", 2);
 
 #noItem {
   font-size: 20px;
+}
+
+#imgLoading {
+  margin-left: 30%;
 }
 </style>

@@ -6,10 +6,11 @@
         :key="game"
         :game="game"
       ></normal-game>
-      <span id="noItem" v-if="!starredGames">
-        즐겨찾기된 게임이 없습니다!
-      </span>
     </div>
+    <span id="imgLoading" v-show="loading"> 이미지 로딩 중 </span>
+    <span id="noItem" v-show="!starredGames && !loading">
+      즐겨찾기된 게임이 없습니다!
+    </span>
   </div>
 </template>
 
@@ -25,21 +26,27 @@ const api = apiInstance();
 const memberId = computed(() => store.state.memberStore.memberInfo.id).value;
 const accessToken = computed(() => store.state.memberStore.accessToken).value;
 
+let loading = ref();
+
 const starredGames = ref();
-const callApi = () => {
-  api
+const callApi = async () => {
+  loading = true;
+  await api
     .get(`/api/members/${memberId}/starred`, {
       headers: {
         "access-token": accessToken, // 변수로 가지고있는 AccessToken
       },
     })
     .then((response) => {
+      loading = false;
       console.log("access-star: ", response.data);
       if (response.data.length > 0) {
         starredGames.value = response.data;
       }
+      console.log(starredGames.value == undefined);
     })
     .catch((error) => {
+      loading = false;
       console.log(error);
       // if (error.response.status == 401) {
       //   getAccessTokenByRefreshToken(); // refresh 토큰으로 다시
@@ -70,5 +77,8 @@ store.dispatch("commonStore/setMemberTabAsync", 1);
 }
 #noItem {
   font-size: 20px;
+}
+#imgLoading {
+  margin-left: 30%;
 }
 </style>

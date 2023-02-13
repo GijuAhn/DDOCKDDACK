@@ -28,12 +28,13 @@
     </div>
     <div id="nameAndEmail">
       <div id="nickname" v-if="!save">
-        <span>{{ name }}</span>
-        <span id="btn_modifyName" @click="modifyNameInput">
+        <span id="name">{{ name }}</span>
+        <span @click="modifyNameInput">
           <img
             :src="require(`@/assets/images/modify-name.png`)"
             alt="이름수정버튼"
             class="modify"
+            id="btn_modifyName"
           />
         </span>
       </div>
@@ -137,7 +138,10 @@ const modifyProfileImg = (f) => {
       .put(`/api/members/profile`, formData, {
         headers: { "access-token": accessToken.value },
       })
-      .then(() => {})
+      .then(() => {
+        store.dispatch("memberStore/getMemberInfo");
+        myProfile = computed(() => store.state.memberStore.memberInfo).value;
+      })
       .catch((err) => {
         if (err.response.status === 401) {
           alert("로그인 후 이용해주세요.");
@@ -189,8 +193,11 @@ const withdrawal = () => {
   position: relative;
 }
 #nickname {
-  font-size: 48px;
   margin-bottom: 10px;
+  width: 350px;
+}
+#name {
+  font-size: 48px;
 }
 .modify {
   width: 20%;
@@ -207,6 +214,8 @@ const withdrawal = () => {
   transform: translate(-50%, -50%);
 }
 #nickname:hover #btn_modifyName {
+  width: 30px;
+  height: 30px;
   display: inline;
   cursor: pointer;
 }

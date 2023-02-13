@@ -46,7 +46,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
             member = Member.builder()
                 .email((String) attributes.get("email"))
                 .nickname((String) attributes.get("nickname"))
-                .profile("")
+                .profile("default_profile_img.png")
                 .role(Role.MEMBER)
                 .build();
             memberRepository.save(member);
