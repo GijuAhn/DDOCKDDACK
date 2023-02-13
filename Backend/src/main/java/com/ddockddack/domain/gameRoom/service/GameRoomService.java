@@ -40,8 +40,9 @@ public class GameRoomService {
     private final GameRoomRepository gameRoomRepository;
     private final GameRepository gameRepository;
     private final MemberRepository memberRepository;
-    private final AwsS3Service awsS3Service;
     private final GameRoomHistoryRepository gameRoomHistoryRepository;
+    private final AwsS3Service awsS3Service;
+
 
     /**
      * 방 생성
