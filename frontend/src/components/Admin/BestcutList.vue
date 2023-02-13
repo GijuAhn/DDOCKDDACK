@@ -13,14 +13,14 @@
           <th>처리</th>
         </tr>
       </thead>
-      <tfoot v-if="reportedBestCuts">
+      <tbody v-if="reportedBestCuts">
         <reported-best-cut
           v-for="reportedBestCut in reportedBestCuts"
           :key="reportedBestCut"
           :reportedBestCut="reportedBestCut"
           @deleteProps="(target) => deleteProps(target)"
         ></reported-best-cut>
-      </tfoot>
+      </tbody>
     </table>
   </div>
 </template>
