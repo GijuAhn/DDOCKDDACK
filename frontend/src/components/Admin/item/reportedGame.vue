@@ -31,7 +31,7 @@
 import { apiInstance } from "@/api/index";
 import { useStore } from "vuex";
 import { defineProps, ref, computed, defineEmits } from "vue";
-import reportedGamePreview from "@/components/Admin/item/reportedGamePreview.vue";
+import ReportedGamePreview from "@/components/Admin/item/ReportedGamePreview.vue";
 
 const api = apiInstance();
 const props = defineProps({ reportedGame: Object });

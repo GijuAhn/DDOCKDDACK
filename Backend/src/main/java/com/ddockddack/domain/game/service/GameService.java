@@ -181,6 +181,7 @@ public class GameService {
         // 검증
         checkAccessValidation(memberId, gameId);
         gameImageRepository.deleteByGameId(gameId);
+        starredGameRepository.deleteByGameId(gameId);
         reportedGameRepository.deleteByGameId(gameId);
         gameRepository.deleteById(gameId);
 
