@@ -6,8 +6,10 @@ import com.ddockddack.domain.bestcut.service.BestcutService;
 import com.ddockddack.domain.game.response.GameRes;
 import com.ddockddack.domain.game.response.StarredGameRes;
 import com.ddockddack.domain.game.service.GameService;
+import com.ddockddack.domain.gameRoom.response.GameRoomHistoryRes;
+import com.ddockddack.domain.gameRoom.service.GameRoomService;
 import com.ddockddack.domain.member.entity.Member;
-import com.ddockddack.domain.member.request.MemberModifyReq;
+import com.ddockddack.domain.member.request.MemberModifyNameReq;
 import com.ddockddack.domain.member.response.MemberAccessRes;
 import com.ddockddack.domain.member.service.MemberService;
 import com.ddockddack.global.error.ErrorCode;
@@ -37,6 +39,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @Slf4j
@@ -48,8 +51,38 @@ public class MemberApiController {
     private final MemberService memberService;
     private final BestcutService bestcutService;
     private final GameService gameService;
+    private final GameRoomService gameRoomService;
 
-    @Operation(summary = "회원 정보 수정", description = "회원 정보 수정 메소드입니다.")
+    @Operation(summary = "회원 nickname 수정", description = "회원 nickname 수정 메소드입니다.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "이력 조회 성공"),
+        @ApiResponse(responseCode = "400", description = "필수 값 누락"),
+        @ApiResponse(responseCode = "400", description = "권한 없음"),
+        @ApiResponse(responseCode = "404", description = "존재하지 않는 유저"),
+        @ApiResponse(responseCode = "500", description = "서버 오류")
+    })
+    @PutMapping("/nickname")
+    public ResponseEntity<?> modifyMemberNickname(@RequestBody MemberModifyNameReq
+        memberModifyNameReq) {
+        try {
+            MemberAccessRes memberAccessRes = (MemberAccessRes) SecurityContextHolder.getContext()
+                .getAuthentication().getPrincipal();
+            Optional<Member> member = memberService.getMemberById(memberAccessRes.getId());
+            if (member.isEmpty()) {
+                throw new NotFoundException(ErrorCode.MEMBER_NOT_FOUND);
+            }
+            memberService.modifyMemberNickname(member.get().getId(), memberModifyNameReq);
+
+//            return ResponseEntity.ok(memberService.modifyMember(member.get().getId(), modifyMemberReq));
+            log.info("memberModifyNameReq {}", memberModifyNameReq);
+
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(e.getMessage());
+        }
+    }
+
+    @Operation(summary = "회원 이미지 수정", description = "회원 이미지 수정 메소드입니다.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "이력 조회 성공"),
         @ApiResponse(responseCode = "400", description = "필수 값 누락"),
@@ -59,13 +92,26 @@ public class MemberApiController {
         @ApiResponse(responseCode = "415", description = "지원하지않는 확장자"),
         @ApiResponse(responseCode = "500", description = "서버 오류")
     })
-    @PutMapping()
-    public ResponseEntity<?> modifyMember(@PathVariable Long memberId,
-        @RequestBody MemberModifyReq modifyMemberReq,
-        @RequestHeader(value = "access-token", required = false) String accessToken) {
+    @PutMapping("/profile")
+    public ResponseEntity<?> modifyMemberProfileImg(
+        @ModelAttribute MultipartFile profileImg
+    ) {
         try {
-//            memberService.modifyMember(memberId, modifyMember);
-            return ResponseEntity.ok(memberService.modifyMember(memberId, modifyMemberReq));
+            MemberAccessRes memberAccessRes = (MemberAccessRes) SecurityContextHolder.getContext()
+                .getAuthentication().getPrincipal();
+            Optional<Member> member = memberService.getMemberById(memberAccessRes.getId());
+            if (member.isEmpty()) {
+                throw new NotFoundException(ErrorCode.MEMBER_NOT_FOUND);
+            }
+            if (profileImg.isEmpty()) {
+                throw new NotFoundException(ErrorCode.MISSING_REQUIRED_VALUE);
+            }
+
+            log.info("profileImg {}", profileImg.getOriginalFilename());
+
+            memberService.modifyMemberProfileImg(member.get().getId(), profileImg);
+
+            return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.status(500).body(e.getMessage());
         }
@@ -82,7 +128,8 @@ public class MemberApiController {
     public ResponseEntity<?> getMemberInfo() {
         log.info("sec info {}",
             SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
-        MemberAccessRes memberAccessRes = Optional.ofNullable((MemberAccessRes) SecurityContextHolder.getContext()
+        MemberAccessRes memberAccessRes = Optional.ofNullable(
+            (MemberAccessRes) SecurityContextHolder.getContext()
                 .getAuthentication().getPrincipal()).get();
         if (memberAccessRes.toString().equals("anonymousUser")) {
             throw new NotFoundException(ErrorCode.MEMBER_NOT_FOUND);
@@ -143,12 +190,9 @@ public class MemberApiController {
         @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @GetMapping("/{memberId}/games")
-    public ResponseEntity<?> getMyGames(@PathVariable Long memberId,
-        @ModelAttribute PageConditionReq pageCondition) {
-
-        log.info("Page Condition {}", pageCondition);
+    public ResponseEntity<?> getMyGames(@PathVariable Long memberId) {
         try {
-            PageImpl<GameRes> gameResList = gameService.findAllGames(memberId, pageCondition);
+            List<GameRes> gameResList = gameService.findAllGameByMemberId(memberId);
             return ResponseEntity.ok(gameResList);
         } catch (Exception e) {
             return ResponseEntity.status(500).body(e);
@@ -163,10 +207,10 @@ public class MemberApiController {
         @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @GetMapping("/{memberId}/starred")
-    public ResponseEntity<?> getGames(@PathVariable Long memberId) {
+    public ResponseEntity<?> getStarredGames(@PathVariable Long memberId) {
         try {
             List<StarredGameRes> starredGameResList = gameService.findAllStarredGames(
-                memberId); //member Response에 올려야 하나?
+                memberId);
             return ResponseEntity.ok(starredGameResList);
         } catch (Exception e) {
             return ResponseEntity.status(500).body(e);
@@ -184,8 +228,8 @@ public class MemberApiController {
     public ResponseEntity<?> getRecords(@PathVariable Long memberId,
         @RequestHeader(value = "access-token", required = false) String accessToken) {
         try {
-//            Member member = gameService.getRecordsById(memberId);
-            return ResponseEntity.ok("게임 이력 조회 성공");
+            List<GameRoomHistoryRes> roomHistory = gameRoomService.findAllRoomHistory(memberId);
+            return ResponseEntity.ok(roomHistory);
         } catch (Exception e) {
             return ResponseEntity.status(500).body(e);
         }
@@ -206,7 +250,7 @@ public class MemberApiController {
 
         String refreshToken = null;
         if (cookies != null) {
-            for (Cookie cookie: cookies) {
+            for (Cookie cookie : cookies) {
                 log.info(String.valueOf(cookie.getName()));
                 if (cookie.getName().equals("refresh-token")) {
                     refreshToken = cookie.getValue();

@@ -3,18 +3,21 @@ package com.ddockddack.domain.member.service;
 import com.ddockddack.domain.member.entity.Member;
 import com.ddockddack.domain.member.entity.Role;
 import com.ddockddack.domain.member.repository.MemberRepository;
+import com.ddockddack.domain.member.request.MemberModifyNameReq;
 import com.ddockddack.domain.member.request.MemberModifyReq;
 import com.ddockddack.global.error.ErrorCode;
+import com.ddockddack.global.error.exception.ImageExtensionException;
 import com.ddockddack.global.error.exception.NotFoundException;
+import com.ddockddack.global.service.AwsS3Service;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import java.time.LocalDate;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.env.Environment;
-//import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -24,9 +27,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @Service
+@Slf4j
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class MemberService {
@@ -34,9 +39,9 @@ public class MemberService {
     private final Environment env;
     private final MemberRepository memberRepository;
     private final TokenService tokenService;
-//    private final RedisTemplate redisTemplate;
+    private final AwsS3Service awsS3Service;
+    //    private final RedisTemplate redisTemplate;
     private RestTemplate rt;
-
 
 
     @Transactional
@@ -55,11 +60,48 @@ public class MemberService {
     @Transactional
     public Member modifyMember(Long memberId, MemberModifyReq modifyMember) {
         Member memberToModify = memberRepository.findById(memberId).get();
+        if (!memberToModify.getNickname().equals(modifyMember.getNickname())) {
+            memberToModify.setNickname(modifyMember.getNickname());
+        }
+        log.info("log! {}, {}", modifyMember.getProfile(), modifyMember.getProfile().isEmpty());
+        if (!memberToModify.getProfile().equals(modifyMember.getProfile())) {
+            memberToModify.setProfile(modifyMember.getProfile());
+        }
 
-        memberToModify.setNickname(modifyMember.getNickname());
-        memberToModify.setProfile(modifyMember.getProfile());
+        return null;
+//        return memberRepository.save(memberToModify);
+    }
 
-        return memberRepository.save(memberToModify);
+    @Transactional
+    public void modifyMemberNickname(Long memberId, MemberModifyNameReq modifyMemberNickname) {
+        Member member = memberRepository.findById(memberId).get();
+        log.info("log! {}, {}", modifyMemberNickname.getNickname(), modifyMemberNickname.getNickname().isEmpty());
+        if (!member.getNickname().equals(modifyMemberNickname.getNickname())) {
+            member.modifyNickname(modifyMemberNickname.getNickname());
+        }
+//        return memberRepository.save(member);
+    }
+
+    @Transactional
+    public void modifyMemberProfileImg(Long memberId, MultipartFile modifyProfileImg) {
+        Member member = memberRepository.findById(memberId).get();
+
+        if (!(modifyProfileImg.getContentType().contains("image/jpg") ||
+            (modifyProfileImg.getContentType().contains("image/jpeg") ||
+                (modifyProfileImg.getContentType().contains("image/png"))))) {
+            throw new ImageExtensionException(ErrorCode.EXTENSION_NOT_ALLOWED);
+        }
+
+        log.info("modifyProfileImg contentType {}", modifyProfileImg.getContentType());
+
+        try {
+            String fileName = awsS3Service.multipartFileUpload(modifyProfileImg);
+            member.modifyProfile(fileName);
+            awsS3Service.deleteObject(member.getProfile());
+        } catch (Exception e) {
+          throw new RuntimeException("UPLOAD_FAILED"); //Exception 추가
+        }
+
     }
 
     /**
@@ -86,11 +128,6 @@ public class MemberService {
     public boolean findUserBySocialId(String email) {
         return memberRepository.existsByEmail(email);
     }
-
-//    public Member findOne(Long memberId) {
-//        return memberRepository.findOne(Member);
-//    }
-
 
     public boolean isAdmin(Long reportId) {
         Member member = memberRepository.findById(reportId)
@@ -124,7 +161,6 @@ public class MemberService {
     public String getKaKaoAccessToken(String code) {
         //카카오 서버에 POST 방식으로 엑세스 토큰을 요청
         //RestTemplate를 이용
-        System.out.println(code + " ############");
 //        RestTemplate rt = new RestTemplate();
 
         rt = new RestTemplate();
@@ -132,9 +168,9 @@ public class MemberService {
         //HttpHeader 오브젝트 생성
         HttpHeaders headers = new HttpHeaders();
 
-        System.out.println("인가 코드 확인 :" + code);
-        System.out.println(env.getProperty("kakao.api_key"));
-        System.out.println(env.getProperty("kakao.login.redirect_uri"));
+//        System.out.println("인가 코드 확인 :" + code);
+//        System.out.println(env.getProperty("kakao.api_key"));
+//        System.out.println(env.getProperty("kakao.login.redirect_uri"));
 
         //HttpBody 오브젝트 생성
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
@@ -184,20 +220,17 @@ public class MemberService {
             String.class
         );
 
-        System.out.println("userinfo " + memberInfoResponse);
-
         return memberInfoResponse;
     }
 
     public String getGoogleAccessToken(String code) {
         RestTemplate rt = new RestTemplate();
 
-        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(
-                "https://www.googleapis.com/oauth2/v4/token")
+        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl("https://www.googleapis.com/oauth2/v4/token")
             .queryParam("code", code)
-            .queryParam("client_id", env.getProperty("login.google.client_id"))
-            .queryParam("client_secret", env.getProperty("login.google.client_secret"))
-            .queryParam("redirect_uri", env.getProperty("login.google.redirect_uri"))
+            .queryParam("client_id", env.getProperty("google.client_id"))
+            .queryParam("client_secret", env.getProperty("google.client_secret"))
+            .queryParam("redirect_uri", env.getProperty("google.login.redirect_uri"))
             .queryParam("grant_type", "authorization_code");
 
         HttpEntity request = new HttpEntity<>(new HttpHeaders());
@@ -253,10 +286,10 @@ public class MemberService {
         return memberRepository.save(memberToModify);
     }
 
-    public LocalDate getReleaseDate(BanLevel banLevel){
+    public LocalDate getReleaseDate(BanLevel banLevel) {
         LocalDate today = LocalDate.now();
 
-        switch (banLevel){
+        switch (banLevel) {
             case oneWeek:
                 today.plusDays(7);
                 break;
@@ -275,5 +308,31 @@ public class MemberService {
         }
 
         return today;
+    }
+
+    public boolean isAdmin(Long reportId) {
+        Member member = memberRepository.findById(reportId)
+            .orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
+        return member.getRole() == Role.ADMIN;
+    }
+
+    public HttpStatus logoutKakao(Long memberId) {
+        HttpHeaders headers = new HttpHeaders();
+
+        //HttpBody 오브젝트 생성
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("client_id", env.getProperty("kakao.api_key"));
+        params.add("redirect_uri", env.getProperty("kakao.logout.redirect_uri"));
+        //HttpHeader와 HttpBody를 HttpEntity에 담기
+        HttpEntity<MultiValueMap<String, String>> kakaoRequest = new HttpEntity<>(params, headers);
+        //카카오 서버에 HTTP 요청 - POST
+        ResponseEntity<String> response = rt.exchange(
+                "https://kauth.kakao.com/oauth/logout",
+                HttpMethod.POST,
+                kakaoRequest,
+                String.class
+        );
+
+        return response.getStatusCode();
     }
 }

@@ -9,11 +9,14 @@
       <router-link to="/bestcut">베스트 컷</router-link>
     </span>
     <span class="right">
-      <span v-if="!accessToken" @click="setCurrentModalAsync(`login`)"
+      <span
+        class="btn_log"
+        v-if="!accessToken"
+        @click="setCurrentModalAsync(`login`)"
         >로그인</span
       >
       <router-link v-if="accessToken" to="/member">마이 페이지</router-link>
-      <span v-if="accessToken" @click="logout">로그아웃</span>
+      <span class="btn_log" v-if="accessToken" @click="logout">로그아웃</span>
       <router-link to="/admin">관리자 페이지</router-link>
     </span>
   </div>
@@ -72,15 +75,17 @@ const logout = () => {
   background-color: #77a4cc;
 }
 .default a,
-.default span {
+.default span,
+.default .btn_log {
   color: black;
 }
 .variant1 a,
-.variant2 a,
-.variant3 a,
+.variant1 .btn_log .variant2 a,
+.variant1 .btn_log .variant3 a,
 .variant1 span,
 .variant2 span,
-.variant3 span {
+.variant3 span,
+.variant1 .btn_log {
   color: white;
 }
 a {
@@ -123,5 +128,9 @@ span:hover {
 
 .right {
   float: right;
+}
+
+.btn_log:hover {
+  cursor: pointer;
 }
 </style>

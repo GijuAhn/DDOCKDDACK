@@ -22,7 +22,7 @@ const authMember = async (to, from, next) => {
 const isLogin = async () => {
   let accessToken = computed(() => store.state.memberStore.accessToken).value;
   let memberInfo = computed(() => store.state.memberStore.memberInfo).value;
-
+  console.log("isLogin ", accessToken);
   if (accessToken === "") {
     await store.dispatch("memberStore/accesstokenReissue", false);
     accessToken = computed(() => store.state.memberStore.accessToken).value;
