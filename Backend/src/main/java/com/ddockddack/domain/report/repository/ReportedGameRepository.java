@@ -11,4 +11,7 @@ public interface ReportedGameRepository extends JpaRepository<ReportedGame, Long
 
     boolean existsByReportMemberIdAndGameId(Long memberId, Long gameId);
 
+    @Query("DELETE FROM ReportedGame rg WHERE rg.game.id = :id")
+    void deleteByGameId(Long id);
+
 }
