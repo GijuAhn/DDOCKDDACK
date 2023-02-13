@@ -50,7 +50,7 @@ public class TokenController {
         @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @GetMapping("/refresh")
-    public String refreshAuth(HttpServletResponse response) throws IOException {
+    public String refreshAuth(HttpServletResponse response) {
         log.info("refresh 진입");
         try {
             MemberAccessRes memberAccessRes = (MemberAccessRes) SecurityContextHolder.getContext()
