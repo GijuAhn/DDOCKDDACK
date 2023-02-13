@@ -181,7 +181,6 @@ public class MemberApiController {
                 refreshTokenCookie.setMaxAge(0);
                 refreshTokenCookie.setPath("/");
                 response.addCookie(refreshTokenCookie);
-//                memberService.logout(refreshToken);
             }
         } catch (Exception e) {
         }
