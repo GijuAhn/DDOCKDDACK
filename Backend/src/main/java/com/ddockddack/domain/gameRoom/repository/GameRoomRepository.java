@@ -6,6 +6,7 @@ import com.ddockddack.domain.gameRoom.request.GameSignalReq;
 import com.ddockddack.domain.gameRoom.response.GameMemberRes;
 import com.ddockddack.domain.member.entity.Member;
 import com.ddockddack.global.error.ErrorCode;
+import com.ddockddack.global.error.exception.AccessDeniedException;
 import com.ddockddack.global.error.exception.NotFoundException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -86,6 +87,11 @@ public class GameRoomRepository {
         //존재하는 pin인지 확인
         Session session = findSessionByPinNumber(pinNumber).orElseThrow(
                 () -> new NotFoundException(ErrorCode.GAME_ROOM_NOT_FOUND));
+
+
+        if (openvidu.getActiveSession(pinNumber).getConnections().size() == 13) {
+            throw new AccessDeniedException(ErrorCode.MAXIMUM_MEMBER);
+        }
 
         //openvidu에 connection 요청
         ConnectionProperties properties = ConnectionProperties.fromJson(new HashMap<>()).build();

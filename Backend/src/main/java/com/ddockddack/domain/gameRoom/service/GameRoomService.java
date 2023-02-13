@@ -79,8 +79,6 @@ public class GameRoomService {
 
         String token = gameRoomRepository.join(pinNumber, member, nickname, clientIp);
 
-
-
         if (gameRoom.isStarted()) {
             throw new AccessDeniedException(ErrorCode.ALREADY_STARTED_GAME);
         }
@@ -111,6 +109,7 @@ public class GameRoomService {
     public void removeGameRoom(String pinNumber) {
         gameRoomRepository.findSessionByPinNumber(pinNumber).orElseThrow(() ->
                 new NotFoundException(ErrorCode.GAME_ROOM_NOT_FOUND));
+
 
         // 게임 삭제 콬드
         gameRoomRepository.deleteById(pinNumber);

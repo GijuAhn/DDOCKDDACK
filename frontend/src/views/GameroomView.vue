@@ -123,7 +123,7 @@
 <script setup>
 import { apiInstance } from "@/api/index";
 import { computed, onBeforeMount, ref } from "@vue/runtime-core";
-import { useRoute, onBeforeRouteLeave } from "vue-router";
+import { useRoute } from "vue-router";
 import { OpenVidu } from "openvidu-browser";
 import UserVideo from "@/components/Gameroom/item/UserVideo.vue";
 import CaptureVideo from "@/components/Gameroom/item/CaptureVideo.vue";
@@ -171,24 +171,6 @@ const resultImages = ref([]);
 const winner = ref([]);
 const intro = ref(false);
 
-// 뒤로가기 이벤트 감지
-onBeforeRouteLeave(() => {
-  if (openviduInfo.value.subscribers.length) {
-    api
-      .delete(
-        `/api/game-rooms/${route.params.pinNumber}/sessions/${openviduInfo.value.session.connection.connectionId}`
-      )
-      .catch((err) => {
-        console.log(err);
-      });
-  } else {
-    // 남아있는 유저가 나 혼자인 경우 방삭제
-    api.delete(`/api/game-rooms/${route.params.pinNumber}`).catch((err) => {
-      console.log(err);
-    });
-  }
-});
-
 onBeforeMount(() => {
   api
     .post(`/api/game-rooms/${route.params.pinNumber}`, {})
@@ -204,6 +186,7 @@ onBeforeMount(() => {
       }
 
       openviduInfo.value.OV = new OpenVidu();
+      openviduInfo.value.OV.enableProdMode();
       openviduInfo.value.session = openviduInfo.value.OV.initSession();
       // On every new Stream received...
       openviduInfo.value.session.on("streamCreated", ({ stream }) => {
@@ -338,6 +321,7 @@ onBeforeMount(() => {
             error.message
           );
         });
+      console.log(window);
       window.addEventListener("beforeunload", leaveSession);
     })
     .catch((err) => {
@@ -346,12 +330,15 @@ onBeforeMount(() => {
       }
       if (err.response.status === 404) {
         alert("존재하지 않는 게임방입니다.");
-        router.replace("/");
       }
       if (err.response.status === 401) {
-        alert("중복 참가는 불가능 합니다.");
-        router.replace("/");
+        if (err.response.data.message == "The maximum length is 13") {
+          alert("방이 꽉 찼습니다.");
+        } else {
+          alert("중복 참가는 불가능 합니다.");
+        }
       }
+      router.replace("/");
     });
 });
 
@@ -418,16 +405,16 @@ const linkShare = async () => {
       description: `${room.value.gameDescription}`,
       imageUrl: `${IMAGE_PATH}/${room.value.gameImages[0].gameImage}`,
       link: {
-        mobileWebUrl: `http://localhost:8080/gameroom/${room.value.pinNumber}`,
-        webUrl: `http://localhost:8080/gameroom/${room.value.pinNumber}`,
+        mobileWebUrl: `https://i8a409.p.ssafy.io/gameroom/${room.value.pinNumber}`,
+        webUrl: `https://i8a409.p.ssafy.io/gameroom/${room.value.pinNumber}`,
       },
     },
     buttons: [
       {
         title: "게임 하러가기 ",
         link: {
-          mobileWebUrl: `http://localhost:8080/gameroom/${room.value.pinNumber}`,
-          webUrl: `http://localhost:8080/gameroom/${room.value.pinNumber}`,
+          mobileWebUrl: `https://i8a409.p.ssafy.io/gameroom/${room.value.pinNumber}`,
+          webUrl: `https://i8a409.p.ssafy.io/gameroom/${room.value.pinNumber}`,
         },
       },
     ],
