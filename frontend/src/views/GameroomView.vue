@@ -1,10 +1,6 @@
 <template>
   <div id="session">
     <modal-frame v-if="currentModal.length !== 0" />
-    <div>
-      <result-modal v-if="resultMode" :round="round" :result="result" />
-    </div>
-
     <div id="session-header">
       <span id="session-title">
         {{ room.gameTitle }} [방 코드 - {{ room.pinNumber }}]
@@ -119,7 +115,6 @@ import { useStore } from "vuex";
 import router from "@/router/index.js";
 import process from "process";
 import ModalFrame from "@/components/common/ModalFrame";
-import ResultModal from "@/components/Gameroom/item/ResultModal.vue";
 import html2canvas from "html2canvas";
 
 const currentModal = computed(() => store.state.commonStore.currentModal);
@@ -215,8 +210,10 @@ onBeforeMount(() => {
       openviduInfo.value.session.on("roundResult", (signal) => {
         resultMode.value = true;
         result.value = JSON.parse(signal.data);
+        setCurrentModalAsync("intermediateResult");
         setTimeout(() => {
           resultMode.value = false;
+          // setCurrentModalAsync("");
           if (round.value < 5 && isHost.value) {
             openviduInfo.value.session.signal({
               data: ++round.value,
@@ -383,10 +380,19 @@ const capture = async (index) => {
 };
 
 const setCurrentModalAsync = (what) => {
-  store.dispatch("commonStore/setCurrentModalAsync", {
-    name: what,
-    data: [resultImages, openviduInfo.value.publisher, room],
-  });
+  if (what === "bestcutUpload") {
+    store.dispatch("commonStore/setCurrentModalAsync", {
+      name: what,
+      data: [resultImages, openviduInfo.value.publisher, room],
+    });
+  } else if (what === "intermediateResult") {
+    store.dispatch("commonStore/setCurrentModalAsync", {
+      name: what,
+      data: [round, result],
+    });
+  } else if (what === "") {
+    store.dispatch("commonStore/setCurrentModalAsync", "");
+  }
 };
 </script>
 
