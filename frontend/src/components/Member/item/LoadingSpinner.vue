@@ -33,7 +33,7 @@
   width: 6px;
   height: 30px;
   border-radius: 20%;
-  background: #3498db;
+  background: peachpuff;
   animation: spinner 1.2s linear infinite;
 }
 
