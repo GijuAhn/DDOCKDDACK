@@ -1,12 +1,12 @@
 <template>
-  <div v-if="props.streamManager">
+  <div id="ovVideoContainer" v-if="props.streamManager">
     <ov-video
-      class="child1"
+      id="ovVideo"
       :class="{ blinking: captureMode }"
       :stream-manager="props.streamManager"
     />
 
-    <div v-if="true">
+    <div id="nickname">
       <p>{{ clientData }}</p>
     </div>
   </div>
@@ -33,6 +33,21 @@ const getConnectionData = () => {
 </script>
 
 <style scoped>
+#ovVideoContainer {
+  position: relative;
+}
+#ovVideo:hover ~ #nickname {
+  display: block;
+}
+#nickname {
+  position: absolute;
+  bottom: 16px;
+  left: 20px;
+  display: none;
+  background-color: black;
+  padding: 2px;
+}
+
 .blinking {
   animation: blink 0.5s ease-in-out infinite alternate;
 }
