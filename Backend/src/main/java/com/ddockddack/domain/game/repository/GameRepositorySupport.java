@@ -35,7 +35,6 @@ import static com.querydsl.jpa.JPAExpressions.select;
 public class GameRepositorySupport {
 
     private final JPAQueryFactory jpaQueryFactory;
-    private final ReportedGameRepository reportedGameRepository;
 
     // 검색 목록 조회
     public PageImpl<GameRes> findAllGameBySearch(Long memberId, PageCondition pageCondition) {
@@ -173,15 +172,6 @@ public class GameRepositorySupport {
                 .innerJoin(reportedGame.reportedMember, member)
                 .orderBy(reportedGame.id.desc())
                 .fetch();
-    }
-
-    /**
-     * 신고된 게임 삭제
-     *
-     * @param reportId
-     */
-    public void removeReportedGame(Long reportId) {
-        reportedGameRepository.deleteById(reportId);
     }
 
     // 나만 쓸 거야
