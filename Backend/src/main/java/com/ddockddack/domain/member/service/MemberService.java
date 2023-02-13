@@ -1,5 +1,6 @@
 package com.ddockddack.domain.member.service;
 
+import com.ddockddack.domain.bestcut.service.BestcutService;
 import com.ddockddack.domain.member.entity.Member;
 import com.ddockddack.domain.member.entity.Role;
 import com.ddockddack.domain.member.repository.MemberRepository;
@@ -8,13 +9,11 @@ import com.ddockddack.global.error.ErrorCode;
 import com.ddockddack.global.error.exception.NotFoundException;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
-//import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -33,8 +32,9 @@ public class MemberService {
 
     private final Environment env;
     private final MemberRepository memberRepository;
+    private final BestcutService bestcutService;
     private final TokenService tokenService;
-//    private final RedisTemplate redisTemplate;
+    //    private final RedisTemplate redisTemplate;
     private RestTemplate rt;
 
 
@@ -75,6 +75,9 @@ public class MemberService {
 
     @Transactional
     public void deleteMemberById(Long memberId) {
+        List<Long> bestcutIds = bestcutService.findByMemberId(memberId);
+        bestcutService.removeAllByIds(bestcutIds);
+
         memberRepository.deleteById(memberId);
     }
 
@@ -252,10 +255,10 @@ public class MemberService {
         return memberRepository.save(memberToModify);
     }
 
-    public LocalDate getReleaseDate(BanLevel banLevel){
+    public LocalDate getReleaseDate(BanLevel banLevel) {
         LocalDate today = LocalDate.now();
 
-        switch (banLevel){
+        switch (banLevel) {
             case oneWeek:
                 today.plusDays(7);
                 break;

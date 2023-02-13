@@ -13,14 +13,14 @@
           <th>처리</th>
         </tr>
       </thead>
-      <tfoot v-if="reportedBestCuts">
+      <tbody v-if="reportedBestCuts">
         <reported-best-cut
           v-for="reportedBestCut in reportedBestCuts"
           :key="reportedBestCut"
           :reportedBestCut="reportedBestCut"
           @deleteProps="(target) => deleteProps(target)"
         ></reported-best-cut>
-      </tfoot>
+      </tbody>
     </table>
   </div>
 </template>
@@ -29,7 +29,7 @@
 import { useStore } from "vuex";
 import { ref, computed } from "vue";
 import { apiInstance } from "@/api/index";
-import reportedBestCut from "@/components/Admin/item/reportedBestCut.vue";
+import ReportedBestCut from "@/components/Admin/item/ReportedBestCut.vue";
 
 const api = apiInstance();
 const store = useStore();

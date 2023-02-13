@@ -13,14 +13,14 @@
           <th>처리</th>
         </tr>
       </thead>
-      <tfoot v-if="reportedGames">
+      <tbody v-if="reportedGames">
         <reported-game
           v-for="reportedGame in reportedGames"
           :key="reportedGame"
           :reportedGame="reportedGame"
           @deleteProps="(target) => deleteProps(target)"
         ></reported-game>
-      </tfoot>
+      </tbody>
     </table>
   </div>
 </template>
@@ -29,7 +29,7 @@
 import { useStore } from "vuex";
 import { ref, computed } from "vue";
 import { apiInstance } from "@/api/index";
-import reportedGame from "@/components/Admin/item/reportedGame.vue";
+import ReportedGame from "@/components/Admin/item/ReportedGame.vue";
 
 const api = apiInstance();
 const store = useStore();
