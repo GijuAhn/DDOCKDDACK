@@ -151,6 +151,19 @@ const modifyProfileImg = (f) => {
 
 const withdrawal = () => {
   console.log("탈퇴!");
+  api
+    .delete(`/api/members`, {
+      headers: { "access-token": accessToken.value },
+    })
+    .then(() => {
+      store.state.memberStore.accessToken = "";
+      store.state.memberStore.memberInfo = {};
+      window.location.assign(`/`);
+    })
+    .catch((err) => {
+      console.log(err);
+      window.location.assign(`/`);
+    });
 };
 
 // console.log(myProfile.value);
