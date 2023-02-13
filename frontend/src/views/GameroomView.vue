@@ -153,7 +153,7 @@ const route = useRoute();
 const store = useStore();
 
 const accessToken = computed(() => store.state.memberStore.accessToken);
-const nickname = ref();
+const nickname = computed(() => store.state.memberStore.memberInfo.nickname);
 const openviduInfo = ref({
   // OpenVidu objects
   OV: undefined,
@@ -289,7 +289,7 @@ onBeforeMount(() => {
         isHost.value = true;
       });
 
-      if (!accessToken) {
+      if (!accessToken.value) {
         console.log(typeof res.data);
       }
 

@@ -6,6 +6,8 @@ import com.ddockddack.domain.bestcut.service.BestcutService;
 import com.ddockddack.domain.game.response.GameRes;
 import com.ddockddack.domain.game.response.StarredGameRes;
 import com.ddockddack.domain.game.service.GameService;
+import com.ddockddack.domain.gameRoom.response.GameRoomHistoryRes;
+import com.ddockddack.domain.gameRoom.service.GameRoomService;
 import com.ddockddack.domain.member.entity.Member;
 import com.ddockddack.domain.member.request.MemberModifyReq;
 import com.ddockddack.domain.member.response.MemberAccessRes;
@@ -41,6 +43,7 @@ public class MemberApiController {
     private final MemberService memberService;
     private final BestcutService bestcutService;
     private final GameService gameService;
+    private final GameRoomService gameRoomService;
 
     @Operation(summary = "회원 정보 수정", description = "회원 정보 수정 메소드입니다.")
     @ApiResponses(value = {
@@ -74,8 +77,9 @@ public class MemberApiController {
     @GetMapping()
     public ResponseEntity<?> getMemberInfo() {
         log.info("sec info {}",
-                SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
-        MemberAccessRes memberAccessRes = Optional.ofNullable((MemberAccessRes) SecurityContextHolder.getContext()
+            SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
+        MemberAccessRes memberAccessRes = Optional.ofNullable(
+            (MemberAccessRes) SecurityContextHolder.getContext()
                 .getAuthentication().getPrincipal()).get();
         if (memberAccessRes.toString().equals("anonymousUser")) {
             throw new NotFoundException(ErrorCode.MEMBER_NOT_FOUND);
@@ -128,6 +132,10 @@ public class MemberApiController {
                 refreshTokenCookie.setMaxAge(0);
                 refreshTokenCookie.setPath("/");
                 response.addCookie(refreshTokenCookie);
+
+                return ResponseEntity.ok().build();
+            } else {
+                return ResponseEntity.status(401).body("refresh-token Error");
             }
         } catch (Exception e) {
 
@@ -206,8 +214,8 @@ public class MemberApiController {
     public ResponseEntity<?> getRecords(@PathVariable Long memberId,
                                         @RequestHeader(value = "access-token", required = false) String accessToken) {
         try {
-//            Member member = gameService.getRecordsById(memberId);
-            return ResponseEntity.ok("게임 이력 조회 성공");
+            List<GameRoomHistoryRes> roomHistory = gameRoomService.findAllRoomHistory(memberId);
+            return ResponseEntity.ok(roomHistory);
         } catch (Exception e) {
             return ResponseEntity.status(500).body(e);
         }
