@@ -45,7 +45,7 @@ public class AdminApiController {
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     public ResponseEntity<?> reportedGameList(@RequestHeader(value = "access-token", required = true) String accessToken) {
-
+        System.out.println(accessToken);
         try {
             List<ReportedGameRes> allReportedGames = gameService.findAllReportedGames();
             return ResponseEntity.ok(allReportedGames);
@@ -85,6 +85,7 @@ public class AdminApiController {
                                              @RequestHeader(value = "access-token", required = true) String accessToken,
                                              @RequestHeader(value = "banMemberId", required = true) Long banMemberId,
                                              @RequestHeader(value = "banLevel", required = true) String banLevel) {
+
         Long adminId = tokenService.getUid(accessToken);
 
         gameService.removeGame(adminId, gameId);

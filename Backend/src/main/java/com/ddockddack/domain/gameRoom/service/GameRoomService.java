@@ -52,9 +52,9 @@ public class GameRoomService {
      * @throws OpenViduHttpException
      */
     public String createRoom(Long gameId)
-        throws OpenViduJavaClientException, OpenViduHttpException {
+            throws OpenViduJavaClientException, OpenViduHttpException {
         Game game = gameRepository.findById(gameId)
-            .orElseThrow(() -> new NotFoundException(ErrorCode.GAME_NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.GAME_NOT_FOUND));
 
         return gameRoomRepository.create(game);
     }
@@ -70,18 +70,19 @@ public class GameRoomService {
      * @throws OpenViduHttpException
      */
     public GameRoomRes joinRoom(String pinNumber, Long memberId, String nickname, String clientIp)
-        throws OpenViduJavaClientException, OpenViduHttpException {
+            throws OpenViduJavaClientException, OpenViduHttpException {
         Member member = null;
         //로그인 한 유저면 memberId로 검색해서 넘겨줌
         if (memberId != null) {
             member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
+                    .orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
         }
 
         GameRoom gameRoom = this.findGameRoom(pinNumber);
 
-        for (GameMember gameMember : gameRoom.getMembers().values()) {
-            if (clientIp.equals(gameMember.getClientIp())) {
+        //중복 접속 방지 (허용하려면 주석처리)
+        for(GameMember gameMember : gameRoom.getMembers().values()) {
+            if(clientIp.equals(gameMember.getClientIp())) {
                 throw new AccessDeniedException(ErrorCode.NOT_AUTHORIZED);
             }
         }
@@ -105,7 +106,7 @@ public class GameRoomService {
     public void removeGameMember(String pinNumber, String sessionId) {
 
         gameRoomRepository.findSessionByPinNumber(pinNumber).orElseThrow(() ->
-            new NotFoundException(ErrorCode.GAME_ROOM_NOT_FOUND));
+                new NotFoundException(ErrorCode.GAME_ROOM_NOT_FOUND));
 
         gameRoomRepository.deleteGameMember(pinNumber, sessionId);
     }
@@ -117,7 +118,7 @@ public class GameRoomService {
      */
     public void removeGameRoom(String pinNumber) {
         gameRoomRepository.findSessionByPinNumber(pinNumber).orElseThrow(() ->
-            new NotFoundException(ErrorCode.GAME_ROOM_NOT_FOUND));
+                new NotFoundException(ErrorCode.GAME_ROOM_NOT_FOUND));
 
         // 게임 삭제 콬드
         gameRoomRepository.deleteById(pinNumber);
@@ -132,7 +133,7 @@ public class GameRoomService {
     public GameRoom findGameRoom(String pinNumber) {
 
         return gameRoomRepository.findById(pinNumber).orElseThrow(() ->
-            new NotFoundException(ErrorCode.GAME_ROOM_NOT_FOUND));
+                new NotFoundException(ErrorCode.GAME_ROOM_NOT_FOUND));
     }
 
     /**
@@ -144,13 +145,13 @@ public class GameRoomService {
     public void startGame(String pinNumber) throws JsonProcessingException {
         // 현재 존재하는 게임 방인지 확징
         gameRoomRepository.findSessionByPinNumber(pinNumber).orElseThrow(() ->
-            new NotFoundException(ErrorCode.GAME_ROOM_NOT_FOUND));
+                new NotFoundException(ErrorCode.GAME_ROOM_NOT_FOUND));
 
         Long gameId = gameRoomRepository.findById(pinNumber).get().getGameId();
 
         // 존재하는 게임인지 확인
         Game game = gameRepository.findById(gameId).orElseThrow(() ->
-            new NotFoundException(ErrorCode.GAME_NOT_FOUND));
+                new NotFoundException(ErrorCode.GAME_NOT_FOUND));
 
         // 게임 play count +1 증가
         game.increasePlayCount();
@@ -166,7 +167,7 @@ public class GameRoomService {
      */
     public Boolean isStartedGame(String pinNumber) {
         GameRoom gameRoom = gameRoomRepository.findById(pinNumber).orElseThrow(() ->
-            new NotFoundException(ErrorCode.GAME_ROOM_NOT_FOUND));
+                new NotFoundException(ErrorCode.GAME_ROOM_NOT_FOUND));
         return gameRoom.isStarted();
     }
 
@@ -179,9 +180,9 @@ public class GameRoomService {
      */
     @Async
     public void scoringImage(String pinNumber, String sessionId, Map<String, String> param)
-        throws Exception {
+            throws Exception {
         gameRoomRepository.findById(pinNumber).orElseThrow(() ->
-            new NotFoundException(ErrorCode.GAME_ROOM_NOT_FOUND));
+                new NotFoundException(ErrorCode.GAME_ROOM_NOT_FOUND));
         byte[] byteGameImage = awsS3Service.getObject(param.get("gameImage"));
         byte[] byteImage = Base64.decodeBase64(param.get("memberGameImage"));
 
@@ -203,7 +204,7 @@ public class GameRoomService {
         Map<String, GameMember> gameMembers = gameRoomRepository.findGameMembers(pinNumber);
         List<GameMember> members = new ArrayList<>(gameMembers.values());
         PriorityQueue<GameMember> pq = new PriorityQueue<>(
-            (a, b) -> b.getRoundScore() - a.getRoundScore());
+                (a, b) -> b.getRoundScore() - a.getRoundScore());
         pq.addAll(members);
         List<GameMemberRes> result = new ArrayList<>();
         for (int i = 0; i < 3; i++) {
@@ -224,7 +225,7 @@ public class GameRoomService {
     public void saveGameRoomHistory(GameRoomHistoryReq gameRoomHistoryReq) {
         //유저가 없는경우
         memberRepository.findById(gameRoomHistoryReq.getMemberId()).orElseThrow(() ->
-            new NotFoundException(ErrorCode.MEMBER_NOT_FOUND)
+                new NotFoundException(ErrorCode.MEMBER_NOT_FOUND)
         );
 
         GameRoomHistory gameRoomHistory = GameRoomHistory.of(gameRoomHistoryReq);
@@ -240,7 +241,7 @@ public class GameRoomService {
     @Transactional(readOnly = true)
     public List<GameRoomHistoryRes> findAllRoomHistory(Long memberId) {
         memberRepository.findById(memberId).orElseThrow(() ->
-            new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
+                new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
 
         List<GameRoomHistory> list = gameRoomHistoryRepository.findByMemberId(memberId);
 

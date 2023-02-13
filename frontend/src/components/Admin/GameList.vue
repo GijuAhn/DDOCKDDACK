@@ -13,7 +13,7 @@
           <th>처리</th>
         </tr>
       </thead>
-      <tfoot>
+      <tfoot v-if="reportedGames">
         <reported-game
           v-for="reportedGame in reportedGames"
           :key="reportedGame"

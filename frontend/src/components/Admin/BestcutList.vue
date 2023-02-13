@@ -13,7 +13,7 @@
           <th>처리</th>
         </tr>
       </thead>
-      <tfoot>
+      <tfoot v-if="reportedBestCuts">
         <reported-best-cut
           v-for="reportedBestCut in reportedBestCuts"
           :key="reportedBestCut"

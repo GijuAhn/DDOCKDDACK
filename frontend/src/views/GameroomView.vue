@@ -49,24 +49,41 @@
 
           <div v-if="!isStart && !intro">
             <div id="gameWaitSection">
-              <button v-if="isHost" v-show="!isStart" @click="play">
-                시작하기!
-              </button>
-              <div id="waitDesc">
-                <span>잠시만 기다려주세요</span><br />
-                <span
-                  >{{ openviduInfo.subscribers.length + 1 }}명 참가중...</span
-                >
+              <div id="relative">
+                <img src="@/assets/images/gameWait.png" />
+                <div id="waitDesc">
+                  <span id="largeFont">잠시만 기다려주세요</span>
+                  <br />
+                  <br />
+                  <span id="smallFont">
+                    {{ openviduInfo.subscribers.length + 1 }}명 참가중...
+                  </span>
+                  <br />
+                  <br />
+                  <div>
+                    <button
+                      v-if="isHost"
+                      v-show="!isStart"
+                      @click="play"
+                      style="float: right"
+                    >
+                      시작하기!
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
 
           <div v-if="isEnd">
             <div id="gameResultSection">
-              <button @click="setCurrentModalAsync(`bestcutUpload`)">
-                내 사진 보기
-              </button>
-              <button>최종 결과</button>
+              <div id="relative">
+                <img src="@/assets/images/gameResult.png" />
+                <button @click="setCurrentModalAsync(`bestcutUpload`)">
+                  내 사진 보기
+                </button>
+                <button>최종 결과</button>
+              </div>
             </div>
           </div>
         </div>
@@ -75,6 +92,8 @@
           <user-video
             :stream-manager="openviduInfo.publisher"
             :captureMode="captureMode"
+            :isHost="isHost"
+            :isSub="false"
           />
         </div>
       </div>
@@ -100,14 +119,25 @@
             v-for="sub in openviduInfo.subscribers"
             :key="sub.stream.connection.connectionId"
             :stream-manager="sub"
+            :isSub="true"
           />
         </div>
       </div>
     </div>
 
     <div id="button-container">
-      <button class="btn-video-control">음소거</button>
-      <button class="btn-video-control">화면 중지</button>
+      <button
+        class="btn-video-control"
+        @click="pubAudioOff(openviduInfo.publisher)"
+      >
+        음소거
+      </button>
+      <button
+        class="btn-video-control"
+        @click="pubVideoOff(openviduInfo.publisher)"
+      >
+        화면 중지
+      </button>
       <button class="btn-close" @click="leaveSession">
         <img
           :src="require(`@/assets/images/close.png`)"
@@ -140,7 +170,7 @@ const route = useRoute();
 const store = useStore();
 
 const accessToken = computed(() => store.state.memberStore.accessToken);
-const nickname = ref();
+const nickname = computed(() => store.state.memberStore.memberInfo.nickname);
 const openviduInfo = ref({
   // OpenVidu objects
   OV: undefined,
@@ -169,7 +199,8 @@ const result = ref([]);
 const resultImages = ref([]);
 const winner = ref([]);
 const intro = ref(false);
-
+const isPubVideoEnable = ref(true);
+const isPubAudioEnable = ref(true);
 onBeforeMount(() => {
   api
     .post(`/api/game-rooms/${route.params.pinNumber}`, {})
@@ -275,7 +306,7 @@ onBeforeMount(() => {
         isHost.value = true;
       });
 
-      if (!accessToken) {
+      if (!accessToken.value) {
         console.log(typeof res.data);
       }
 
@@ -320,7 +351,6 @@ onBeforeMount(() => {
             error.message
           );
         });
-      console.log(window);
       window.addEventListener("beforeunload", leaveSession);
     })
     .catch((err) => {
@@ -455,6 +485,16 @@ const setCurrentModalAsync = (what) => {
     data: [resultImages, openviduInfo.value.publisher, room],
   });
 };
+
+const pubVideoOff = (video) => {
+  isPubVideoEnable.value = !isPubVideoEnable.value;
+  video.publishVideo(isPubVideoEnable.value);
+};
+
+const pubAudioOff = (video) => {
+  isPubAudioEnable.value = !isPubAudioEnable.value;
+  video.publishAudio(isPubAudioEnable);
+};
 </script>
 
 <style scoped>
@@ -519,6 +559,7 @@ const setCurrentModalAsync = (what) => {
   width: 100%;
   object-fit: contain;
 }
+
 #gameWaitSection,
 #gameResultSection {
   background-color: #fdf8ec;
@@ -538,9 +579,34 @@ const setCurrentModalAsync = (what) => {
   cursor: pointer;
 }
 
-#waitDesc > span {
+#relative {
+  height: 100%;
+  width: 100%;
+  position: relative;
+}
+
+#waitDesc {
+  float: left;
+  top: 50%;
+  left: 45%;
+  position: absolute;
+  transform: translate(0, -50%);
+}
+
+#relative img {
+  top: 50%;
+  position: absolute;
+  transform: translate(10%, -50%);
+}
+
+#largeFont {
   color: black;
   font-size: 50px;
+}
+
+#smallFont {
+  color: black;
+  font-size: 30px;
 }
 
 #gameCurrentSection {
