@@ -122,7 +122,7 @@ public class GameRepositorySupport {
                 .fetch();
     }
 
-    // 즐겨찾기 목록 조회
+    // 즐겨찾기 한 게임 목록 조회
     public List<StarredGameRes> findAllStarredGame(Long memberId) {
         return jpaQueryFactory
                 .select(new QStarredGameRes(
@@ -171,6 +171,16 @@ public class GameRepositorySupport {
                 .innerJoin(reportedGame.reportMember, member)
                 .innerJoin(reportedGame.reportedMember, member)
                 .orderBy(reportedGame.id.desc())
+                .fetch();
+    }
+
+    // 회원 탈퇴시 해당 회원이 만든 게임을 삭제 하기 위한 조회
+    public List<Long> findAllGameIdByMemberId(Long memberId) {
+        return jpaQueryFactory
+                .select(game.id
+                )
+                .from(game)
+                .where(game.member.id.eq(memberId))
                 .fetch();
     }
 

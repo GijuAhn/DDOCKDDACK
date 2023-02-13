@@ -38,7 +38,6 @@ public class MemberService {
     private RestTemplate rt;
 
 
-
     @Transactional
     public Long joinMember(Member member) {
         memberRepository.save(member);
