@@ -10,11 +10,9 @@ import com.ddockddack.global.error.exception.NotFoundException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.openvidu.java.client.*;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Collections;
-import java.util.List;
-import java.util.PriorityQueue;
+
+import java.util.*;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,10 +23,6 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.PostConstruct;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.web.client.RestTemplate;
 
@@ -47,6 +41,7 @@ public class GameRoomRepository {
     private String OPENVIDU_HEADER;
     private Map<String, GameRoom> gameRooms = new ConcurrentHashMap<>();
     private OpenVidu openvidu;
+
 
     @PostConstruct
     public void init() {
@@ -136,17 +131,30 @@ public class GameRoomRepository {
         sendSignal(signal);
     }
 
-    public void saveScore(String pinNumber, String sessionId, byte[] byteImage, int score)
+    public void saveScore(String pinNumber, String sessionId, byte[] byteImage, int rawScore)
             throws JsonProcessingException {
         GameRoom gameRoom = this.gameRooms.get(pinNumber);
         GameMember gameMember = gameRoom.getMembers().get(sessionId);
         gameMember.getImages().add(byteImage);
-        gameMember.setRoundScore(score);
-        gameMember.setTotalScore(gameMember.getTotalScore()+score);
+        gameMember.setRoundScore(rawScore);
         gameRoom.increaseScoreCnt();
+
         if(gameRoom.getScoreCount() == gameRoom.getMembers().size()){
-            String resultData = mapper.writeValueAsString(findRoundResult(gameRoom));
+            List<GameMemberRes> roundResultData = findRoundResult(gameRoom);
+            int maxRoundScore = Collections.max(roundResultData, Comparator.comparing(GameMemberRes::getRoundScore)).getRoundScore();
+            int scaledRoundScore = (int) ((double)rawScore/maxRoundScore) * 100; //max score per round is +100 point
+            gameMember.setScaledRoundScore(scaledRoundScore);
+            gameMember.setTotalScore(gameMember.getTotalScore()+scaledRoundScore);
+
+            String resultData = mapper.writeValueAsString(roundResultData);
             String signal = createSignal(pinNumber, "roundResult", resultData);
+
+            log.info("roundResult memberNickname : {}", gameMember.getNickname());
+            log.info("roundResult signal : {}", signal);
+            log.info("roundResult rawScore : {}", rawScore);
+            log.info("roundResult maxRoundScore : {}", maxRoundScore);
+            log.info("roundResult scaledRoundScore : {}", scaledRoundScore);
+            log.info("roundResult totalScore : {}", gameMember.getTotalScore());
 
             sendSignal(signal);
             gameRoom.resetScoreCnt();

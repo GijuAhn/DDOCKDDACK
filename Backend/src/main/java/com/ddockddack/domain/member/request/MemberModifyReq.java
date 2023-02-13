@@ -13,12 +13,4 @@ public class MemberModifyReq {
     String nickname;
     @NotBlank(message = "프로필 사진을 설정해주세요.")
     String profile;
-
-    @Override
-    public String toString() {
-        return "MemberModifyReq{" +
-            "nickname='" + nickname + '\'' +
-            ", profile='" + profile + '\'' +
-            '}';
-    }
 }

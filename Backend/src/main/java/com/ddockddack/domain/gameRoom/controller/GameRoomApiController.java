@@ -1,9 +1,6 @@
 package com.ddockddack.domain.gameRoom.controller;
 
-import com.ddockddack.domain.gameRoom.entity.GameRoomHistory;
-import com.ddockddack.domain.gameRoom.request.GameRoomHistoryReq;
 import com.ddockddack.domain.gameRoom.response.GameMemberRes;
-import com.ddockddack.domain.gameRoom.response.GameRoomHistoryRes;
 import com.ddockddack.domain.gameRoom.response.GameRoomRes;
 import com.ddockddack.domain.gameRoom.service.GameRoomService;
 import com.ddockddack.domain.member.response.MemberAccessRes;

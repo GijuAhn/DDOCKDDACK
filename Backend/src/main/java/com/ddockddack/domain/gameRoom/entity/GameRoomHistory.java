@@ -1,6 +1,5 @@
 package com.ddockddack.domain.gameRoom.entity;
 
-import com.ddockddack.domain.gameRoom.request.GameRoomHistoryReq;
 import com.ddockddack.domain.member.entity.Member;
 import com.ddockddack.domain.report.entity.ReportType;
 import lombok.AccessLevel;
@@ -23,8 +22,9 @@ public class GameRoomHistory {
     @Column(name = "game_room_history_id")
     private Long id;
 
-    @Column(nullable = false)
-    private Long memberId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id", foreignKey = @ForeignKey(name = "game_room_history_member_id_idx"))
+    private Member member;
 
     @Column(length = 30, nullable = false)
     private String GameTitle;
@@ -36,18 +36,9 @@ public class GameRoomHistory {
     private LocalDate createAt;
 
     @Builder
-    public GameRoomHistory(Long memberId, String gameTitle, int ranking) {
-        this.memberId = memberId;
+    public GameRoomHistory(Member member, String gameTitle, int ranking) {
+        this.member = member;
         GameTitle = gameTitle;
         this.ranking = ranking;
-    }
-
-
-    public static GameRoomHistory of(GameRoomHistoryReq gameRoomHistoryReq) {
-        return GameRoomHistory.builder()
-                .memberId(gameRoomHistoryReq.getMemberId())
-                .gameTitle(gameRoomHistoryReq.getGameTitle())
-                .ranking(gameRoomHistoryReq.getRanking())
-                .build();
     }
 }
