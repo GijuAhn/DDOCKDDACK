@@ -107,8 +107,34 @@ public class MemberApiController {
     @DeleteMapping()
     public ResponseEntity<?> deleteMember(@PathVariable Long memberId) {
         try {
-            memberService.deleteMemberById(memberId); //탈퇴로직에 access, refresh Token 정지시키는 로직 추가해야함
-            return ResponseEntity.ok("success 삭제");
+            Cookie[] cookies = request.getCookies();
+            log.info("cokies {}", cookies);
+
+            String refreshToken = null;
+            if (cookies != null) {
+                for (Cookie cookie : cookies) {
+                    log.info(String.valueOf(cookie.getName()));
+                    if (cookie.getName().equals("refresh-token")) {
+                        refreshToken = cookie.getValue();
+                        break;
+                    }
+                }
+            }
+
+            MemberAccessRes memberAccessRes = Optional.ofNullable(
+                (MemberAccessRes) SecurityContextHolder.getContext()
+                    .getAuthentication().getPrincipal()).get();
+            memberService.deleteMemberById(
+                memberAccessRes.getId()); //탈퇴로직에 access, refresh Token 정지시키는 로직 추가해야함
+
+            log.info("RT {}", refreshToken);
+            if (refreshToken != null) {
+                log.info("lgout {} ", refreshToken);
+                Cookie refreshTokenCookie = new Cookie("refresh-token", null);
+                refreshTokenCookie.setMaxAge(0);
+                refreshTokenCookie.setPath("/");
+                response.addCookie(refreshTokenCookie);
+            }
         } catch (Exception e) {
             return ResponseEntity.status(500).body(e);
         }
