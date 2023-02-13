@@ -84,7 +84,6 @@ public class GameRoomApiController {
 
 
         gameRoomService.removeGameMember(pinNumber, socketId);
-
         return ResponseEntity.ok().build();
 
     }
@@ -98,7 +97,6 @@ public class GameRoomApiController {
     public ResponseEntity removeGameRoom(@PathVariable String pinNumber) {
 
         gameRoomService.removeGameRoom(pinNumber);
-
         return ResponseEntity.ok().build();
     }
 
@@ -153,6 +151,13 @@ public class GameRoomApiController {
     @Operation(summary = "다음 라운드로 진행")
     public ResponseEntity next(@PathVariable("pinNumber") String pinNumber) throws JsonProcessingException {
         gameRoomService.nextRound(pinNumber);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("{pinNumber}/final")
+    @Operation(summary = "최종 결과 반환")
+    public ResponseEntity finalResult(@PathVariable("pinNumber") String pinNumber) throws JsonProcessingException {
+        gameRoomService.finalResult(pinNumber);
         return ResponseEntity.ok().build();
     }
 

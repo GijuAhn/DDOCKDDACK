@@ -2,7 +2,14 @@
   <div id="session">
     <modal-frame v-if="currentModal.length !== 0" />
     <div>
-      <result-modal v-if="resultMode" :round="round" :result="result" />
+      <result-modal
+        v-if="resultMode"
+        :round="round"
+        :result="result"
+        :isEnd="isEnd"
+        :winner="winner"
+        :publisher="openviduInfo.publisher"
+      />
     </div>
 
     <div id="session-header">
@@ -23,6 +30,9 @@
 
       <div id="left-section">
         <div id="gameInfoSection">
+          <div v-if="intro" id="introSection">
+            <span id="intro">게임 시작!</span>
+          </div>
           <div v-if="isStart && !isEnd">
             <div id="gameImageSection">
               <img
@@ -30,13 +40,14 @@
                 :src="`${IMAGE_PATH}/${room.gameImages[round - 1].gameImage}`"
               />
             </div>
+
             <div id="gameCurrentSection">
               <span v-show="!isEnd"> {{ round }}/10</span>
               <span v-show="!isEnd"> {{ timerCount }} </span>
             </div>
           </div>
 
-          <div v-if="!isStart">
+          <div v-if="!isStart && !intro">
             <div id="gameWaitSection">
               <div id="relative">
                 <img src="@/assets/images/gameWait.png" />
@@ -81,6 +92,8 @@
           <user-video
             :stream-manager="openviduInfo.publisher"
             :captureMode="captureMode"
+            :isHost="isHost"
+            :isSub="false"
           />
         </div>
       </div>
@@ -106,14 +119,25 @@
             v-for="sub in openviduInfo.subscribers"
             :key="sub.stream.connection.connectionId"
             :stream-manager="sub"
+            :isSub="true"
           />
         </div>
       </div>
     </div>
 
     <div id="button-container">
-      <button class="btn-video-control">음소거</button>
-      <button class="btn-video-control">화면 중지</button>
+      <button
+        class="btn-video-control"
+        @click="pubAudioOff(openviduInfo.publisher)"
+      >
+        음소거
+      </button>
+      <button
+        class="btn-video-control"
+        @click="pubVideoOff(openviduInfo.publisher)"
+      >
+        화면 중지
+      </button>
       <button class="btn-close" @click="leaveSession">
         <img
           :src="require(`@/assets/images/close.png`)"
@@ -146,7 +170,7 @@ const route = useRoute();
 const store = useStore();
 
 const accessToken = computed(() => store.state.memberStore.accessToken);
-const nickname = ref();
+const nickname = computed(() => store.state.memberStore.memberInfo.nickname);
 const openviduInfo = ref({
   // OpenVidu objects
   OV: undefined,
@@ -173,7 +197,10 @@ const resultMode = ref(false);
 const captureMode = ref(false);
 const result = ref([]);
 const resultImages = ref([]);
-
+const winner = ref([]);
+const intro = ref(false);
+const isPubVideoEnable = ref(true);
+const isPubAudioEnable = ref(true);
 onBeforeMount(() => {
   api
     .post(`/api/game-rooms/${route.params.pinNumber}`, {})
@@ -189,6 +216,7 @@ onBeforeMount(() => {
       }
 
       openviduInfo.value.OV = new OpenVidu();
+      openviduInfo.value.OV.enableProdMode();
       openviduInfo.value.session = openviduInfo.value.OV.initSession();
       // On every new Stream received...
       openviduInfo.value.session.on("streamCreated", ({ stream }) => {
@@ -212,40 +240,73 @@ onBeforeMount(() => {
         console.warn(exception);
       });
 
-      openviduInfo.value.session.on("signal:roundStart", (signal) => {
+      openviduInfo.value.session.on("roundStart", async (signal) => {
         round.value = signal.data;
         if (signal.data == 1) {
-          isStart.value = true;
-          console.log("게임 시작");
+          intro.value = true;
+          setTimeout(() => {
+            intro.value = false;
+            isStart.value = true;
+            const timer = setInterval(() => {
+              timerCount.value--;
+              if (timerCount.value === 0) {
+                clearInterval(timer);
+                capture(signal.data - 1);
+                timerCount.value = 5;
+                resultMode.value = true;
+              }
+            }, 1000);
+          }, 3000);
+        } else {
+          const timer = setInterval(() => {
+            timerCount.value--;
+            if (timerCount.value === 0) {
+              clearInterval(timer);
+              capture(signal.data - 1);
+              timerCount.value = 5;
+              resultMode.value = true;
+            }
+          }, 1000);
         }
-
-        const timer = setInterval(() => {
-          timerCount.value--;
-          if (timerCount.value === 0) {
-            clearInterval(timer);
-            capture(signal.data - 1);
-            timerCount.value = 5;
-          }
-        }, 1000);
       });
 
       openviduInfo.value.session.on("roundResult", (signal) => {
-        resultMode.value = true;
         result.value = JSON.parse(signal.data);
         setTimeout(() => {
           resultMode.value = false;
+          result.value.length = 0;
           if (round.value < 5 && isHost.value) {
-            openviduInfo.value.session.signal({
-              data: ++round.value,
-              type: "roundStart",
-            });
-          } else if (round.value == 5) {
-            isEnd.value = true;
+            api.get(`/api/game-rooms/${route.params.pinNumber}/round`);
+          } else if (isHost.value) {
+            api.get(`/api/game-rooms/${route.params.pinNumber}/final`);
           }
         }, 5000);
       });
 
-      if (!accessToken) {
+      openviduInfo.value.session.on("finalResult", async (signal) => {
+        resultMode.value = true;
+        isEnd.value = true;
+        const result = await JSON.parse(signal.data);
+        result.forEach((id, index) => {
+          if (openviduInfo.value.session.connection.connectionId === id) {
+            winner.value.splice(index, 0, openviduInfo.value.publisher);
+          } else {
+            const sub = openviduInfo.value.subscribers.find(
+              (s) => s.stream.connection.connectionId === id
+            );
+            winner.value.splice(index, 0, sub);
+          }
+        });
+        setTimeout(() => {
+          resultMode.value = false;
+        }, 5000);
+      });
+
+      openviduInfo.value.session.on("signal:host", () => {
+        isHost.value = true;
+      });
+
+      if (!accessToken.value) {
         console.log(typeof res.data);
       }
 
@@ -298,12 +359,15 @@ onBeforeMount(() => {
       }
       if (err.response.status === 404) {
         alert("존재하지 않는 게임방입니다.");
-        router.replace("/");
       }
       if (err.response.status === 401) {
-        alert("중복 참가는 불가능 합니다.");
-        router.replace("/");
+        if (err.response.data.message == "The maximum length is 13") {
+          alert("방이 꽉 찼습니다.");
+        } else {
+          alert("중복 참가는 불가능 합니다.");
+        }
       }
+      router.replace("/");
     });
 });
 
@@ -311,6 +375,9 @@ const leaveSession = () => {
   // --- 7) Leave the session by calling 'disconnect' method over the Session object ---
   if (openviduInfo.value.session) {
     let socketId = openviduInfo.value.session.connection.connectionId;
+    if (isHost.value) {
+      throwHost();
+    }
     // 방에 유저가 있는 경우 멤버삭제
     if (openviduInfo.value.subscribers.length) {
       api
@@ -339,6 +406,19 @@ const leaveSession = () => {
   window.removeEventListener("beforeunload", leaveSession);
   router.replace("/");
 };
+
+const throwHost = () => {
+  if (openviduInfo.value.subscribers.length) {
+    const nextHost =
+      openviduInfo.value.subscribers[0].stream.connection.connectionId;
+    openviduInfo.value.session.signal({
+      data: "",
+      to: [nextHost],
+      type: "host",
+    });
+  }
+};
+
 const play = () => {
   api
     .put(`/api/game-rooms/${route.params.pinNumber}`)
@@ -356,16 +436,16 @@ const linkShare = async () => {
       description: `${room.value.gameDescription}`,
       imageUrl: `${IMAGE_PATH}/${room.value.gameImages[0].gameImage}`,
       link: {
-        mobileWebUrl: `http://localhost:8080/gameroom/${room.value.pinNumber}`,
-        webUrl: `http://localhost:8080/gameroom/${room.value.pinNumber}`,
+        mobileWebUrl: `https://i8a409.p.ssafy.io/gameroom/${room.value.pinNumber}`,
+        webUrl: `https://i8a409.p.ssafy.io/gameroom/${room.value.pinNumber}`,
       },
     },
     buttons: [
       {
         title: "게임 하러가기 ",
         link: {
-          mobileWebUrl: `http://localhost:8080/gameroom/${room.value.pinNumber}`,
-          webUrl: `http://localhost:8080/gameroom/${room.value.pinNumber}`,
+          mobileWebUrl: `https://i8a409.p.ssafy.io/gameroom/${room.value.pinNumber}`,
+          webUrl: `https://i8a409.p.ssafy.io/gameroom/${room.value.pinNumber}`,
         },
       },
     ],
@@ -404,6 +484,16 @@ const setCurrentModalAsync = (what) => {
     name: what,
     data: [resultImages, openviduInfo.value.publisher, room],
   });
+};
+
+const pubVideoOff = (video) => {
+  isPubVideoEnable.value = !isPubVideoEnable.value;
+  video.publishVideo(isPubVideoEnable.value);
+};
+
+const pubAudioOff = (video) => {
+  isPubAudioEnable.value = !isPubAudioEnable.value;
+  video.publishAudio(isPubAudioEnable);
 };
 </script>
 
@@ -455,6 +545,14 @@ const setCurrentModalAsync = (what) => {
   right: 10px;
   bottom: 10px;
   border: 1px solid #464646;
+}
+#intro {
+  color: white;
+  font-family: "Gugi-Regular";
+  font-size: 80px;
+  position: absolute;
+  top: 150px;
+  left: 300px;
 }
 #gameImageSection img {
   height: 100%;
