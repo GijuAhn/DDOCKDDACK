@@ -120,7 +120,9 @@ public class BestcutApiController {
     })
     public ResponseEntity<PageImpl<BestcutRes>> bestcutList(Authentication authentication, @ModelAttribute PageConditionReq pageConditionReq) {
         Long memberId = 0L;
-        System.out.println(authentication);
+        if(authentication!=null){
+            memberId = ((MemberAccessRes)authentication.getPrincipal()).getId();
+        }
 
         PageImpl<BestcutRes> result = bestcutService.findAll(false, memberId, pageConditionReq);
 
