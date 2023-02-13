@@ -5,3 +5,12 @@ import store from "./store";
 import vueClickOutsideElement from "vue-click-outside-element";
 
 createApp(App).use(store).use(router).use(vueClickOutsideElement).mount("#app");
+
+module.exports = {
+  // ...
+  resolve: {
+    alias: {
+      vue$: "vue/dist/vue.esm.js",
+    },
+  },
+};
