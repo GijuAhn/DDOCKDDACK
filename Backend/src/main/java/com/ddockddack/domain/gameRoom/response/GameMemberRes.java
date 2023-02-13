@@ -11,12 +11,14 @@ public class GameMemberRes {
     private String socketId;
     private byte[] image;
     private int roundScore;
+    private int scaledRoundScore;
 
     @Builder
-    public GameMemberRes(String socketId, byte[] image, int roundScore) {
+    public GameMemberRes(String socketId, byte[] image, int roundScore, int scaledRoundScore) {
         this.socketId = socketId;
         this.image = image;
         this.roundScore = roundScore;
+        this.scaledRoundScore = scaledRoundScore;
     }
 
     public static GameMemberRes from(GameMember gameMember, int round){
@@ -24,6 +26,7 @@ public class GameMemberRes {
                 .socketId(gameMember.getSocketId())
                 .image(gameMember.getImages().get(round))
                 .roundScore(gameMember.getRoundScore())
+                .scaledRoundScore(gameMember.getScaledRoundScore())
                 .build();
     }
 }

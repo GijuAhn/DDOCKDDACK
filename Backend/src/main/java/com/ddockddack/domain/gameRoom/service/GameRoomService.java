@@ -71,11 +71,12 @@ public class GameRoomService {
 
         GameRoom gameRoom = this.findGameRoom(pinNumber);
 
-        for(GameMember gameMember : gameRoom.getMembers().values()) {
-            if(clientIp.equals(gameMember.getClientIp())) {
-                throw new AccessDeniedException(ErrorCode.NOT_AUTHORIZED);
-            }
-        }
+        //중복 접속 방지 (허용하려면 주석처리)
+//        for(GameMember gameMember : gameRoom.getMembers().values()) {
+//            if(clientIp.equals(gameMember.getClientIp())) {
+//                throw new AccessDeniedException(ErrorCode.NOT_AUTHORIZED);
+//            }
+//        }
 
         String token = gameRoomRepository.join(pinNumber, member, nickname, clientIp);
 
@@ -165,7 +166,6 @@ public class GameRoomService {
 
     /**
      * 게임 멤버 이미지 저장
-     *
      * @param pinNumber
      * @param sessionId
      * @param param
@@ -179,9 +179,9 @@ public class GameRoomService {
 
         System.out.println();
 
-        int score = EnsembleModel.CalculateSimilarity(byteGameImage, byteImage);
+        int rawScore = EnsembleModel.CalculateSimilarity(byteGameImage, byteImage);
 
-        gameRoomRepository.saveScore(pinNumber, sessionId, byteImage, score);
+        gameRoomRepository.saveScore(pinNumber, sessionId, byteImage, rawScore);
     }
 
     /**

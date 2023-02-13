@@ -1,9 +1,11 @@
 package com.ddockddack.domain.gameRoom.repository;
 
 import com.ddockddack.domain.game.entity.GameImage;
+
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,7 +16,7 @@ import lombok.ToString;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class   GameRoom {
+public class GameRoom {
     private String pinNumber;
     private Long gameId;
     private String gameTitle;
