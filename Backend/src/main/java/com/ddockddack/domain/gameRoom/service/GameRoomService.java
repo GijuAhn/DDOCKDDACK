@@ -80,8 +80,9 @@ public class GameRoomService {
 
         GameRoom gameRoom = this.findGameRoom(pinNumber);
 
-        for (GameMember gameMember : gameRoom.getMembers().values()) {
-            if (clientIp.equals(gameMember.getClientIp())) {
+        //중복 접속 방지 (허용하려면 주석처리)
+        for(GameMember gameMember : gameRoom.getMembers().values()) {
+            if(clientIp.equals(gameMember.getClientIp())) {
                 throw new AccessDeniedException(ErrorCode.NOT_AUTHORIZED);
             }
         }
