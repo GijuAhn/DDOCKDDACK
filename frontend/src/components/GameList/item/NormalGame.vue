@@ -6,7 +6,6 @@
         alt="대표사진"
         class="image"
       />
-
       <div class="imageBehind">
         <div class="count">
           <span>
