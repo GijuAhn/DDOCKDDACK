@@ -1,14 +1,43 @@
 <template>
-  <!-- <div class="white-bg">
+  <div class="white-bg">
     <div v-if="result.length">
-      <div v-if="!isEnd">
-        <img
-          v-for="(e, index) in result"
-          :key="e"
-          :id="`rank${index}`"
-          :src="`data:image/jpeg;base64, ${e.image}`"
-          class="result"
-        />
+      <div v-if="!isEnd" id="rankContainer">
+        <div id="box1">
+          <div>
+            <span>{{ rankTitle[1] }}</span>
+          </div>
+          <div v-if="result[1]">
+            <img
+              id="rank1"
+              :src="`data:image/jpeg;base64, ${result[1].image}`"
+            />
+          </div>
+          <div v-if="result[1]"><span>닉네임</span></div>
+        </div>
+        <div id="box0">
+          <div>
+            <span>{{ rankTitle[0] }}</span>
+          </div>
+          <div v-if="result[0]">
+            <img
+              id="rank0"
+              :src="`data:image/jpeg;base64, ${result[0].image}`"
+            />
+          </div>
+          <div v-if="result[0]"><span>닉네임</span></div>
+        </div>
+        <div id="box2">
+          <div>
+            <span>{{ rankTitle[2] }}</span>
+          </div>
+          <div v-if="result[2]">
+            <img
+              id="rank2"
+              :src="`data:image/jpeg;base64, ${result[2].image}`"
+            />
+          </div>
+          <div v-if="result[2]"><span>닉네임</span></div>
+        </div>
       </div>
       <div v-else>
         <user-video id="rank0" :stream-manager="winner[0]" />
@@ -20,67 +49,50 @@
       채점 중입니다.
       <div class="clock"></div>
     </div>
-  </div> -->
-  <div class="white-bg">
+  </div>
+  <!-- <div class="white-bg">
     <div v-if="true">
-      <div v-if="true">
-        <div v-for="(e, index) in 3" :key="e">
-          <img
-            :id="`rank${index}`"
-            src="https://source.unsplash.com/category/portrait/"
-          />
+      <div v-if="true" id="rankContainer">
+        <div v-for="(e, index) in 3" :key="e" :id="`box${index}`">
+          <div>
+            <span>{{ rankTitle[index] }}</span>
+          </div>
+          <div>
+            <img
+              :id="`rank${index}`"
+              src="https://source.unsplash.com/category/portrait/"
+            />
+          </div>
+          <div><span>닉네임</span></div>
         </div>
       </div>
     </div>
-  </div>
+  </div> -->
 </template>
 
 <script setup>
-// import { ref } from "vue";
-// import { computed } from "vue";
-// import { useStore } from "vuex";
+import { ref } from "vue";
+import { computed } from "vue";
+import { useStore } from "vuex";
 
-// const store = useStore();
-// const currentModal = computed(() => store.state.commonStore.currentModal);
-// // const round = ref(currentModal.value.data[0]);
-// const result = ref(currentModal.value.data[1]);
-// const isEnd = ref(currentModal.value.data[2]);
-// const winner = ref(currentModal.value.data[3]);
-// // const publisher = ref(currentModal.value.data[4]);
+const store = useStore();
+const currentModal = computed(() => store.state.commonStore.currentModal);
+// const round = ref(currentModal.value.data[0]);
+const result = ref(currentModal.value.data[1]);
+const isEnd = ref(currentModal.value.data[2]);
+const winner = ref(currentModal.value.data[3]);
+// const publisher = ref(currentModal.value.data[4]);
+
+const rankTitle = ["1st", "2nd", "3rd"];
 </script>
 
 <style scoped>
 .white-bg {
   background-color: white;
   width: 1300px;
-  height: 700px;
+  height: 750px;
   border-radius: 10px;
   position: relative;
-}
-img {
-  width: 350px;
-  height: 350px;
-  object-fit: cover;
-  position: absolute;
-  border-radius: 15px;
-}
-#rank0 {
-  top: 40%;
-  left: 50%;
-  transform: translate(-50%, -40%);
-  border: 15px solid #fbd600;
-}
-#rank1 {
-  top: 60%;
-  left: 50px;
-  transform: translate(0, -60%);
-  border: 15px solid #c1c1c1;
-}
-#rank2 {
-  top: 60%;
-  right: 50px;
-  transform: translate(0, -60%);
-  border: 15px solid #f3b251;
 }
 .clock {
   border-radius: 60px;
@@ -160,5 +172,65 @@ img {
   100% {
     transform: rotate(360deg);
   }
+}
+#rankContainer {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  height: 750px;
+}
+#rankContainer > div {
+  width: 400px;
+  height: 700px;
+  border: 2px solid black;
+  position: relative;
+  box-shadow: 0 0 10px #8b8b8b;
+}
+#box0 {
+  background-color: #fbd600;
+}
+#box1 {
+  background-color: #c1c1c1;
+}
+#box2 {
+  background-color: #f3b251;
+}
+#rankContainer > div > * {
+  left: 50%;
+  transform: translateX(-50%);
+  position: absolute;
+}
+#rankContainer > div > div:nth-child(1) {
+  top: 50px;
+}
+#rankContainer > div > div:nth-child(1) > span {
+  font-family: Gugi-Regular;
+  text-shadow: -2px 0 #000, 0 2px #000, 2px 0 #000, 0 -2px #000;
+  color: white;
+  font-size: 80px;
+}
+#rankContainer > div > div:nth-child(2) {
+  top: 170px;
+}
+#rankContainer > div > div:nth-child(3) {
+  top: 585px;
+}
+#rankContainer > div > div:nth-child(3) > span {
+  font-size: 24px;
+  border: 2px solid black;
+  background-color: white;
+  width: 200px;
+  height: 50px;
+  display: inline-block;
+  border-radius: 50px;
+  text-align: center;
+  line-height: 50px;
+}
+
+img {
+  width: 350px;
+  height: 350px;
+  object-fit: cover;
+  border: 2px solid black;
 }
 </style>

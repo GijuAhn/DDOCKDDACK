@@ -209,7 +209,7 @@ onBeforeMount(() => {
               if (timerCount.value === 0) {
                 clearInterval(timer);
                 capture(signal.data - 1);
-                // setCurrentModalAsync("intermediateResult"); //주석
+                setCurrentModalAsync("intermediateResult"); //주석
                 timerCount.value = 5;
                 resultMode.value = true;
               }
@@ -221,7 +221,7 @@ onBeforeMount(() => {
             if (timerCount.value === 0) {
               clearInterval(timer);
               capture(signal.data - 1);
-              // setCurrentModalAsync("intermediateResult"); //주석
+              setCurrentModalAsync("intermediateResult"); //주석
               timerCount.value = 5;
               resultMode.value = true;
             }
@@ -234,7 +234,7 @@ onBeforeMount(() => {
         setTimeout(() => {
           resultMode.value = false;
           result.value.length = 0;
-          // setCurrentModalAsync(""); //주석
+          setCurrentModalAsync(""); //주석
           if (round.value < 5 && isHost.value) {
             api.get(`/api/game-rooms/${route.params.pinNumber}/round`);
           } else if (isHost.value) {
@@ -455,7 +455,7 @@ const setCurrentModalAsync = (what) => {
     store.dispatch("commonStore/setCurrentModalAsync", "");
   }
 };
-setCurrentModalAsync("intermediateResult"); //주석
+// setCurrentModalAsync("intermediateResult"); //주석
 </script>
 
 <style scoped>
@@ -557,7 +557,7 @@ setCurrentModalAsync("intermediateResult"); //주석
   font-size: 24px;
   color: white;
   border-radius: 24px;
-  width: 80px;
+  width: 90px;
   height: 36px;
   text-align: center;
   line-height: 36px;
