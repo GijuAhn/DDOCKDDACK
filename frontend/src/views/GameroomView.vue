@@ -51,7 +51,7 @@
             <div id="gameWaitSection">
               <div id="relative">
                 <img src="@/assets/images/gameWait.png" />
-                <div id="waitDesc">
+                <div id="Desc">
                   <span id="largeFont">잠시만 기다려주세요</span>
                   <br />
                   <br />
@@ -78,11 +78,14 @@
           <div v-if="isEnd">
             <div id="gameResultSection">
               <div id="relative">
-                <img src="@/assets/images/gameResult.png" />
-                <button @click="setCurrentModalAsync(`bestcutUpload`)">
-                  내 사진 보기
-                </button>
-                <button>최종 결과</button>
+                <img id="result_1" src="@/assets/images/gameResult_1.png" />
+                <img id="result_2" src="@/assets/images/gameResult_2.png" />
+                <div id="Desc">
+                  <button @click="setCurrentModalAsync(`bestcutUpload`)">
+                    내 사진 보기
+                  </button>
+                  <button>최종 결과</button>
+                </div>
               </div>
             </div>
           </div>
@@ -600,7 +603,7 @@ const pubAudioOff = (video) => {
   position: relative;
 }
 
-#waitDesc {
+#gameWaitSection #Desc {
   float: left;
   top: 50%;
   left: 45%;
@@ -608,10 +611,34 @@ const pubAudioOff = (video) => {
   transform: translate(0, -50%);
 }
 
-#relative img {
+#gameWaitSection #relative img {
   top: 50%;
   position: absolute;
   transform: translate(10%, -50%);
+}
+
+#gameResultSection #Desc {
+  float: left;
+  top: 50%;
+  left: 30%;
+  position: absolute;
+  transform: translate(0, -50%);
+}
+
+#gameResultSection #relative #result_1 {
+  top: 15%;
+  left: 15%;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  height: 30%;
+}
+
+#gameResultSection #relative #result_2 {
+  top: 70%;
+  left: 85%;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  height: 70%;
 }
 
 #largeFont {
@@ -663,6 +690,7 @@ const pubAudioOff = (video) => {
   background-color: #f08383;
   color: white;
   width: 140px;
+  margin: 0 20px;
 }
 #gameResultSection button:hover {
   cursor: pointer;
