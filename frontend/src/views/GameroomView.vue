@@ -162,6 +162,7 @@ import process from "process";
 import ModalFrame from "@/components/common/ModalFrame";
 import ResultModal from "@/components/Gameroom/item/ResultModal.vue";
 import html2canvas from "html2canvas";
+import captureSound from "@/assets/sounds/capture_sound.mp3";
 
 const currentModal = computed(() => store.state.commonStore.currentModal);
 const IMAGE_PATH = process.env.VUE_APP_IMAGE_PATH;
@@ -204,6 +205,7 @@ const winner = ref([]);
 const intro = ref(false);
 const isPubVideoEnable = ref(true);
 const isPubAudioEnable = ref(true);
+const captureAudio = new Audio(captureSound);
 onBeforeMount(() => {
   api
     .post(`/api/game-rooms/${route.params.pinNumber}`, {})
@@ -458,6 +460,7 @@ const linkShare = async () => {
 };
 
 const capture = async (index) => {
+  captureAudio.play();
   let me = document.getElementById("myVideo2");
   captureMode.value = true;
   setTimeout(() => {
