@@ -29,7 +29,7 @@
 import { useStore } from "vuex";
 import { ref, computed } from "vue";
 import { apiInstance } from "@/api/index";
-import ReportedBestCut from "@/components/Admin/item/ReportedBestCut.vue";
+import ReportedBestCut from "@/components/Admin/item/ReportedBestCut";
 
 const api = apiInstance();
 const store = useStore();

@@ -31,7 +31,7 @@
 import { apiInstance } from "@/api/index";
 import { useStore } from "vuex";
 import { defineProps, ref, computed, defineEmits } from "vue";
-import ReportedBestCutPreview from "@/components/Admin/item/ReportedBestCutPreview.vue";
+import ReportedBestCutPreview from "@/components/Admin/item/ReportedBestCutPreview";
 
 const api = apiInstance();
 const props = defineProps({ reportedBestCut: Object });
