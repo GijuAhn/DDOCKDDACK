@@ -1,18 +1,21 @@
 <template>
   <div class="white-bg">
     <!-- <div v-if="result.length" id="rankContainer"></div> -->
+    <div v-for="r in result" :key="r">
+      <span>{{ r }}</span>
+    </div>
     <div>아녕하세요!</div>
   </div>
 </template>
 
 <script setup>
-// import { ref } from "vue";
-// import { computed } from "vue";
-// import { useStore } from "vuex";
+import { ref } from "vue";
+import { computed } from "vue";
+import { useStore } from "vuex";
 
-// const store = useStore();
-// const currentModal = computed(() => store.state.commonStore.currentModal);
-// const result = ref(currentModal.value.data);
+const store = useStore();
+const currentModal = computed(() => store.state.commonStore.currentModal);
+const result = ref(currentModal.value.data);
 </script>
 
 <style scoped>
