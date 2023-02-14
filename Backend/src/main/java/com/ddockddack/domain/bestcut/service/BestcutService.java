@@ -1,7 +1,8 @@
 package com.ddockddack.domain.bestcut.service;
 
  import com.ddockddack.domain.bestcut.entity.Bestcut;
-import com.ddockddack.domain.bestcut.repository.BestcutRepository;
+ import com.ddockddack.domain.bestcut.repository.BestcutLikeRepository;
+ import com.ddockddack.domain.bestcut.repository.BestcutRepository;
 import com.ddockddack.domain.bestcut.repository.BestcutRepositorySupport;
 import com.ddockddack.domain.bestcut.request.BestcutImageReq;
 import com.ddockddack.domain.bestcut.request.BestcutSaveReq;
@@ -34,8 +35,9 @@ import java.util.List;
 public class BestcutService {
 
     private final BestcutRepository bestcutRepository;
-    private final MemberRepository memberRepository;
+    private final BestcutLikeRepository bestcutLikeRepository;
     private final ReportedBestcutRepository reportedBestcutRepository;
+    private final MemberRepository memberRepository;
     private final GameRoomRepository gameRoomRepository;
     private final AwsS3Service awsS3Service;
     private final BestcutRepositorySupport bestcutRepositorySupport;
@@ -94,8 +96,19 @@ public class BestcutService {
             throw new AccessDeniedException(ErrorCode.NOT_AUTHORIZED);
         }
 
+        bestcutLikeRepository.deleteByBestcutId(bestcutId);
+        reportedBestcutRepository.deleteByBestcutId(bestcutId);
+
         awsS3Service.deleteObject(bestcut.getImageUrl());
         bestcutRepository.delete(bestcut);
+    }
+
+    @Transactional
+    public void removeAllByIds(List<Long> bestcutIds) {
+        bestcutLikeRepository.deleteByBestcutIdIn(bestcutIds);
+        reportedBestcutRepository.deleteByBestcutIdIn(bestcutIds);
+
+        bestcutRepository.deleteAllByIds(bestcutIds);
     }
 
     @Transactional
@@ -130,6 +143,10 @@ public class BestcutService {
         return bestcutRepository.findAllBySearch(my, loginMemberId, pageCondition);
     }
 
+    public List<Long> findByMemberId(Long memberId){
+        return bestcutRepository.findByAllMemberId(memberId);
+    }
+
     public BestcutRes findOne(Long loginMemberId, Long bestcutId) {
         return bestcutRepository.findOne(loginMemberId, bestcutId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.BESTCUT_NOT_FOUND));
@@ -145,4 +162,5 @@ public class BestcutService {
 
         return bestcutRepositorySupport.findAllReportedBestcut();
     }
+
 }

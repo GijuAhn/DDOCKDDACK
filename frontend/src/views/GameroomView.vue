@@ -170,7 +170,10 @@ const route = useRoute();
 const store = useStore();
 
 const accessToken = computed(() => store.state.memberStore.accessToken);
-const nickname = computed(() => store.state.memberStore.memberInfo.nickname);
+const nickname = ref(undefined);
+const tempNickname = computed(
+  () => store.state.memberStore.memberInfo.nickname
+);
 const openviduInfo = ref({
   // OpenVidu objects
   OV: undefined,
@@ -213,6 +216,8 @@ onBeforeMount(() => {
             router.replace("/");
           }
         } while (nickname.value.trim() == "");
+      } else {
+        nickname.value = tempNickname.value;
       }
 
       openviduInfo.value.OV = new OpenVidu();
