@@ -24,16 +24,30 @@ import { ref, computed } from "vue";
 import LoadingSpinner from "./item/LoadingSpinner.vue";
 
 const store = useStore();
-
 const api = apiInstance();
 const accessToken = computed(() => store.state.memberStore.accessToken).value;
-
 const isLoading = ref(true);
 
 let myBestcuts = ref();
+
+let pageConditionReq = ref({
+  order: "RECENT",
+  period: "ALL",
+  search: "MEMBER",
+  keyword: "",
+  page: 1,
+});
+
 const callApi = async () => {
   await api
     .get(`/api/members/bestcuts`, {
+      params: {
+        order: pageConditionReq.value.order,
+        period: pageConditionReq.value.period,
+        search: pageConditionReq.value.search,
+        keyword: pageConditionReq.value.keyword,
+        page: pageConditionReq.value.page,
+      },
       headers: {
         "access-token": accessToken, // 변수로 가지고있는 AccessToken
       },

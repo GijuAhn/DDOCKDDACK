@@ -205,7 +205,8 @@ public class MemberApiController {
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @GetMapping("/games")
-    public ResponseEntity getMyGames(Authentication authentication) {
+    public ResponseEntity getMyGames(
+        @ModelAttribute PageConditionReq pageConditionReq, Authentication authentication) {
         Long memberId = ((MemberAccessRes)authentication.getPrincipal()).getId();
         try {
             PageImpl<GameRes> gameResList = gameService.findAllGameByMemberId(memberId, pageConditionReq);
