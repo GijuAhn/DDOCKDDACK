@@ -136,7 +136,8 @@ const starredGame = () => {
       emit("updateProps", { status: "starred", index: props.index });
     })
     .catch((error) => {
-      console.log(error);
+      error;
+      alert("로그인이 필요합니다.");
     });
 };
 const unstarredGame = () => {
@@ -149,7 +150,8 @@ const unstarredGame = () => {
       emit("updateProps", { status: "unstarred", index: props.index });
     })
     .catch((error) => {
-      console.log(error);
+      error;
+      alert("로그인이 필요합니다.");
     });
 };
 </script>

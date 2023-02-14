@@ -6,7 +6,6 @@
       :bestcut="detailBestcut"
       @bestcutLike="(bestcutId) => bestcutLike(bestcutId)"
       @bestcutDislike="(bestcutId) => bestcutDislike(bestcutId)"
-      @openReportModal="(bestcutId) => openReportModal(bestcutId)"
     ></bestcut-detail>
     <div id="searchBar">
       <div>
@@ -85,7 +84,6 @@
         @bestcutDetail="detailBestcut = bestcut"
         @bestcutLike="(bestcutId) => bestcutLike(bestcutId)"
         @bestcutDislike="(bestcutId) => bestcutDislike(bestcutId)"
-        @openReportModal="(bestcutId) => openReportModal(bestcutId)"
       ></normal-bestcut>
     </div>
     <page-nav
@@ -220,6 +218,10 @@ const changePage = (page) => {
 
 //베스트컷 좋아요
 const bestcutLike = (bestcutId) => {
+  if (!accessToken.value) {
+    alert("로그인 후 이용해주세요.");
+    return;
+  }
   api
     .post(
       `/api/bestcuts/like/${bestcutId}`,

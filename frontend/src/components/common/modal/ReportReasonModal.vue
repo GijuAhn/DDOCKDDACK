@@ -25,6 +25,10 @@ const currentModal = computed(() => store.state.commonStore.currentModal);
 const accessToken = computed(() => store.state.memberStore.accessToken).value;
 
 const reportGame = (reportType) => {
+  if (!accessToken.value) {
+    alert("로그인 후 이용해주세요.");
+    return;
+  }
   api
     .post(
       `/api/games/report/${currentModal.value.data.gameId}`,
