@@ -18,7 +18,7 @@ public interface StarredGameRepository extends JpaRepository<StarredGame, Long> 
     boolean existsByMemberIdAndGameId(Long memberId, Long gameId);
 
     @Modifying(clearAutomatically = true)
-    @Query("DELETE FROM StarredGame sg WHERE sg.game = :id")
+    @Query("DELETE FROM StarredGame sg WHERE sg.game.id = :id")
     void deleteByGameId(Long id);
 
     @Modifying(clearAutomatically = true)
