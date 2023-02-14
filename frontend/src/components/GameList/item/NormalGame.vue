@@ -65,9 +65,6 @@
           <div @click="setCurrentModalAsync(`reportReason`)">
             <span>신고</span>
           </div>
-          <div @click="setCurrentModalAsync(`reportReason`)">
-            <span>삭제</span>
-          </div>
         </div>
       </div>
     </div>

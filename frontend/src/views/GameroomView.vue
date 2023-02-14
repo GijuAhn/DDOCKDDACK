@@ -163,6 +163,7 @@ import ModalFrame from "@/components/common/ModalFrame";
 import ResultModal from "@/components/Gameroom/item/ResultModal.vue";
 import html2canvas from "html2canvas";
 import captureSound from "@/assets/sounds/capture_sound.mp3";
+import backgroundSound from "@/assets/sounds/background_sound.mp3";
 
 const currentModal = computed(() => store.state.commonStore.currentModal);
 const IMAGE_PATH = process.env.VUE_APP_IMAGE_PATH;
@@ -206,6 +207,8 @@ const intro = ref(false);
 const isPubVideoEnable = ref(true);
 const isPubAudioEnable = ref(true);
 const captureAudio = new Audio(captureSound);
+const backgroundAudio = new Audio(backgroundSound);
+
 onBeforeMount(() => {
   api
     .post(`/api/game-rooms/${route.params.pinNumber}`, {})
@@ -293,6 +296,8 @@ onBeforeMount(() => {
       openviduInfo.value.session.on("finalResult", async (signal) => {
         resultMode.value = true;
         isEnd.value = true;
+        backgroundAudio.pause();
+        backgroundAudio.currentTime = 0;
         const result = await JSON.parse(signal.data);
         result.forEach((id, index) => {
           if (openviduInfo.value.session.connection.connectionId === id) {
@@ -429,7 +434,9 @@ const throwHost = () => {
 const play = () => {
   api
     .put(`/api/game-rooms/${route.params.pinNumber}`)
-    .then()
+    .then(() => {
+      backgroundAudio.play();
+    })
     .catch(() => {
       alert("게임시작에 실패 하였습니다.");
     });
