@@ -62,7 +62,7 @@ public class MemberApiController {
         @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @PutMapping("/nickname")
-    public ResponseEntity<?> modifyMemberNickname(@RequestBody MemberModifyNameReq
+    public ResponseEntity modifyMemberNickname(@RequestBody MemberModifyNameReq
         memberModifyNameReq) {
         try {
             MemberAccessRes memberAccessRes = (MemberAccessRes) SecurityContextHolder.getContext()
@@ -93,7 +93,7 @@ public class MemberApiController {
         @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @PutMapping("/profile")
-    public ResponseEntity<?> modifyMemberProfileImg(
+    public ResponseEntity modifyMemberProfileImg(
         @ModelAttribute MultipartFile profileImg
     ) {
         try {
@@ -125,7 +125,7 @@ public class MemberApiController {
         @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @GetMapping()
-    public ResponseEntity<?> getMemberInfo() {
+    public ResponseEntity getMemberInfo() {
         log.info("sec info {}",
             SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
         MemberAccessRes memberAccessRes = Optional.ofNullable(
@@ -152,38 +152,38 @@ public class MemberApiController {
         @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @DeleteMapping()
-    public void deleteMember(HttpServletRequest request, HttpServletResponse response) {
-        try {
-            Cookie[] cookies = request.getCookies();
-            log.info("cokies {}", cookies);
+    public ResponseEntity deleteMember(HttpServletRequest request, HttpServletResponse response) {
+        Cookie[] cookies = request.getCookies();
+        log.info("cokies {}", cookies);
 
-            String refreshToken = null;
-            if (cookies != null) {
-                for (Cookie cookie : cookies) {
-                    log.info(String.valueOf(cookie.getName()));
-                    if (cookie.getName().equals("refresh-token")) {
-                        refreshToken = cookie.getValue();
-                        break;
-                    }
+        String refreshToken = "";
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                log.info(String.valueOf(cookie.getName()));
+                if (cookie.getName().equals("refresh-token")) {
+                    refreshToken = cookie.getValue();
+                    break;
                 }
             }
+        }
 
-            MemberAccessRes memberAccessRes = Optional.ofNullable(
+        MemberAccessRes memberAccessRes = Optional.ofNullable(
                 (MemberAccessRes) SecurityContextHolder.getContext()
-                    .getAuthentication().getPrincipal()).get();
-            memberService.deleteMemberById(
+                        .getAuthentication().getPrincipal()).get();
+        memberService.deleteMemberById(
                 memberAccessRes.getId()); //탈퇴로직에 access, refresh Token 정지시키는 로직 추가해야함
 
-            log.info("RT {}", refreshToken);
-            if (refreshToken != null) {
-                log.info("lgout {} ", refreshToken);
-                Cookie refreshTokenCookie = new Cookie("refresh-token", null);
-                refreshTokenCookie.setMaxAge(0);
-                refreshTokenCookie.setPath("/");
-                response.addCookie(refreshTokenCookie);
-//                memberService.logout(refreshToken);
-            }
-        } catch (Exception e) {
+        log.info("RT {}", refreshToken);
+        if ("".equals(refreshToken)) {
+            log.info("lgout {} ", refreshToken);
+            Cookie refreshTokenCookie = new Cookie("refresh-token", null);
+            refreshTokenCookie.setMaxAge(0);
+            refreshTokenCookie.setPath("/");
+            response.addCookie(refreshTokenCookie);
+
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.status(401).body("refresh-token Error");
         }
     }
 
@@ -195,7 +195,7 @@ public class MemberApiController {
         @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @GetMapping("/{memberId}/bestcuts")
-    public ResponseEntity<?> getBestcuts(@PathVariable Long memberId,
+    public ResponseEntity getBestcuts(@PathVariable Long memberId,
         @ModelAttribute PageConditionReq pageCondition) {
         try {
             log.info("bestcuts {}, {}", memberId, pageCondition.toString());
@@ -216,7 +216,7 @@ public class MemberApiController {
         @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @GetMapping("/{memberId}/games")
-    public ResponseEntity<?> getMyGames(@PathVariable Long memberId) {
+    public ResponseEntity getMyGames(@PathVariable Long memberId) {
         try {
             List<GameRes> gameResList = gameService.findAllGameByMemberId(memberId);
             return ResponseEntity.ok(gameResList);
@@ -233,7 +233,7 @@ public class MemberApiController {
         @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @GetMapping("/{memberId}/starred")
-    public ResponseEntity<?> getStarredGames(@PathVariable Long memberId) {
+    public ResponseEntity getStarredGames(@PathVariable Long memberId) {
         try {
             List<StarredGameRes> starredGameResList = gameService.findAllStarredGames(
                 memberId);
@@ -251,7 +251,7 @@ public class MemberApiController {
         @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @GetMapping("/{memberId}/records")
-    public ResponseEntity<?> getRecords(@PathVariable Long memberId,
+    public ResponseEntity getRecords(@PathVariable Long memberId,
         @RequestHeader(value = "access-token", required = false) String accessToken) {
         try {
             List<GameRoomHistoryRes> roomHistory = gameRoomService.findAllRoomHistory(memberId);

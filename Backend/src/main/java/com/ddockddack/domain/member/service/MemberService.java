@@ -293,10 +293,8 @@ public class MemberService {
     }
 
     public LocalDate getReleaseDate(BanLevel banLevel) {
-    public LocalDate getReleaseDate(BanLevel banLevel) {
         LocalDate today = LocalDate.now();
 
-        switch (banLevel) {
         switch (banLevel) {
             case oneWeek:
                 today.plusDays(7);
