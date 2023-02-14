@@ -42,7 +42,7 @@ const callApi = () => {
     })
     .then((response) => {
       console.log("access-games: ", response.data);
-      myGames.value = response.data;
+      myGames.value = response.data.content;
     })
     .catch((error) => {
       console.log(error);
