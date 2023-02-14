@@ -2,6 +2,7 @@ package com.ddockddack.domain.gameRoom.repository;
 
 import com.ddockddack.domain.game.entity.Game;
 import com.ddockddack.domain.game.entity.GameImage;
+import com.ddockddack.domain.gameRoom.entity.GameRoomHistory;
 import com.ddockddack.domain.gameRoom.request.GameSignalReq;
 import com.ddockddack.domain.gameRoom.response.GameMemberRes;
 import com.ddockddack.domain.member.entity.Member;
@@ -35,6 +36,7 @@ public class GameRoomRepository {
     private final Integer PIN_NUMBER_BOUND = 1_000_000;
     private final Random random = new Random();
     private final ObjectMapper mapper = new ObjectMapper();
+    private final GameRoomHistoryRepository gameRoomHistoryRepository;
     @Value("${OPENVIDU_URL}")
     private String OPENVIDU_URL;
     @Value("${OPENVIDU_SECRET}")
@@ -244,5 +246,4 @@ public class GameRoomRepository {
         }
         return finalResult;
     }
-
 }
