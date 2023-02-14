@@ -5,6 +5,7 @@ import com.ddockddack.domain.game.repository.GameImageRepository;
 import com.ddockddack.domain.game.repository.GameRepository;
 import com.ddockddack.domain.game.repository.GameRepositorySupport;
 import com.ddockddack.domain.game.repository.StarredGameRepository;
+import com.ddockddack.domain.gameRoom.repository.GameRoomRepository;
 import com.ddockddack.domain.member.entity.Member;
 import com.ddockddack.domain.member.entity.Role;
 import com.ddockddack.domain.member.repository.MemberRepository;
@@ -51,6 +52,9 @@ public class MemberService {
     private final StarredGameRepository starredGameRepository;
     private final GameRepositorySupport gameRepositorySupport;
     private final GameRepository gameRepository;
+    private final AwsS3Service awsS3Service;
+
+
 
     //    private final RedisTemplate redisTemplate;
     private RestTemplate rt;
