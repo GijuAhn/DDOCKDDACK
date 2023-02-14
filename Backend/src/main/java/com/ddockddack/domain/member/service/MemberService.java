@@ -5,19 +5,29 @@ import com.ddockddack.domain.game.repository.GameImageRepository;
 import com.ddockddack.domain.game.repository.GameRepository;
 import com.ddockddack.domain.game.repository.GameRepositorySupport;
 import com.ddockddack.domain.game.repository.StarredGameRepository;
+import com.ddockddack.domain.gameRoom.entity.GameRoomHistory;
+import com.ddockddack.domain.gameRoom.repository.GameRoomHistoryRepository;
+import com.ddockddack.domain.gameRoom.repository.GameRoomHistoryRepositorySupport;
+import com.ddockddack.domain.gameRoom.repository.GameRoomRepository;
 import com.ddockddack.domain.member.entity.Member;
 import com.ddockddack.domain.member.entity.Role;
 import com.ddockddack.domain.member.repository.MemberRepository;
+import com.ddockddack.domain.member.request.MemberModifyNameReq;
 import com.ddockddack.domain.member.request.MemberModifyReq;
 import com.ddockddack.domain.report.repository.ReportedGameRepository;
 import com.ddockddack.global.error.ErrorCode;
+import com.ddockddack.global.error.exception.ImageExtensionException;
 import com.ddockddack.global.error.exception.NotFoundException;
+import com.ddockddack.global.service.AwsS3Service;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -28,9 +38,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @Service
+@Slf4j
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class MemberService {
@@ -44,32 +56,66 @@ public class MemberService {
     private final StarredGameRepository starredGameRepository;
     private final GameRepositorySupport gameRepositorySupport;
     private final GameRepository gameRepository;
+    private final GameRoomHistoryRepository gameRoomHistoryRepository;
+    private final GameRoomHistoryRepositorySupport gameRoomHistoryRepositorySupport;
+    private final AwsS3Service awsS3Service;
+
+
 
     //    private final RedisTemplate redisTemplate;
     private RestTemplate rt;
 
 
-    @Transactional
-    public Long joinMember(Member member) {
-        memberRepository.save(member);
+//    /**
+//     * @param memberId
+//     * @param modifyMember
+//     * @return 수정된 member
+//     */
+//    @Transactional
+//    public Member modifyMember(Long memberId, MemberModifyReq modifyMember) {
+//        Member memberToModify = memberRepository.findById(memberId).get();
+//        if (!memberToModify.getNickname().equals(modifyMember.getNickname())) {
+//            memberToModify.setNickname(modifyMember.getNickname());
+//        }
+//        log.info("log! {}, {}", modifyMember.getProfile(), modifyMember.getProfile().isEmpty());
+//        if (!memberToModify.getProfile().equals(modifyMember.getProfile())) {
+//            memberToModify.setProfile(modifyMember.getProfile());
+//        }
+//
+//        return null;
+////        return memberRepository.save(memberToModify);
+//    }
 
-        return member.getId();
+    @Transactional
+    public void modifyMemberNickname(Long memberId, MemberModifyNameReq modifyMemberNickname) {
+        Member member = memberRepository.findById(memberId).get();
+        log.info("log! {}, {}", modifyMemberNickname.getNickname(), modifyMemberNickname.getNickname().isEmpty());
+        if (!member.getNickname().equals(modifyMemberNickname.getNickname())) {
+            member.modifyNickname(modifyMemberNickname.getNickname());
+        }
+//        return memberRepository.save(member);
     }
 
-
-    /**
-     * @param memberId
-     * @param modifyMember
-     * @return 수정된 member
-     */
     @Transactional
-    public Member modifyMember(Long memberId, MemberModifyReq modifyMember) {
-        Member memberToModify = memberRepository.findById(memberId).get();
+    public void modifyMemberProfileImg(Long memberId, MultipartFile modifyProfileImg) {
+        Member member = memberRepository.findById(memberId).get();
 
-        memberToModify.setNickname(modifyMember.getNickname());
-        memberToModify.setProfile(modifyMember.getProfile());
+        if (!(modifyProfileImg.getContentType().contains("image/jpg") ||
+            (modifyProfileImg.getContentType().contains("image/jpeg") ||
+                (modifyProfileImg.getContentType().contains("image/png"))))) {
+            throw new ImageExtensionException(ErrorCode.EXTENSION_NOT_ALLOWED);
+        }
 
-        return memberRepository.save(memberToModify);
+        log.info("modifyProfileImg contentType {}", modifyProfileImg.getContentType());
+
+        try {
+            String fileName = awsS3Service.multipartFileUpload(modifyProfileImg);
+            awsS3Service.deleteObject(member.getProfile());
+            member.modifyProfile(fileName);
+        } catch (Exception e) {
+            throw new RuntimeException("UPLOAD_FAILED"); //Exception 추가
+        }
+
     }
 
     /**
@@ -95,6 +141,12 @@ public class MemberService {
         reportedGameRepository.deleteAllByGameId(gameIds);
         gameRepository.deleteAllByGameId(gameIds);
 
+        List<Long> gameRoomHistoryIds = gameRoomHistoryRepositorySupport.findAllGameRoomHistoryIdByMemberId(memberId);
+
+        log.info(gameRoomHistoryIds.toString());
+
+        gameRoomHistoryRepository.deleteAllByGameId(gameRoomHistoryIds);
+
         memberRepository.deleteById(memberId);
     }
 
@@ -105,11 +157,6 @@ public class MemberService {
     public boolean findUserBySocialId(String email) {
         return memberRepository.existsByEmail(email);
     }
-
-//    public Member findOne(Long memberId) {
-//        return memberRepository.findOne(Member);
-//    }
-
 
     public boolean isAdmin(Long reportId) {
         Member member = memberRepository.findById(reportId)
@@ -135,15 +182,17 @@ public class MemberService {
 //                    TimeUnit.MILLISECONDS);
 //        }
     }
+/*
 
-    /**
+    */
+/**
      * @param code
      * @return Access 토큰
-     */
+     *//*
+
     public String getKaKaoAccessToken(String code) {
         //카카오 서버에 POST 방식으로 엑세스 토큰을 요청
         //RestTemplate를 이용
-        System.out.println(code + " ############");
 //        RestTemplate rt = new RestTemplate();
 
         rt = new RestTemplate();
@@ -151,9 +200,9 @@ public class MemberService {
         //HttpHeader 오브젝트 생성
         HttpHeaders headers = new HttpHeaders();
 
-        System.out.println("인가 코드 확인 :" + code);
-        System.out.println(env.getProperty("kakao.api_key"));
-        System.out.println(env.getProperty("kakao.login.redirect_uri"));
+//        System.out.println("인가 코드 확인 :" + code);
+//        System.out.println(env.getProperty("kakao.api_key"));
+//        System.out.println(env.getProperty("kakao.login.redirect_uri"));
 
         //HttpBody 오브젝트 생성
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
@@ -181,10 +230,12 @@ public class MemberService {
         return accessToken;
     }
 
-    /**
+    */
+/**
      * @param accessToken
      * @return 카카오 사용자 정보
-     */
+     *//*
+
     public ResponseEntity<String> getKakaoMember(String accessToken) {
         //엑세스 토큰을 통해 사용자 정보를 응답 받기
 
@@ -251,6 +302,7 @@ public class MemberService {
 
         return responsememberInfo;
     }
+*/
 
     @Transactional
     public Member banMember(Long memberId, BanLevel banLevel) {

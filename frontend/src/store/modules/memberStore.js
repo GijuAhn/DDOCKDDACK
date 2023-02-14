@@ -64,7 +64,7 @@ export const memberStore = {
       );
     },
 
-    async getMemberInfo({ commit, state }) {
+    async getMemberInfo({ commit, state, dispatch }) {
       let accessToken = state.accessToken;
       await findByAccessToken(
         accessToken,
@@ -78,11 +78,12 @@ export const memberStore = {
         },
         async (error) => {
           console.log("[토큰 만료]", error.response.status);
+          dispatch("accesstokenReissue", "true");
         }
       );
     },
 
-    async accesstokenReissue({ commit, state }, isAuthPage) {
+    async accesstokenReissue({ commit, state, store }, isAuthPage) {
       await accesstokenRegeneration(
         ({ data }) => {
           if (data) {
@@ -103,10 +104,11 @@ export const memberStore = {
                   console.log("리프레시 토큰 제거 실패");
                 }
                 // alert("RefreshToken 기간 만료!!! 다시 로그인해 주세요.");
-                // store.dispatch("commonStore/setCurrentModalAsync", {
-                //   name: "login",
-                //   data: "",
-                // });
+                store.dispatch("commonStore/setCurrentModalAsync", {
+                  name: "login",
+                  data: "",
+                });
+                commit("setToken", "");
                 router.push({ name: "main" });
               },
               (error) => {
@@ -130,6 +132,7 @@ export const memberStore = {
         }
       },
       (error) => {
+        commit("setToken", "");
         console.log(error);
       }
     );
