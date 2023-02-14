@@ -108,6 +108,7 @@ export const memberStore = {
                   name: "login",
                   data: "",
                 });
+                commit("setToken", "");
                 router.push({ name: "main" });
               },
               (error) => {
@@ -131,7 +132,7 @@ export const memberStore = {
         }
       },
       (error) => {
-        accessToken = "";
+        commit("setToken", "");
         console.log(error);
       }
     );
