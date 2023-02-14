@@ -8,10 +8,10 @@
         :game="game"
       ></normal-game>
     </div>
-    <loading-spinner id="imgLoading" v-if="isLoading">
+    <loading-spinner id="imgLoading" v-show="isLoading">
       <!-- 이미지 로딩 중 -->
     </loading-spinner>
-    <span id="noItem" v-else-if="!myGames && !isLoading">
+    <span id="noItem" v-show="(!myGames || !myGames) && !isLoading">
       게임을 등록 해주세요!
     </span>
   </div>

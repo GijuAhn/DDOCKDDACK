@@ -74,6 +74,7 @@ let checkNickname = ref(false);
 const modifyNameInput = () => {
   //form형태로 변경
   console.log("click ", save.value);
+  console.log("profile ", myProfile);
   save.value = !save.value;
 };
 
@@ -104,7 +105,7 @@ const modifyName = () => {
       });
 
     save.value = !save.value;
-    checkNickname.value = !checkNickname.value;
+    // checkNickname.value = !checkNickname.value;
   } else {
     console.log("닉네임 규칙에 맞게");
     if (!checkNickname.value) {
@@ -155,7 +156,7 @@ const withdrawal = () => {
       headers: { "access-token": accessToken.value },
     })
     .then(() => {
-      store.state.memberStore.accessToken = "";
+      store.state.memberStore.accessToken = null;
       store.state.memberStore.memberInfo = {};
       window.location.assign(`/`);
     })
@@ -237,5 +238,16 @@ const withdrawal = () => {
   font-size: 13px;
   padding-top: 5px;
   /* padding: 12px 0px; */
+}
+input {
+  outline: none;
+  border-radius: 5px;
+  border: 2px solid black;
+  font-size: 40px;
+  font-family: "NanumSquareRoundB";
+  padding: 0 10px;
+  height: 46px;
+  width: 300px;
+  margin-bottom: 20px;
 }
 </style>

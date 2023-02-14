@@ -7,7 +7,7 @@
         :game="game"
       ></normal-game>
     </div>
-    <loading-spinner id="imgLoading" v-if="isLoading">
+    <loading-spinner id="imgLoading" v-show="isLoading">
       <!-- 이미지 로딩 중 -->
     </loading-spinner>
     <span id="noItem" v-show="!starredGames && !isLoading">

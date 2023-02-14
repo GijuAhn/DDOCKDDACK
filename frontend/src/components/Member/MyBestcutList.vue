@@ -7,10 +7,13 @@
         :bestcut="bestcut"
       ></normal-bestcut>
     </div>
-    <loading-spinner id="imgLoading" v-if="isLoading">
+    <loading-spinner id="imgLoading" v-show="isLoading">
       <!-- 이미지 로딩 중 -->
     </loading-spinner>
-    <span id="noItem" v-else-if="!myBestcuts && !isLoading">
+    <span
+      id="noItem"
+      v-show="(!myBestcuts || !myBestcuts.length) && !isLoading"
+    >
       베스트컷을 등록 해주세요!
     </span>
   </div>

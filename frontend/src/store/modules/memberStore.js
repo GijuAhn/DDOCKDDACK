@@ -11,7 +11,7 @@ export const memberStore = {
   state: {
     accessToken: "",
     memberInfo: {
-      memberId: "",
+      id: "",
       email: "",
       nickname: "",
       profile: "",
@@ -46,16 +46,12 @@ export const memberStore = {
             // let accessToken = data["access-token"];
             // let refreshToken = data["refresh-token"];
             // console.log("login success token created!!!! >> ", accessToken, refreshToken);
-            commit("SET_IS_LOGIN", true);
-            commit("SET_IS_LOGIN_ERROR", false);
-            commit("SET_IS_VALID_TOKEN", true);
+            commit("setMemberInfo", data);
 
             // sessionStorage.setItem("access-token", accessToken); //변수에
             // sessionStorage.setItem("refresh-token", refreshToken); //cookie에
           } else {
-            commit("SET_IS_LOGIN", false);
-            commit("SET_IS_LOGIN_ERROR", true);
-            commit("SET_IS_VALID_TOKEN", false);
+            console.log("login 실패");
           }
         },
         (error) => {
@@ -84,6 +80,7 @@ export const memberStore = {
     },
 
     async accesstokenReissue({ commit, state, store }, isAuthPage) {
+      console.log("이슈 진입");
       await accesstokenRegeneration(
         ({ data }) => {
           if (data) {
@@ -93,6 +90,8 @@ export const memberStore = {
         },
         async (error) => {
           //AccessToken 갱신 실패시 refreshToken이 문제임 >> 다시 로그인해야함
+          commit("setToken", "");
+          console.log("Reissue 실패");
           if (error === 401 && isAuthPage) {
             console.log("갱신 실패");
             await logout(
@@ -108,7 +107,6 @@ export const memberStore = {
                   name: "login",
                   data: "",
                 });
-                commit("setToken", "");
                 router.push({ name: "main" });
               },
               (error) => {

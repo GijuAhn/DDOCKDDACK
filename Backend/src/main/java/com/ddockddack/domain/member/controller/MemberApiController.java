@@ -173,14 +173,14 @@ public class MemberApiController {
         memberService.deleteMemberById(
                 memberAccessRes.getId()); //탈퇴로직에 access, refresh Token 정지시키는 로직 추가해야함
 
-        log.info("RT {}", refreshToken);
+        log.info("withdrawal {} ", refreshToken);
         if ("".equals(refreshToken)) {
-            log.info("lgout {} ", refreshToken);
             Cookie refreshTokenCookie = new Cookie("refresh-token", null);
             refreshTokenCookie.setMaxAge(0);
             refreshTokenCookie.setPath("/");
             response.addCookie(refreshTokenCookie);
 
+            log.info("withdrawal2 {} ", refreshToken);
             return ResponseEntity.ok().build();
         } else {
             return ResponseEntity.status(401).body("refresh-token Error");
@@ -269,7 +269,7 @@ public class MemberApiController {
         @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @GetMapping("/logout")
-    public void
+    public ResponseEntity
     logoutUser(HttpServletRequest request, HttpServletResponse response) {
         Cookie[] cookies = request.getCookies();
         log.info("cokies {}", cookies);
@@ -293,6 +293,9 @@ public class MemberApiController {
             refreshTokenCookie.setPath("/");
             response.addCookie(refreshTokenCookie);
             memberService.logout(refreshToken);
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.status(401).body("refresh-token Error");
         }
     }
 
