@@ -5,6 +5,9 @@ import com.ddockddack.domain.game.repository.GameImageRepository;
 import com.ddockddack.domain.game.repository.GameRepository;
 import com.ddockddack.domain.game.repository.GameRepositorySupport;
 import com.ddockddack.domain.game.repository.StarredGameRepository;
+import com.ddockddack.domain.gameRoom.entity.GameRoomHistory;
+import com.ddockddack.domain.gameRoom.repository.GameRoomHistoryRepository;
+import com.ddockddack.domain.gameRoom.repository.GameRoomHistoryRepositorySupport;
 import com.ddockddack.domain.gameRoom.repository.GameRoomRepository;
 import com.ddockddack.domain.member.entity.Member;
 import com.ddockddack.domain.member.entity.Role;
@@ -19,6 +22,7 @@ import com.ddockddack.global.service.AwsS3Service;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -52,6 +56,8 @@ public class MemberService {
     private final StarredGameRepository starredGameRepository;
     private final GameRepositorySupport gameRepositorySupport;
     private final GameRepository gameRepository;
+    private final GameRoomHistoryRepository gameRoomHistoryRepository;
+    private final GameRoomHistoryRepositorySupport gameRoomHistoryRepositorySupport;
     private final AwsS3Service awsS3Service;
 
 
@@ -134,6 +140,12 @@ public class MemberService {
         starredGameRepository.deleteAllByGameId(gameIds);
         reportedGameRepository.deleteAllByGameId(gameIds);
         gameRepository.deleteAllByGameId(gameIds);
+
+        List<Long> gameRoomHistoryIds = gameRoomHistoryRepositorySupport.findAllGameRoomHistoryIdByMemberId(memberId);
+
+        log.info(gameRoomHistoryIds.toString());
+
+        gameRoomHistoryRepository.deleteAllByGameId(gameRoomHistoryIds);
 
         memberRepository.deleteById(memberId);
     }
