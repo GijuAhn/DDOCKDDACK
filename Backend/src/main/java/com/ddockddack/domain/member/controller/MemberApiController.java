@@ -9,7 +9,7 @@ import com.ddockddack.domain.game.service.GameService;
 import com.ddockddack.domain.gameRoom.response.GameRoomHistoryRes;
 import com.ddockddack.domain.gameRoom.service.GameRoomService;
 import com.ddockddack.domain.member.entity.Member;
-import com.ddockddack.domain.member.request.MemberModifyReq;
+import com.ddockddack.domain.member.request.MemberModifyNameReq;
 import com.ddockddack.domain.member.response.MemberAccessRes;
 import com.ddockddack.domain.member.service.MemberService;
 import com.ddockddack.global.error.ErrorCode;
@@ -20,18 +20,26 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
+import java.util.Optional;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.List;
-import java.util.Optional;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @Slf4j
@@ -45,23 +53,65 @@ public class MemberApiController {
     private final GameService gameService;
     private final GameRoomService gameRoomService;
 
-    @Operation(summary = "회원 정보 수정", description = "회원 정보 수정 메소드입니다.")
+    @Operation(summary = "회원 nickname 수정", description = "회원 nickname 수정 메소드입니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "이력 조회 성공"),
-            @ApiResponse(responseCode = "400", description = "필수 값 누락"),
-            @ApiResponse(responseCode = "400", description = "권한 없음"),
-            @ApiResponse(responseCode = "404", description = "존재하지 않는 유저"),
-            @ApiResponse(responseCode = "413", description = "파일용량 초과"),
-            @ApiResponse(responseCode = "415", description = "지원하지않는 확장자"),
-            @ApiResponse(responseCode = "500", description = "서버 오류")
+        @ApiResponse(responseCode = "200", description = "이력 조회 성공"),
+        @ApiResponse(responseCode = "400", description = "필수 값 누락"),
+        @ApiResponse(responseCode = "400", description = "권한 없음"),
+        @ApiResponse(responseCode = "404", description = "존재하지 않는 유저"),
+        @ApiResponse(responseCode = "500", description = "서버 오류")
     })
-    @PutMapping()
-    public ResponseEntity<?> modifyMember(@PathVariable Long memberId,
-                                          @RequestBody MemberModifyReq modifyMemberReq,
-                                          @RequestHeader(value = "access-token", required = false) String accessToken) {
+    @PutMapping("/nickname")
+    public ResponseEntity modifyMemberNickname(@RequestBody MemberModifyNameReq
+        memberModifyNameReq) {
         try {
-//            memberService.modifyMember(memberId, modifyMember);
-            return ResponseEntity.ok(memberService.modifyMember(memberId, modifyMemberReq));
+            MemberAccessRes memberAccessRes = (MemberAccessRes) SecurityContextHolder.getContext()
+                .getAuthentication().getPrincipal();
+            Optional<Member> member = memberService.getMemberById(memberAccessRes.getId());
+            if (member.isEmpty()) {
+                throw new NotFoundException(ErrorCode.MEMBER_NOT_FOUND);
+            }
+            memberService.modifyMemberNickname(member.get().getId(), memberModifyNameReq);
+
+//            return ResponseEntity.ok(memberService.modifyMember(member.get().getId(), modifyMemberReq));
+            log.info("memberModifyNameReq {}", memberModifyNameReq);
+
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(e.getMessage());
+        }
+    }
+
+    @Operation(summary = "회원 이미지 수정", description = "회원 이미지 수정 메소드입니다.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "이력 조회 성공"),
+        @ApiResponse(responseCode = "400", description = "필수 값 누락"),
+        @ApiResponse(responseCode = "400", description = "권한 없음"),
+        @ApiResponse(responseCode = "404", description = "존재하지 않는 유저"),
+        @ApiResponse(responseCode = "413", description = "파일용량 초과"),
+        @ApiResponse(responseCode = "415", description = "지원하지않는 확장자"),
+        @ApiResponse(responseCode = "500", description = "서버 오류")
+    })
+    @PutMapping("/profile")
+    public ResponseEntity modifyMemberProfileImg(
+        @ModelAttribute MultipartFile profileImg
+    ) {
+        try {
+            MemberAccessRes memberAccessRes = (MemberAccessRes) SecurityContextHolder.getContext()
+                .getAuthentication().getPrincipal();
+            Optional<Member> member = memberService.getMemberById(memberAccessRes.getId());
+            if (member.isEmpty()) {
+                throw new NotFoundException(ErrorCode.MEMBER_NOT_FOUND);
+            }
+            if (profileImg.isEmpty()) {
+                throw new NotFoundException(ErrorCode.MISSING_REQUIRED_VALUE);
+            }
+
+            log.info("profileImg {}", profileImg.getOriginalFilename());
+
+            memberService.modifyMemberProfileImg(member.get().getId(), profileImg);
+
+            return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.status(500).body(e.getMessage());
         }
@@ -69,18 +119,18 @@ public class MemberApiController {
 
     @Operation(summary = "내 정보 조회", description = "회원 정보 조회 메소드입니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "이력 조회 성공"),
-            @ApiResponse(responseCode = "400", description = "파라미터 타입 오류"),
-            @ApiResponse(responseCode = "404", description = "존재하지 않는 유저"),
-            @ApiResponse(responseCode = "500", description = "서버 오류")
+        @ApiResponse(responseCode = "200", description = "이력 조회 성공"),
+        @ApiResponse(responseCode = "400", description = "파라미터 타입 오류"),
+        @ApiResponse(responseCode = "404", description = "존재하지 않는 유저"),
+        @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @GetMapping()
-    public ResponseEntity<?> getMemberInfo() {
+    public ResponseEntity getMemberInfo() {
         log.info("sec info {}",
-                SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
+            SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
         MemberAccessRes memberAccessRes = Optional.ofNullable(
-                (MemberAccessRes) SecurityContextHolder.getContext()
-                        .getAuthentication().getPrincipal()).get();
+            (MemberAccessRes) SecurityContextHolder.getContext()
+                .getAuthentication().getPrincipal()).get();
         if (memberAccessRes.toString().equals("anonymousUser")) {
             throw new NotFoundException(ErrorCode.MEMBER_NOT_FOUND);
         }
@@ -96,64 +146,57 @@ public class MemberApiController {
 
     @Operation(summary = "회원 탈퇴", description = "회원 탈퇴 메소드입니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "이력 조회 성공"),
-            @ApiResponse(responseCode = "400", description = "파라미터 타입 오류"),
-            @ApiResponse(responseCode = "404", description = "존재하지 않는 유저"),
-            @ApiResponse(responseCode = "500", description = "서버 오류")
+        @ApiResponse(responseCode = "200", description = "이력 조회 성공"),
+        @ApiResponse(responseCode = "400", description = "파라미터 타입 오류"),
+        @ApiResponse(responseCode = "404", description = "존재하지 않는 유저"),
+        @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @DeleteMapping()
-    public ResponseEntity deleteMember(HttpServletRequest request,
-                                       HttpServletResponse response) {
-        try {
-            Cookie[] cookies = request.getCookies();
-            log.info("cokies {}", cookies);
+    public ResponseEntity deleteMember(HttpServletRequest request, HttpServletResponse response) {
+        Cookie[] cookies = request.getCookies();
+        log.info("cokies {}", cookies);
 
-            String refreshToken = null;
-            if (cookies != null) {
-                for (Cookie cookie : cookies) {
-                    log.info(String.valueOf(cookie.getName()));
-                    if (cookie.getName().equals("refresh-token")) {
-                        refreshToken = cookie.getValue();
-                        break;
-                    }
+        String refreshToken = "";
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                log.info(String.valueOf(cookie.getName()));
+                if (cookie.getName().equals("refresh-token")) {
+                    refreshToken = cookie.getValue();
+                    break;
                 }
             }
-
-            MemberAccessRes memberAccessRes = Optional.ofNullable(
-                    (MemberAccessRes) SecurityContextHolder.getContext()
-                            .getAuthentication().getPrincipal()).get();
-            memberService.deleteMemberById(
-                    memberAccessRes.getId()); //탈퇴로직에 access, refresh Token 정지시키는 로직 추가해야함
-
-            log.info("RT {}", refreshToken);
-            if (refreshToken != null) {
-                log.info("lgout {} ", refreshToken);
-                Cookie refreshTokenCookie = new Cookie("refresh-token", null);
-                refreshTokenCookie.setMaxAge(0);
-                refreshTokenCookie.setPath("/");
-                response.addCookie(refreshTokenCookie);
-
-                return ResponseEntity.ok().build();
-            } else {
-                return ResponseEntity.status(401).body("refresh-token Error");
-            }
-        } catch (Exception e) {
-
         }
-        return ResponseEntity.ok().build();
 
+        MemberAccessRes memberAccessRes = Optional.ofNullable(
+                (MemberAccessRes) SecurityContextHolder.getContext()
+                        .getAuthentication().getPrincipal()).get();
+        memberService.deleteMemberById(
+                memberAccessRes.getId()); //탈퇴로직에 access, refresh Token 정지시키는 로직 추가해야함
+
+        log.info("RT {}", refreshToken);
+        if ("".equals(refreshToken)) {
+            log.info("lgout {} ", refreshToken);
+            Cookie refreshTokenCookie = new Cookie("refresh-token", null);
+            refreshTokenCookie.setMaxAge(0);
+            refreshTokenCookie.setPath("/");
+            response.addCookie(refreshTokenCookie);
+
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.status(401).body("refresh-token Error");
+        }
     }
 
     @Operation(summary = "내 베스트 컷 전체 조회", description = "내 베스트 컷 전체 조회 메소드입니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "내 베스트 컷 전체 조회 성공"),
-            @ApiResponse(responseCode = "400", description = "파라미터 타입 오류"),
-            @ApiResponse(responseCode = "404", description = "존재하지 않는 유저"),
-            @ApiResponse(responseCode = "500", description = "서버 오류")
+        @ApiResponse(responseCode = "200", description = "내 베스트 컷 전체 조회 성공"),
+        @ApiResponse(responseCode = "400", description = "파라미터 타입 오류"),
+        @ApiResponse(responseCode = "404", description = "존재하지 않는 유저"),
+        @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @GetMapping("/{memberId}/bestcuts")
-    public ResponseEntity<?> getBestcuts(@PathVariable Long memberId,
-                                         @ModelAttribute PageConditionReq pageCondition) {
+    public ResponseEntity getBestcuts(@PathVariable Long memberId,
+        @ModelAttribute PageConditionReq pageCondition) {
         try {
             log.info("bestcuts {}, {}", memberId, pageCondition.toString());
 
@@ -167,18 +210,15 @@ public class MemberApiController {
 
     @Operation(summary = "내가 만든 게임 전체 조회", description = "내가 만든 게임 전체 조회 메소드입니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "내가 만든 게임 전체 조회 성공"),
-            @ApiResponse(responseCode = "400", description = "파라미터 타입 오류"),
-            @ApiResponse(responseCode = "404", description = "존재하지 않는 유저"),
-            @ApiResponse(responseCode = "500", description = "서버 오류")
+        @ApiResponse(responseCode = "200", description = "내가 만든 게임 전체 조회 성공"),
+        @ApiResponse(responseCode = "400", description = "파라미터 타입 오류"),
+        @ApiResponse(responseCode = "404", description = "존재하지 않는 유저"),
+        @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @GetMapping("/{memberId}/games")
-    public ResponseEntity<?> getMyGames(@PathVariable Long memberId,
-                                        @ModelAttribute PageConditionReq pageCondition) {
-
-        log.info("Page Condition {}", pageCondition);
+    public ResponseEntity getMyGames(@PathVariable Long memberId) {
         try {
-            PageImpl<GameRes> gameResList = gameService.findAllGames(memberId, pageCondition);
+            List<GameRes> gameResList = gameService.findAllGameByMemberId(memberId);
             return ResponseEntity.ok(gameResList);
         } catch (Exception e) {
             return ResponseEntity.status(500).body(e);
@@ -187,16 +227,16 @@ public class MemberApiController {
 
     @Operation(summary = "즐겨찾기 게임 전체 조회", description = "내가 만든 게임 전체 조회 메소드입니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "즐겨찾기 게임 전체 조회 성공"),
-            @ApiResponse(responseCode = "400", description = "파라미터 타입 오류"),
-            @ApiResponse(responseCode = "404", description = "존재하지 않는 유저"),
-            @ApiResponse(responseCode = "500", description = "서버 오류")
+        @ApiResponse(responseCode = "200", description = "즐겨찾기 게임 전체 조회 성공"),
+        @ApiResponse(responseCode = "400", description = "파라미터 타입 오류"),
+        @ApiResponse(responseCode = "404", description = "존재하지 않는 유저"),
+        @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @GetMapping("/{memberId}/starred")
-    public ResponseEntity<?> getGames(@PathVariable Long memberId) {
+    public ResponseEntity getStarredGames(@PathVariable Long memberId) {
         try {
             List<StarredGameRes> starredGameResList = gameService.findAllStarredGames(
-                    memberId); //member Response에 올려야 하나?
+                memberId);
             return ResponseEntity.ok(starredGameResList);
         } catch (Exception e) {
             return ResponseEntity.status(500).body(e);
@@ -205,14 +245,14 @@ public class MemberApiController {
 
     @Operation(summary = "게임 이력 조회", description = "게임 이력 조회 메소드입니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "이력 조회 성공"),
-            @ApiResponse(responseCode = "400", description = "파라미터 타입 오류"),
-            @ApiResponse(responseCode = "404", description = "존재하지 않는 유저"),
-            @ApiResponse(responseCode = "500", description = "서버 오류")
+        @ApiResponse(responseCode = "200", description = "이력 조회 성공"),
+        @ApiResponse(responseCode = "400", description = "파라미터 타입 오류"),
+        @ApiResponse(responseCode = "404", description = "존재하지 않는 유저"),
+        @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @GetMapping("/{memberId}/records")
-    public ResponseEntity<?> getRecords(@PathVariable Long memberId,
-                                        @RequestHeader(value = "access-token", required = false) String accessToken) {
+    public ResponseEntity getRecords(@PathVariable Long memberId,
+        @RequestHeader(value = "access-token", required = false) String accessToken) {
         try {
             List<GameRoomHistoryRes> roomHistory = gameRoomService.findAllRoomHistory(memberId);
             return ResponseEntity.ok(roomHistory);
@@ -223,10 +263,10 @@ public class MemberApiController {
 
     @Operation(summary = "로그아웃", description = "로그아웃 메소드입니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "성공"),
-            @ApiResponse(responseCode = "401", description = "인증 실패"),
-            @ApiResponse(responseCode = "404", description = "사용자 없음"),
-            @ApiResponse(responseCode = "500", description = "서버 오류")
+        @ApiResponse(responseCode = "200", description = "성공"),
+        @ApiResponse(responseCode = "401", description = "인증 실패"),
+        @ApiResponse(responseCode = "404", description = "사용자 없음"),
+        @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @GetMapping("/logout")
     public void
@@ -369,4 +409,5 @@ public class MemberApiController {
     }*/
 
 }
+
 
