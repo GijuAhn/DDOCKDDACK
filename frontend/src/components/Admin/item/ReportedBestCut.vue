@@ -1,9 +1,9 @@
 <template>
   <tr>
-    <td>{{ props.reportedGame.gameTitle }}</td>
-    <td>{{ props.reportedGame.reason }}</td>
-    <td>{{ props.reportedGame.reportMemberNickname }}</td>
-    <td>{{ props.reportedGame.reportedMemberNickname }}</td>
+    <td>{{ props.reportedBestCut.bestcutTitle }}</td>
+    <td>{{ props.reportedBestCut.reason }}</td>
+    <td>{{ props.reportedBestCut.reportMemberNickname }}</td>
+    <td>{{ props.reportedBestCut.reportedMemberNickname }}</td>
     <td><input v-model="visible" type="checkbox" /></td>
     <td>
       <select v-model="banLevel" class="action">
@@ -20,9 +20,9 @@
   </tr>
   <tr v-if="visible">
     <td colspan="6">
-      <div class="preview">
-        <reported-game-preview :gameId="gameId"></reported-game-preview>
-      </div>
+      <reported-best-cut-preview
+        :bestcutId="bestcutId"
+      ></reported-best-cut-preview>
     </td>
   </tr>
 </template>
@@ -31,30 +31,50 @@
 import { apiInstance } from "@/api/index";
 import { useStore } from "vuex";
 import { defineProps, ref, computed, defineEmits } from "vue";
-import reportedGamePreview from "@/components/Admin/item/reportedGamePreview.vue";
+import ReportedBestCutPreview from "@/components/Admin/item/ReportedBestCutPreview.vue";
 
 const api = apiInstance();
-const props = defineProps({ reportedGame: Object });
+const props = defineProps({ reportedBestCut: Object });
 const visible = ref();
 const store = useStore();
 const admin_api_url = `/api/admin`;
 const accessToken = computed(() => store.state.memberStore.accessToken);
 const banLevel = "noPenalty";
 const emit = defineEmits(["deleteProps"]);
-const gameId = computed(() => {
-  return props.reportedGame.gameId;
+const bestcutId = computed(() => {
+  return props.reportedBestCut.bestcutId;
 });
 
 const punishmentApi = () => {
   api
     .delete(
       admin_api_url +
-        `/remove/game/${props.reportedGame.reportId}/${props.reportedGame.gameId}`,
+        `/remove/bestcut/${props.reportedBestCut.reportId}/${props.reportedBestCut.bestcutId}`,
       {
         headers: {
           "access-token": accessToken.value,
-          banMemberId: props.reportedGame.reportedMemberId,
+          banMemberId: props.reportedBestCut.reportedMemberId,
           banLevel: banLevel,
+        },
+      }
+    )
+    .then((response) => {
+      console.log(response);
+      emit("deleteProps", { target: props.reportedBestCut.bestcutId });
+    })
+    .catch((error) => {
+      error;
+      console.log(error);
+    });
+};
+
+const reportcancelApi = () => {
+  api
+    .delete(
+      admin_api_url + `/remove/bestcut/${props.reportedBestCut.reportId}`,
+      {
+        headers: {
+          "access-token": accessToken.value,
         },
       }
     )
@@ -67,31 +87,9 @@ const punishmentApi = () => {
       console.log(error);
     });
 };
-
-const reportcancelApi = () => {
-  api
-    .delete(admin_api_url + `/remove/game/${props.reportedGame.reportId}`, {
-      headers: {
-        "access-token": accessToken.value,
-      },
-    })
-    .then((response) => {
-      console.log(response);
-      emit("deleteProps", { target: props.reportedGame.gameId });
-    })
-    .catch((error) => {
-      error;
-      console.log(error);
-    });
-};
 </script>
 
 <style scoped>
-.preview {
-  display: flex;
-  justify-content: center; /* flex-start / center / flex-end */
-}
-
 td {
   height: 50px;
   border-bottom: 1px solid #737373;

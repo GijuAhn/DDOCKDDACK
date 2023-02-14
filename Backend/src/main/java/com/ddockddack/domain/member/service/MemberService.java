@@ -1,5 +1,6 @@
 package com.ddockddack.domain.member.service;
 
+import com.ddockddack.domain.bestcut.service.BestcutService;
 import com.ddockddack.domain.member.entity.Member;
 import com.ddockddack.domain.member.entity.Role;
 import com.ddockddack.domain.member.repository.MemberRepository;
@@ -11,8 +12,8 @@ import com.ddockddack.global.error.exception.NotFoundException;
 import com.ddockddack.global.service.AwsS3Service;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +39,7 @@ public class MemberService {
 
     private final Environment env;
     private final MemberRepository memberRepository;
+    private final BestcutService bestcutService;
     private final TokenService tokenService;
     private final AwsS3Service awsS3Service;
     //    private final RedisTemplate redisTemplate;
@@ -110,6 +112,9 @@ public class MemberService {
 
     @Transactional
     public void deleteMemberById(Long memberId) {
+        List<Long> bestcutIds = bestcutService.findByMemberId(memberId);
+        bestcutService.removeAllByIds(bestcutIds);
+
         memberRepository.deleteById(memberId);
     }
 
@@ -288,8 +293,10 @@ public class MemberService {
     }
 
     public LocalDate getReleaseDate(BanLevel banLevel) {
+    public LocalDate getReleaseDate(BanLevel banLevel) {
         LocalDate today = LocalDate.now();
 
+        switch (banLevel) {
         switch (banLevel) {
             case oneWeek:
                 today.plusDays(7);
