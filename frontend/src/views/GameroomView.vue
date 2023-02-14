@@ -1,17 +1,6 @@
 <template>
   <div id="session">
     <modal-frame v-if="currentModal.length !== 0" />
-    <div>
-      <result-modal
-        v-if="resultMode"
-        :round="round"
-        :result="result"
-        :isEnd="isEnd"
-        :winner="winner"
-        :publisher="openviduInfo.publisher"
-      />
-    </div>
-
     <div id="session-header">
       <span id="session-title">
         {{ room.gameTitle }} [방 코드 - {{ room.pinNumber }}]
@@ -51,7 +40,7 @@
             <div id="gameWaitSection">
               <div id="relative">
                 <img src="@/assets/images/gameWait.png" />
-                <div id="waitDesc">
+                <div id="Desc">
                   <span id="largeFont">잠시만 기다려주세요</span>
                   <br />
                   <br />
@@ -78,11 +67,14 @@
           <div v-if="isEnd">
             <div id="gameResultSection">
               <div id="relative">
-                <img src="@/assets/images/gameResult.png" />
-                <button @click="setCurrentModalAsync(`bestcutUpload`)">
-                  내 사진 보기
-                </button>
-                <button>최종 결과</button>
+                <img id="result_1" src="@/assets/images/gameResult_1.png" />
+                <img id="result_2" src="@/assets/images/gameResult_2.png" />
+                <div id="Desc">
+                  <button @click="setCurrentModalAsync(`bestcutUpload`)">
+                    내 사진 보기
+                  </button>
+                  <button>최종 결과</button>
+                </div>
               </div>
             </div>
           </div>
@@ -160,7 +152,6 @@ import { useStore } from "vuex";
 import router from "@/router/index.js";
 import process from "process";
 import ModalFrame from "@/components/common/ModalFrame";
-import ResultModal from "@/components/Gameroom/item/ResultModal.vue";
 import html2canvas from "html2canvas";
 import captureSound from "@/assets/sounds/capture_sound.mp3";
 import backgroundSound from "@/assets/sounds/background_sound.mp3";
@@ -210,23 +201,24 @@ const captureAudio = new Audio(captureSound);
 const backgroundAudio = new Audio(backgroundSound);
 
 onBeforeMount(() => {
-  api
-    .post(`/api/game-rooms/${route.params.pinNumber}`, {})
-    .then((res) => {
-      //access-token 없으면 닉네임 입력 받도록 수정 필요
-      if (!accessToken.value) {
-        do {
-          nickname.value = prompt("닉네임을 입력해주세요.");
-          if (nickname.value == null) {
-            router.replace("/");
-          }
-        } while (nickname.value.trim() == "");
-      } else {
-        nickname.value = tempNickname.value;
+  //access-token 없으면 닉네임 입력 받도록 수정 필요
+  if (!accessToken.value) {
+    do {
+      nickname.value = prompt("닉네임을 입력해주세요.");
+      if (nickname.value == null) {
+        router.replace("/");
       }
-
+    } while (nickname.value.trim() == "");
+  } else {
+    nickname.value = tempNickname.value;
+  }
+  api
+    .post(`/api/game-rooms/${route.params.pinNumber}`, {
+      nickname: nickname.value,
+    })
+    .then((res) => {
       openviduInfo.value.OV = new OpenVidu();
-      openviduInfo.value.OV.enableProdMode();
+      // openviduInfo.value.OV.enableProdMode();
       openviduInfo.value.session = openviduInfo.value.OV.initSession();
       // On every new Stream received...
       openviduInfo.value.session.on("streamCreated", ({ stream }) => {
@@ -262,6 +254,7 @@ onBeforeMount(() => {
               if (timerCount.value === 0) {
                 clearInterval(timer);
                 capture(signal.data - 1);
+                setCurrentModalAsync("intermediateResult"); //주석
                 timerCount.value = 5;
                 resultMode.value = true;
               }
@@ -273,6 +266,7 @@ onBeforeMount(() => {
             if (timerCount.value === 0) {
               clearInterval(timer);
               capture(signal.data - 1);
+              setCurrentModalAsync("intermediateResult"); //주석
               timerCount.value = 5;
               resultMode.value = true;
             }
@@ -285,6 +279,7 @@ onBeforeMount(() => {
         setTimeout(() => {
           resultMode.value = false;
           result.value.length = 0;
+          setCurrentModalAsync(""); //주석
           if (round.value < 5 && isHost.value) {
             api.get(`/api/game-rooms/${route.params.pinNumber}/round`);
           } else if (isHost.value) {
@@ -495,12 +490,20 @@ const capture = async (index) => {
 };
 
 const setCurrentModalAsync = (what) => {
-  store.dispatch("commonStore/setCurrentModalAsync", {
-    name: what,
-    data: [resultImages, openviduInfo.value.publisher, room],
-  });
+  if (what === "bestcutUpload") {
+    store.dispatch("commonStore/setCurrentModalAsync", {
+      name: what,
+      data: [resultImages, openviduInfo.value.publisher, room],
+    });
+  } else if (what === "intermediateResult") {
+    store.dispatch("commonStore/setCurrentModalAsync", {
+      name: what,
+      data: [round, result, isEnd, winner, openviduInfo.value.publisher],
+    });
+  } else if (what === "") {
+    store.dispatch("commonStore/setCurrentModalAsync", "");
+  }
 };
-
 const pubVideoOff = (video) => {
   isPubVideoEnable.value = !isPubVideoEnable.value;
   video.publishVideo(isPubVideoEnable.value);
@@ -510,6 +513,8 @@ const pubAudioOff = (video) => {
   isPubAudioEnable.value = !isPubAudioEnable.value;
   video.publishAudio(isPubAudioEnable);
 };
+
+// setCurrentModalAsync("intermediateResult"); //주석
 </script>
 
 <style scoped>
@@ -600,7 +605,7 @@ const pubAudioOff = (video) => {
   position: relative;
 }
 
-#waitDesc {
+#gameWaitSection #Desc {
   float: left;
   top: 50%;
   left: 45%;
@@ -608,10 +613,34 @@ const pubAudioOff = (video) => {
   transform: translate(0, -50%);
 }
 
-#relative img {
+#gameWaitSection #relative img {
   top: 50%;
   position: absolute;
   transform: translate(10%, -50%);
+}
+
+#gameResultSection #Desc {
+  float: left;
+  top: 50%;
+  left: 30%;
+  position: absolute;
+  transform: translate(0, -50%);
+}
+
+#gameResultSection #relative #result_1 {
+  top: 15%;
+  left: 15%;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  height: 30%;
+}
+
+#gameResultSection #relative #result_2 {
+  top: 70%;
+  left: 85%;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  height: 70%;
 }
 
 #largeFont {
@@ -637,7 +666,7 @@ const pubAudioOff = (video) => {
   font-size: 24px;
   color: white;
   border-radius: 24px;
-  width: 80px;
+  width: 90px;
   height: 36px;
   text-align: center;
   line-height: 36px;
@@ -663,6 +692,7 @@ const pubAudioOff = (video) => {
   background-color: #f08383;
   color: white;
   width: 140px;
+  margin: 0 20px;
 }
 #gameResultSection button:hover {
   cursor: pointer;
