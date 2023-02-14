@@ -60,12 +60,13 @@ public class GameRoomApiController {
             @ApiResponse(responseCode = "404", description = "존재 하지 않는 게임방")
     })
     public ResponseEntity<GameRoomRes> joinRoom(@PathVariable String pinNumber,
-                                                @RequestBody(required = false) String nickname,
+                                                @RequestBody(required = false) Map<String, String> param,
                                                 Authentication authentication,
                                                 HttpServletRequest request) throws OpenViduJavaClientException, OpenViduHttpException {
 
         String clientIp = ClientUtils.etRemoteAddr(request);
         log.info("clientIp 확인 {}", clientIp);
+        String nickname = param.get("nickname");
         Long memberId = null;
         if(authentication != null) {
             memberId = ((MemberAccessRes) authentication.getPrincipal()).getId();
