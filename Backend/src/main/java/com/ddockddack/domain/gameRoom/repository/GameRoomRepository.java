@@ -234,16 +234,14 @@ public class GameRoomRepository {
     }
 
 
-    public List<String> findFinalResult(GameRoom gameRoom){
+    public List<GameMemberRes> findFinalResult(GameRoom gameRoom){
         List<GameMember> members = new ArrayList<>(gameRoom.getMembers().values());
         PriorityQueue<GameMember> pq = new PriorityQueue<>((a, b) -> b.getTotalScore() - a.getTotalScore());
         pq.addAll(members);
-        List<String> finalResult = new ArrayList<>();
-        for (int i = 0; i < 3; i++) {
-            if (pq.isEmpty()) break;
-            finalResult.add(pq.poll().getSocketId());
+        List<GameMemberRes> finalResult = new ArrayList<>();
+        while(!pq.isEmpty()){
+            finalResult.add(GameMemberRes.from(pq.poll()));
         }
-
         return finalResult;
     }
 

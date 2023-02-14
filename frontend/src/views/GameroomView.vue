@@ -207,23 +207,24 @@ const isPubVideoEnable = ref(true);
 const isPubAudioEnable = ref(true);
 const captureAudio = new Audio(captureSound);
 onBeforeMount(() => {
-  api
-    .post(`/api/game-rooms/${route.params.pinNumber}`, {})
-    .then((res) => {
-      //access-token 없으면 닉네임 입력 받도록 수정 필요
-      if (!accessToken.value) {
-        do {
-          nickname.value = prompt("닉네임을 입력해주세요.");
-          if (nickname.value == null) {
-            router.replace("/");
-          }
-        } while (nickname.value.trim() == "");
-      } else {
-        nickname.value = tempNickname.value;
+  //access-token 없으면 닉네임 입력 받도록 수정 필요
+  if (!accessToken.value) {
+    do {
+      nickname.value = prompt("닉네임을 입력해주세요.");
+      if (nickname.value == null) {
+        router.replace("/");
       }
-
+    } while (nickname.value.trim() == "");
+  } else {
+    nickname.value = tempNickname.value;
+  }
+  api
+    .post(`/api/game-rooms/${route.params.pinNumber}`, {
+      nickname: nickname.value,
+    })
+    .then((res) => {
       openviduInfo.value.OV = new OpenVidu();
-      openviduInfo.value.OV.enableProdMode();
+      // openviduInfo.value.OV.enableProdMode();
       openviduInfo.value.session = openviduInfo.value.OV.initSession();
       // On every new Stream received...
       openviduInfo.value.session.on("streamCreated", ({ stream }) => {
@@ -282,7 +283,7 @@ onBeforeMount(() => {
         setTimeout(() => {
           resultMode.value = false;
           result.value.length = 0;
-          if (round.value < 5 && isHost.value) {
+          if (round.value < 1 && isHost.value) {
             api.get(`/api/game-rooms/${route.params.pinNumber}/round`);
           } else if (isHost.value) {
             api.get(`/api/game-rooms/${route.params.pinNumber}/final`);
