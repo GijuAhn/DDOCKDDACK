@@ -96,8 +96,9 @@ public class GameRepositorySupport {
     }
 
     // 내가 만든 게임 전체 조회
-    public List<GameRes> findAllByMemberId(Long memberId) {
-        return jpaQueryFactory.select(
+    public PageImpl<GameRes> findAllByMemberId(Long memberId, PageCondition pageCondition) {
+
+        List<GameRes> list = jpaQueryFactory.select(
                         new QGameRes(game.id.as("gameId"),
                                 game.category.as("gameCategory").stringValue(),
                                 game.title.as("gameTitle"),
@@ -111,7 +112,9 @@ public class GameRepositorySupport {
                 .from(game)
                 .innerJoin(game.member, member)
                 .innerJoin(game.images, gameImage)
-                .where(member.id.eq(memberId))
+                .where(member.id.eq(memberId), searchCond(pageCondition.getSearchCondition(), pageCondition), periodCond(pageCondition.getPeriodCondition()))
+                .offset(pageCondition.getPageable().getOffset())
+                .limit(pageCondition.getPageable().getPageSize())
                 .groupBy(game.id,
                         game.category,
                         game.title,
@@ -120,6 +123,7 @@ public class GameRepositorySupport {
                         game.playCount)
                 .orderBy(game.id.desc())
                 .fetch();
+        return new PageImpl<>(list, pageCondition.getPageable(), getTotalPageCount(memberId, pageCondition));
     }
 
     // 즐겨찾기 한 게임 목록 조회

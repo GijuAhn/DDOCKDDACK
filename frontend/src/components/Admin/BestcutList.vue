@@ -18,7 +18,8 @@
           v-for="reportedBestCut in reportedBestCuts"
           :key="reportedBestCut"
           :reportedBestCut="reportedBestCut"
-          @deleteProps="(target) => deleteProps(target)"
+          @deleteBestcut="(target) => deleteBestcut(target)"
+          @deleteReport="(target) => deleteReport(target)"
         ></reported-best-cut>
       </tbody>
     </table>
@@ -57,10 +58,16 @@ const callApi = () => {
 
 callApi();
 
-const deleteProps = function (target) {
-  reportedBestCuts.value = reportedBestCuts.value.filter((item) => {
-    item.bestcutId !== target;
-  });
+const deleteReport = function (target) {
+  reportedBestCuts.value = reportedBestCuts.value.filter(
+    (item) => item.reportId !== target.value
+  );
+};
+
+const deleteBestcut = function (target) {
+  reportedBestCuts.value = reportedBestCuts.value.filter(
+    (item) => item.bestcutId !== target.value
+  );
 };
 
 store.dispatch("commonStore/setAdminTabAsync", 1);

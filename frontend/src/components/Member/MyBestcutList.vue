@@ -6,8 +6,13 @@
         :key="bestcut"
         :bestcut="bestcut"
       ></normal-bestcut>
-      <!-- <span id="noItem" v-if="!myBestcuts"> 베스트컷을 등록 해주세요! </span> -->
     </div>
+    <loading-spinner id="imgLoading" v-if="isLoading">
+      <!-- 이미지 로딩 중 -->
+    </loading-spinner>
+    <span id="noItem" v-else-if="!myBestcuts && !isLoading">
+      베스트컷을 등록 해주세요!
+    </span>
   </div>
 </template>
 
@@ -16,6 +21,7 @@ import NormalBestcut from "@/components/BestcutList/item/NormalBestcut";
 import { apiInstance } from "@/api/index";
 import { useStore } from "vuex";
 import { ref, computed } from "vue";
+import LoadingSpinner from "./item/LoadingSpinner.vue";
 
 const store = useStore();
 
@@ -24,16 +30,18 @@ const memberId = computed(() => store.state.memberStore.memberInfo.id).value;
 const api = apiInstance();
 const accessToken = computed(() => store.state.memberStore.accessToken).value;
 
+const isLoading = ref(true);
+
 let myBestcuts = ref();
-const callApi = () => {
-  api
+const callApi = async () => {
+  await api
     .get(`/api/members/${memberId}/bestcuts`, {
       headers: {
         "access-token": accessToken, // 변수로 가지고있는 AccessToken
       },
     })
     .then((response) => {
-      console.log("access-bestcuts: ", response.data.content);
+      console.log("access-bestcuts: ", response.data.content); //bestcut은 pageimpl이기때문에 content까지 붙여줌
       myBestcuts.value = response.data.content;
     })
     .catch((error) => {
@@ -41,6 +49,9 @@ const callApi = () => {
       // if (error.response.status == 401) {
       //   getAccessTokenByRefreshToken(); // refresh 토큰으로 다시
       // }
+    })
+    .finally(() => {
+      isLoading.value = false;
     });
 };
 
@@ -68,5 +79,9 @@ store.dispatch("commonStore/setMemberTabAsync", 3);
 }
 #noItem {
   font-size: 20px;
+  margin-left: 25%;
+}
+#imgLoading {
+  margin-left: 30%;
 }
 </style>

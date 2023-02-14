@@ -18,7 +18,8 @@
           v-for="reportedGame in reportedGames"
           :key="reportedGame"
           :reportedGame="reportedGame"
-          @deleteProps="(target) => deleteProps(target)"
+          @deleteGame="(target) => deleteGame(target)"
+          @deleteReport="(target) => deleteReport(target)"
         ></reported-game>
       </tbody>
     </table>
@@ -45,7 +46,6 @@ const callApi = () => {
       params: {},
     })
     .then((response) => {
-      console.log(response);
       reportedGames.value = response.data;
       console.log(reportedGames);
     })
@@ -56,10 +56,17 @@ const callApi = () => {
 
 callApi();
 
-const deleteProps = function (target) {
-  reportedGames.value = reportedGames.value.filter((item) => {
-    item.gameId !== target;
-  });
+const deleteGame = function (target) {
+  reportedGames.value = reportedGames.value.filter(
+    (item) => item.reportId !== target.value
+  );
+  console.log(reportedGames);
+};
+
+const deleteReport = function (target) {
+  reportedGames.value = reportedGames.value.filter(
+    (item) => item.reportId !== target.value
+  );
 };
 
 store.dispatch("commonStore/setAdminTabAsync", 0);
