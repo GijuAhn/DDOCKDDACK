@@ -40,7 +40,7 @@ const store = useStore();
 const admin_api_url = `/api/admin`;
 const accessToken = computed(() => store.state.memberStore.accessToken);
 const banLevel = "noPenalty";
-const emit = defineEmits(["deleteProps"]);
+const emit = defineEmits(["deleteBestcut", "deleteReport"]);
 const bestcutId = computed(() => {
   return props.reportedBestCut.bestcutId;
 });
@@ -60,7 +60,7 @@ const punishmentApi = () => {
     )
     .then((response) => {
       console.log(response);
-      emit("deleteProps", { target: props.reportedBestCut.bestcutId });
+      emit("deleteBestcut", { value: props.reportedBestCut.bestcutId });
     })
     .catch((error) => {
       error;
@@ -80,7 +80,7 @@ const reportcancelApi = () => {
     )
     .then((response) => {
       console.log(response);
-      emit("deleteProps", { index: props.index });
+      emit("deleteReport", { value: props.reportedBestCut.reportId });
     })
     .catch((error) => {
       error;
