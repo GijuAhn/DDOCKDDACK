@@ -43,11 +43,8 @@ public class Game {
     @Column(columnDefinition = "DATETIME default now()")
     private LocalDateTime createdAt;
 
-    @OneToMany(mappedBy = "game", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "game", fetch = FetchType.LAZY)
     private List<GameImage> images;
-
-    @OneToMany(mappedBy = "game", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<ReportedGame> reportedGames;
 
     @Builder
     public Game(Member member, String title, Category category, String description) {

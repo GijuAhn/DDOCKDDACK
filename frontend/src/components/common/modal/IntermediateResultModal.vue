@@ -1,50 +1,41 @@
 <template>
   <div class="white-bg">
-    <div v-if="result.length">
-      <div v-if="!isEnd" id="rankContainer">
-        <div id="box1">
-          <div>
-            <span>{{ rankTitle[1] }}</span>
-          </div>
-          <div v-if="result[1]">
-            <img
-              id="rank1"
-              :src="`data:image/jpeg;base64, ${result[1].image}`"
-            />
-          </div>
-          <div v-if="result[1]"><span>닉네임</span></div>
+    <div v-if="result.length" id="rankContainer">
+      <div id="box1">
+        <div>
+          <span>{{ rankTitle[1] }}</span>
         </div>
-        <div id="box0">
-          <div>
-            <span>{{ rankTitle[0] }}</span>
-          </div>
-          <div v-if="result[0]">
-            <img
-              id="rank0"
-              :src="`data:image/jpeg;base64, ${result[0].image}`"
-            />
-          </div>
-          <div v-if="result[0]"><span>닉네임</span></div>
+        <div v-if="result[1]">
+          <img id="rank1" :src="`data:image/jpeg;base64, ${result[1].image}`" />
         </div>
-        <div id="box2">
-          <div>
-            <span>{{ rankTitle[2] }}</span>
-          </div>
-          <div v-if="result[2]">
-            <img
-              id="rank2"
-              :src="`data:image/jpeg;base64, ${result[2].image}`"
-            />
-          </div>
-          <div v-if="result[2]"><span>닉네임</span></div>
+        <div v-if="result[1]">
+          <span>{{ result[1].nickname }}</span>
         </div>
       </div>
-      <div v-else>
-        <user-video id="rank0" :stream-manager="winner[0]" />
-        <user-video id="rank1" :stream-manager="winner[1]" />
-        <user-video id="rank2" :stream-manager="winner[2]" />
+      <div id="box0">
+        <div>
+          <span>{{ rankTitle[0] }}</span>
+        </div>
+        <div v-if="result[0]">
+          <img id="rank0" :src="`data:image/jpeg;base64, ${result[0].image}`" />
+        </div>
+        <div v-if="result[0]">
+          <span>{{ result[0].nickname }}</span>
+        </div>
+      </div>
+      <div id="box2">
+        <div>
+          <span>{{ rankTitle[2] }}</span>
+        </div>
+        <div v-if="result[2]">
+          <img id="rank2" :src="`data:image/jpeg;base64, ${result[2].image}`" />
+        </div>
+        <div v-if="result[2]">
+          <span>{{ result[2].nickname }}</span>
+        </div>
       </div>
     </div>
+
     <div v-else>
       채점 중입니다.
       <div class="clock"></div>
@@ -79,8 +70,8 @@ const store = useStore();
 const currentModal = computed(() => store.state.commonStore.currentModal);
 // const round = ref(currentModal.value.data[0]);
 const result = ref(currentModal.value.data[1]);
-const isEnd = ref(currentModal.value.data[2]);
-const winner = ref(currentModal.value.data[3]);
+// const isEnd = ref(currentModal.value.data[2]);
+// const winner = ref(currentModal.value.data[3]);
 // const publisher = ref(currentModal.value.data[4]);
 
 const rankTitle = ["1st", "2nd", "3rd"];

@@ -57,6 +57,7 @@ public class GameRoomRepository {
         Map<String, String> paramMap = new HashMap<>();
         paramMap.put("customSessionId", pinNumber);
 
+
         List<GameImage> gameImages = game.getImages();
         Collections.shuffle(gameImages);
 

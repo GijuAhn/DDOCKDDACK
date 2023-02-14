@@ -180,7 +180,9 @@ public class GameService {
 
         // 검증
         checkAccessValidation(memberId, gameId);
-
+        gameImageRepository.deleteByGameId(gameId);
+        starredGameRepository.deleteByGameId(gameId);
+        reportedGameRepository.deleteByGameId(gameId);
         gameRepository.deleteById(gameId);
 
     }
@@ -297,7 +299,6 @@ public class GameService {
 
         return gameRepositorySupport.findAllReportedGame();
     }
-
 
     /**
      * 게임 수정, 삭제 권한 검증
