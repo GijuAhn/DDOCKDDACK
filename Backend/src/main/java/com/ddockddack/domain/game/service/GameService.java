@@ -270,10 +270,11 @@ public class GameService {
      * @return
      */
     @Transactional(readOnly = true)
-    public List<GameRes> findAllGameByMemberId(Long memberId) {
+    public PageImpl<GameRes> findAllGameByMemberId(Long memberId, PageConditionReq pageConditionReq) {
+        PageCondition pageCondition = pageConditionReq.toEntity();
         memberRepository.findById(memberId).orElseThrow(() ->
                 new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
-        return gameRepositorySupport.findAllByMemberId(memberId);
+        return gameRepositorySupport.findAllByMemberId(memberId, pageCondition);
     }
 
     /**
