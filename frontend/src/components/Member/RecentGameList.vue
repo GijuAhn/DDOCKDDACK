@@ -44,7 +44,6 @@ const callApi = () => {
     .then((response) => {
       console.log("access-games: ", response.data);
       recentGames.value = response.data;
-      console.log(recentGames.value);
     })
     .catch((error) => {
       console.log(error);
