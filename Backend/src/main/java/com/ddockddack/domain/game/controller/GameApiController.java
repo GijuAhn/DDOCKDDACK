@@ -164,4 +164,14 @@ public class GameApiController {
 
     }
 
+    @GetMapping("/test/{memberId}/{gameId}")
+    public ResponseEntity test(@PathVariable Long gameId
+    ,@PathVariable Long memberId) {
+        System.out.println(gameId);
+        System.out.println(memberId);
+        gameService.removeGame(memberId, gameId);
+        return ResponseEntity.ok().build();
+
+    }
+
 }

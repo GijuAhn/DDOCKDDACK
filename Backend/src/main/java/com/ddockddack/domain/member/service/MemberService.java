@@ -1,11 +1,16 @@
 package com.ddockddack.domain.member.service;
 
 import com.ddockddack.domain.bestcut.service.BestcutService;
+import com.ddockddack.domain.game.repository.GameImageRepository;
+import com.ddockddack.domain.game.repository.GameRepository;
+import com.ddockddack.domain.game.repository.GameRepositorySupport;
+import com.ddockddack.domain.game.repository.StarredGameRepository;
 import com.ddockddack.domain.member.entity.Member;
 import com.ddockddack.domain.member.entity.Role;
 import com.ddockddack.domain.member.repository.MemberRepository;
 import com.ddockddack.domain.member.request.MemberModifyNameReq;
 import com.ddockddack.domain.member.request.MemberModifyReq;
+import com.ddockddack.domain.report.repository.ReportedGameRepository;
 import com.ddockddack.global.error.ErrorCode;
 import com.ddockddack.global.error.exception.ImageExtensionException;
 import com.ddockddack.global.error.exception.NotFoundException;
@@ -41,7 +46,12 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final BestcutService bestcutService;
     private final TokenService tokenService;
-    private final AwsS3Service awsS3Service;
+    private final ReportedGameRepository reportedGameRepository;
+    private final GameImageRepository gameImageRepository;
+    private final StarredGameRepository starredGameRepository;
+    private final GameRepositorySupport gameRepositorySupport;
+    private final GameRepository gameRepository;
+
     //    private final RedisTemplate redisTemplate;
     private RestTemplate rt;
 
@@ -114,6 +124,12 @@ public class MemberService {
     public void deleteMemberById(Long memberId) {
         List<Long> bestcutIds = bestcutService.findByMemberId(memberId);
         bestcutService.removeAllByIds(bestcutIds);
+
+        List<Long> gameIds = gameRepositorySupport.findAllGameIdByMemberId(memberId);
+        gameImageRepository.deleteAllByGameId(gameIds);
+        starredGameRepository.deleteAllByGameId(gameIds);
+        reportedGameRepository.deleteAllByGameId(gameIds);
+        gameRepository.deleteAllByGameId(gameIds);
 
         memberRepository.deleteById(memberId);
     }

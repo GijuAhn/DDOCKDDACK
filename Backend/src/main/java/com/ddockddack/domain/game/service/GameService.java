@@ -300,7 +300,6 @@ public class GameService {
         return gameRepositorySupport.findAllReportedGame();
     }
 
-
     /**
      * 게임 수정, 삭제 권한 검증
      *
