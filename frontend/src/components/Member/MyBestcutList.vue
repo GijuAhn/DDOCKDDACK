@@ -10,12 +10,9 @@
     <loading-spinner id="imgLoading" v-show="isLoading">
       <!-- 이미지 로딩 중 -->
     </loading-spinner>
-    <span
-      id="noItem"
-      v-show="(!myBestcuts || !myBestcuts.length) && !isLoading"
-    >
+    <div id="noItem" v-show="(!myBestcuts || !myBestcuts.length) && !isLoading">
       베스트컷을 등록 해주세요!
-    </span>
+    </div>
   </div>
 </template>
 
@@ -28,8 +25,6 @@ import LoadingSpinner from "./item/LoadingSpinner.vue";
 
 const store = useStore();
 
-const memberId = computed(() => store.state.memberStore.memberInfo.id).value;
-
 const api = apiInstance();
 const accessToken = computed(() => store.state.memberStore.accessToken).value;
 
@@ -38,13 +33,13 @@ const isLoading = ref(true);
 let myBestcuts = ref();
 const callApi = async () => {
   await api
-    .get(`/api/members/${memberId}/bestcuts`, {
+    .get(`/api/members/bestcuts`, {
       headers: {
         "access-token": accessToken, // 변수로 가지고있는 AccessToken
       },
     })
     .then((response) => {
-      console.log("access-bestcuts: ", response.data.content); //bestcut은 pageimpl이기때문에 content까지 붙여줌
+      // console.log("access-bestcuts: ", response.data.content); //bestcut은 pageimpl이기때문에 content까지 붙여줌
       myBestcuts.value = response.data.content;
     })
     .catch((error) => {
@@ -82,6 +77,7 @@ store.dispatch("commonStore/setMemberTabAsync", 3);
 }
 #noItem {
   font-size: 20px;
+  margin-top: 10%;
   margin-left: 25%;
 }
 #imgLoading {

@@ -62,12 +62,14 @@ import process from "process";
 const store = useStore();
 const api = apiInstance();
 const accessToken = computed(() => store.state.memberStore.accessToken);
-let myProfile = computed(() => store.state.memberStore.memberInfo).value;
+let myProfile = computed(() => store.state.memberStore.memberInfo);
 const IMAGE_PATH = process.env.VUE_APP_IMAGE_PATH;
 const maxSize = 2 * 1024 * 1024;
 
-let name = myProfile.nickname;
-let profile = myProfile.profile;
+console.log(myProfile);
+
+let name = myProfile.value.nickname;
+let profile = myProfile.value.profile;
 
 let save = ref(false);
 let checkNickname = ref(false);
@@ -95,7 +97,7 @@ const modifyName = () => {
       )
       .then(() => {
         console.log("성공");
-        myProfile.nickname = name;
+        myProfile.value.nickname = name;
       })
       .catch((err) => {
         console.log("err ", err);
@@ -156,13 +158,17 @@ const withdrawal = () => {
       headers: { "access-token": accessToken.value },
     })
     .then(() => {
-      store.state.memberStore.accessToken = null;
-      store.state.memberStore.memberInfo = {};
       window.location.assign(`/`);
     })
     .catch((err) => {
       console.log(err);
+      // alert("회원 탈퇴에 실패했습니다.");
       window.location.assign(`/`);
+    })
+    .finally(() => {
+      store.state.memberStore.$reset;
+      // store.state.memberStore.accessToken = "";
+      // store.state.memberStore.memberInfo = {};
     });
 };
 </script>
@@ -219,7 +225,6 @@ const withdrawal = () => {
 #modifyProfile {
   display: inline;
   cursor: pointer;
-
   width: 50px;
   height: 50px;
 }

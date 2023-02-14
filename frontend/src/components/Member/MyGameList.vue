@@ -11,9 +11,9 @@
     <loading-spinner id="imgLoading" v-show="isLoading">
       <!-- 이미지 로딩 중 -->
     </loading-spinner>
-    <span id="noItem" v-show="(!myGames || !myGames) && !isLoading">
+    <div id="noItem" v-show="(!myGames || !myGames.length) && !isLoading">
       게임을 등록 해주세요!
-    </span>
+    </div>
   </div>
 </template>
 
@@ -25,9 +25,7 @@ import { ref, computed } from "vue";
 import LoadingSpinner from "./item/LoadingSpinner.vue";
 
 const store = useStore();
-
 const api = apiInstance();
-const memberId = computed(() => store.state.memberStore.memberInfo.id).value;
 const accessToken = computed(() => store.state.memberStore.accessToken).value;
 
 const isLoading = ref(true);
@@ -35,13 +33,13 @@ const myGames = ref();
 
 const callApi = () => {
   api
-    .get(`/api/members/${memberId}/games`, {
+    .get(`/api/members/games`, {
       headers: {
         "access-token": accessToken, // 변수로 가지고있는 AccessToken
       },
     })
     .then((response) => {
-      console.log("access-games: ", response.data);
+      // console.log("access-games: ", response.data);
       myGames.value = response.data;
     })
     .catch((error) => {
@@ -80,6 +78,7 @@ store.dispatch("commonStore/setMemberTabAsync", 2);
 
 #noItem {
   font-size: 20px;
+  margin-top: 10%;
   margin-left: 25%;
 }
 

@@ -4,6 +4,7 @@ import {
   findByAccessToken,
   accesstokenRegeneration,
   logout,
+  withdrawalMember,
 } from "@/api/member";
 
 export const memberStore = {
@@ -119,10 +120,43 @@ export const memberStore = {
     },
   },
 
-  async userLogout({ commit }, accessToken) {
+  async memberLogout({ commit }, accessToken) {
     await logout(
       accessToken,
       ({ data }) => {
+        if (data.status === 200) {
+          commit("setMemberInfo", null);
+        } else {
+          console.log("유저 정보 없음!!!!");
+        }
+      },
+      (error) => {
+        commit("setToken", "");
+        console.log(error);
+      }
+    );
+  },
+
+  // withdrawal = () => {
+  //   console.log("탈퇴!");
+  //   api
+  //     .delete(`/api/members`, {
+  //       headers: { "access-token": accessToken.value },
+  //     })
+  //     .then(() => {
+  //       store.state.memberStore.accessToken = null;
+  //       store.state.memberStore.memberInfo = {};
+  //       window.location.assign(`/`);
+  //     })
+  //     .catch((err) => {
+  //       console.log(err);
+  //       window.location.assign(`/`);
+  //     });
+  async withdrawal({ commit }, accessToken) {
+    await withdrawalMember(
+      accessToken,
+      ({ data }) => {
+        commit("setToken", "");
         if (data.status === 200) {
           commit("setMemberInfo", null);
         } else {

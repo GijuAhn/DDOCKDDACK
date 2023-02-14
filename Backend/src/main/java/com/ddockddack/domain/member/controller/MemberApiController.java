@@ -29,6 +29,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -154,9 +155,8 @@ public class MemberApiController {
     @DeleteMapping()
     public ResponseEntity deleteMember(HttpServletRequest request, HttpServletResponse response) {
         Cookie[] cookies = request.getCookies();
-        log.info("cokies {}", cookies);
 
-        String refreshToken = "";
+        String refreshToken = null;
         if (cookies != null) {
             for (Cookie cookie : cookies) {
                 log.info(String.valueOf(cookie.getName()));
@@ -174,17 +174,12 @@ public class MemberApiController {
                 memberAccessRes.getId()); //탈퇴로직에 access, refresh Token 정지시키는 로직 추가해야함
 
         log.info("withdrawal {} ", refreshToken);
-        if ("".equals(refreshToken)) {
-            Cookie refreshTokenCookie = new Cookie("refresh-token", null);
-            refreshTokenCookie.setMaxAge(0);
-            refreshTokenCookie.setPath("/");
-            response.addCookie(refreshTokenCookie);
+        Cookie refreshTokenCookie = new Cookie("refresh-token", null);
+        refreshTokenCookie.setMaxAge(0);
+        refreshTokenCookie.setPath("/");
+        response.addCookie(refreshTokenCookie);
 
-            log.info("withdrawal2 {} ", refreshToken);
-            return ResponseEntity.ok().build();
-        } else {
-            return ResponseEntity.status(401).body("refresh-token Error");
-        }
+        return ResponseEntity.ok().build();
     }
 
     @Operation(summary = "내 베스트 컷 전체 조회", description = "내 베스트 컷 전체 조회 메소드입니다.")
@@ -194,9 +189,10 @@ public class MemberApiController {
         @ApiResponse(responseCode = "404", description = "존재하지 않는 유저"),
         @ApiResponse(responseCode = "500", description = "서버 오류")
     })
-    @GetMapping("/{memberId}/bestcuts")
-    public ResponseEntity getBestcuts(@PathVariable Long memberId,
-        @ModelAttribute PageConditionReq pageCondition) {
+    @GetMapping("/bestcuts")
+    public ResponseEntity getBestcuts(
+        @ModelAttribute PageConditionReq pageCondition, Authentication authentication) {
+        Long memberId = ((MemberAccessRes)authentication.getPrincipal()).getId();
         try {
             log.info("bestcuts {}, {}", memberId, pageCondition.toString());
 
@@ -215,8 +211,9 @@ public class MemberApiController {
         @ApiResponse(responseCode = "404", description = "존재하지 않는 유저"),
         @ApiResponse(responseCode = "500", description = "서버 오류")
     })
-    @GetMapping("/{memberId}/games")
-    public ResponseEntity getMyGames(@PathVariable Long memberId) {
+    @GetMapping("/games")
+    public ResponseEntity getMyGames(Authentication authentication) {
+        Long memberId = ((MemberAccessRes)authentication.getPrincipal()).getId();
         try {
             List<GameRes> gameResList = gameService.findAllGameByMemberId(memberId);
             return ResponseEntity.ok(gameResList);
@@ -232,8 +229,9 @@ public class MemberApiController {
         @ApiResponse(responseCode = "404", description = "존재하지 않는 유저"),
         @ApiResponse(responseCode = "500", description = "서버 오류")
     })
-    @GetMapping("/{memberId}/starred")
-    public ResponseEntity getStarredGames(@PathVariable Long memberId) {
+    @GetMapping("/starred")
+    public ResponseEntity getStarredGames(Authentication authentication) {
+        Long memberId = ((MemberAccessRes)authentication.getPrincipal()).getId();
         try {
             List<StarredGameRes> starredGameResList = gameService.findAllStarredGames(
                 memberId);
@@ -250,9 +248,9 @@ public class MemberApiController {
         @ApiResponse(responseCode = "404", description = "존재하지 않는 유저"),
         @ApiResponse(responseCode = "500", description = "서버 오류")
     })
-    @GetMapping("/{memberId}/records")
-    public ResponseEntity getRecords(@PathVariable Long memberId,
-        @RequestHeader(value = "access-token", required = false) String accessToken) {
+    @GetMapping("/records")
+    public ResponseEntity getRecords(Authentication authentication) {
+        Long memberId = ((MemberAccessRes)authentication.getPrincipal()).getId();
         try {
             List<GameRoomHistoryRes> roomHistory = gameRoomService.findAllRoomHistory(memberId);
             return ResponseEntity.ok(roomHistory);
@@ -272,7 +270,6 @@ public class MemberApiController {
     public ResponseEntity
     logoutUser(HttpServletRequest request, HttpServletResponse response) {
         Cookie[] cookies = request.getCookies();
-        log.info("cokies {}", cookies);
 
         String refreshToken = null;
         if (cookies != null) {
@@ -285,18 +282,13 @@ public class MemberApiController {
             }
         }
 
-        log.info("RT {}", refreshToken);
-        if (refreshToken != null) {
-            log.info("lgout {} ", refreshToken);
-            Cookie refreshTokenCookie = new Cookie("refresh-token", null);
-            refreshTokenCookie.setMaxAge(0);
-            refreshTokenCookie.setPath("/");
-            response.addCookie(refreshTokenCookie);
-            memberService.logout(refreshToken);
-            return ResponseEntity.ok().build();
-        } else {
-            return ResponseEntity.status(401).body("refresh-token Error");
-        }
+        log.info("logout {} ", refreshToken);
+        Cookie refreshTokenCookie = new Cookie("refresh-token", null);
+        refreshTokenCookie.setMaxAge(0);
+        refreshTokenCookie.setPath("/");
+        response.addCookie(refreshTokenCookie);
+        memberService.logout(refreshToken);
+        return ResponseEntity.ok().build();
     }
 
     private void checkLogin(String accessToken) {
