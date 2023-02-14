@@ -35,7 +35,8 @@
       </div>
       <div v-else>
         <form id="modifyInput" @submit="modifyName" onsubmit="return false">
-          <input type="text" name="site" v-model="name" /><br />
+          <input type="text" v-model="name" /><br />
+          <button type="button" @click="modifyName">수정</button>
         </form>
         <span v-if="checkNickname" id="checkNickname">
           2~15글자내외, 특수문자 사용 불가능
@@ -45,7 +46,7 @@
       <div id="email">
         <span>{{ myProfile.email }}</span>
       </div>
-      <div id="deleteMember">
+      <div id="deleteMember" v-if="save">
         <span id="btn_withdrawal" @click="withdrawal">회원탈퇴</span>
       </div>
       <!-- ${{ props.profile.gameId }}, ${{ props.profile.gameId }} -->
@@ -174,6 +175,18 @@ const withdrawal = () => {
 </script>
 
 <style scoped>
+input {
+  outline: none;
+  border-radius: 5px;
+  border: 2px solid black;
+  font-size: 36px;
+  font-family: "NanumSquareRoundB";
+  padding: 5 10px;
+  height: 46px;
+  width: 300px;
+  margin-bottom: 5px;
+}
+
 #image {
   border-radius: 75%;
   box-shadow: 0 0px 3px #999;
@@ -194,9 +207,10 @@ const withdrawal = () => {
   margin-right: 30px;
   position: relative;
 }
-#nickname {
-  margin-bottom: 10px;
+#modifyInput {
+  margin-bottom: 20px;
   width: 350px;
+  /* position: absolute; */
 }
 #name {
   font-size: 48px;
@@ -233,26 +247,38 @@ const withdrawal = () => {
 }
 
 #email {
-  padding-bottom: 5px;
+  font-size: 20px;
+  margin-top: 5px;
 }
 
 #btn_withdrawal {
   display: inline-block;
   cursor: pointer;
   color: #666666;
-  font-size: 13px;
+  font-size: 15px;
   padding-top: 5px;
   /* padding: 12px 0px; */
 }
-input {
-  outline: none;
-  border-radius: 5px;
-  border: 2px solid black;
-  font-size: 40px;
-  font-family: "NanumSquareRoundB";
-  padding: 0 10px;
-  height: 46px;
-  width: 300px;
-  margin-bottom: 20px;
+
+#deleteMember {
+  margin-bottom: 10px;
+}
+
+#email #deleteMember {
+  position: relative;
+}
+
+button {
+  background-color: transparent;
+  /* border: none; */
+  border-color: black;
+  color: black;
+  padding: 5px 10px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 14px;
+  cursor: pointer;
+  border-radius: 4px;
 }
 </style>
