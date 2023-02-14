@@ -92,7 +92,7 @@ public class BestcutService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
 
-        if (member.getRole() != Role.ADMIN && bestcut.getMember().getId() != memberId) {
+        if (member.getRole() != Role.ADMIN && !bestcut.getMember().getId().equals(memberId)) {
             throw new AccessDeniedException(ErrorCode.NOT_AUTHORIZED);
         }
 
