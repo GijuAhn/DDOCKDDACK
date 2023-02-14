@@ -7,6 +7,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+
+import com.ddockddack.domain.gameRoom.response.GameMemberRes;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -44,11 +46,11 @@ public class GameRoomHistory {
     }
 
 
-    public static GameRoomHistory of(GameRoomHistoryReq gameRoomHistoryReq) {
+    public static GameRoomHistory from(Long memberId, String gameTitle, int ranking) {
         return GameRoomHistory.builder()
-            .memberId(gameRoomHistoryReq.getMemberId())
-            .gameTitle(gameRoomHistoryReq.getGameTitle())
-            .ranking(gameRoomHistoryReq.getRanking())
+            .memberId(memberId)
+            .gameTitle(gameTitle)
+            .ranking(ranking)
             .build();
     }
 }

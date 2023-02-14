@@ -218,22 +218,6 @@ public class GameRoomService {
     }
 
     /**
-     * 게임 이력 저장
-     *
-     * @param gameRoomHistoryReq
-     */
-    @Transactional
-    public void saveGameRoomHistory(GameRoomHistoryReq gameRoomHistoryReq) {
-        //유저가 없는경우
-        memberRepository.findById(gameRoomHistoryReq.getMemberId()).orElseThrow(() ->
-                new NotFoundException(ErrorCode.MEMBER_NOT_FOUND)
-        );
-
-        GameRoomHistory gameRoomHistory = GameRoomHistory.of(gameRoomHistoryReq);
-        gameRoomHistoryRepository.save(gameRoomHistory);
-    }
-
-    /**
      * 게임 이력 전체 조회
      *
      * @param memberId
