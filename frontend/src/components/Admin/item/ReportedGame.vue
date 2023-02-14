@@ -40,7 +40,7 @@ const store = useStore();
 const admin_api_url = `/api/admin`;
 const accessToken = computed(() => store.state.memberStore.accessToken);
 const banLevel = "noPenalty";
-const emit = defineEmits(["deleteProps"]);
+const emit = defineEmits(["deleteGame", "deleteReport"]);
 const gameId = computed(() => {
   return props.reportedGame.gameId;
 });
@@ -60,7 +60,7 @@ const punishmentApi = () => {
     )
     .then((response) => {
       console.log(response);
-      emit("deleteProps", { index: props.index });
+      emit("deleteGame", { value: props.reportedGame.gameId });
     })
     .catch((error) => {
       error;
@@ -77,7 +77,7 @@ const reportcancelApi = () => {
     })
     .then((response) => {
       console.log(response);
-      emit("deleteProps", { target: props.reportedGame.gameId });
+      emit("deleteReport", { value: props.reportedGame.reportId });
     })
     .catch((error) => {
       error;
