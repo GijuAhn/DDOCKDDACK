@@ -2,6 +2,7 @@ package com.ddockddack.domain.gameRoom.repository;
 
 import com.ddockddack.domain.game.entity.Game;
 import com.ddockddack.domain.game.entity.GameImage;
+import com.ddockddack.domain.gameRoom.entity.GameRoomHistory;
 import com.ddockddack.domain.gameRoom.request.GameSignalReq;
 import com.ddockddack.domain.gameRoom.response.GameMemberRes;
 import com.ddockddack.domain.member.entity.Member;
@@ -35,6 +36,7 @@ public class GameRoomRepository {
     private final Integer PIN_NUMBER_BOUND = 1_000_000;
     private final Random random = new Random();
     private final ObjectMapper mapper = new ObjectMapper();
+    private final GameRoomHistoryRepository gameRoomHistoryRepository;
     @Value("${OPENVIDU_URL}")
     private String OPENVIDU_URL;
     @Value("${OPENVIDU_SECRET}")
@@ -239,10 +241,12 @@ public class GameRoomRepository {
         PriorityQueue<GameMember> pq = new PriorityQueue<>((a, b) -> b.getTotalScore() - a.getTotalScore());
         pq.addAll(members);
         List<String> finalResult = new ArrayList<>();
+        List<GameRoomHistory> gameRoomHistories = new ArrayList<>();
         for (int i = 0; i < 3; i++) {
             if (pq.isEmpty()) break;
             finalResult.add(pq.poll().getSocketId());
         }
+
 
         return finalResult;
     }
