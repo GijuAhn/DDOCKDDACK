@@ -22,6 +22,7 @@
 9. [ER Diagram](https://lab.ssafy.com/s08-webmobile1-sub2/S08P12A409/-/blob/develop/README.md#er-diagram)
 10. [컨벤션 전략](https://lab.ssafy.com/s08-webmobile1-sub2/S08P12A409/-/blob/develop/README.md#%EC%BB%A8%EB%B2%A4%EC%85%98-%EC%A0%84%EB%9E%B5)
 11. [EC2 포트 정리](https://lab.ssafy.com/s08-webmobile1-sub2/S08P12A409/-/blob/develop/README.md#ec2-%ED%8F%AC%ED%8A%B8-%EC%A0%95%EB%A6%AC)
+12. [팀원 역할]()
 
 ## 주요 기능
 
@@ -68,6 +69,12 @@
 
 Jenkins를 이용하여 빌드하고 전달, ansible playbook, dockerCompose를 이용하여 docker container로 배포하였습니다. <br>
 letsencrypt를 이용하여 ssl 인증서를 적용하였고, 프론트엔드는 443(https)로 프록시로 분기, 백엔드는 /api 경로로 프록시를 걸어줬습니다.
+
+<br>
+
+**[상세 보기](./exec/PortingMenual.md)**
+
+<br>
 
 ## 이미지 분석 알고리즘
 
@@ -184,3 +191,5 @@ letsencrypt를 이용하여 ssl 인증서를 적용하였고, 프론트엔드는
 |     30022     |                  vue, NginX Docker ssh port                  |
 | 40000 - 57000 | used by Kurento Media Server to establish media connections. |
 | 57001 - 65535 | used by TURN server to establish relayed media connections.  |
+
+## 팀원 역할
