@@ -7,7 +7,7 @@
     />
 
     <div id="nickname" v-if="props.isSub">
-      <span>{{ clientData }}</span> /
+      <span>{{ clientData }}</span>
       <span>
         <svg-icon
           v-if="isSubVideoEnable"
@@ -88,18 +88,49 @@ const subAudioChange = () => {
   position: relative;
 }
 #ovVideo:hover ~ #nickname {
-  display: block;
+  display: flex;
+  align-items: center;
 }
 #nickname {
   position: absolute;
-  bottom: 16px;
+  bottom: 14px;
   left: 20px;
+  padding: 2px;
   display: none;
   background-color: black;
-  padding: 2px;
+  /* border: 1px solid red; */
+  vertical-align: middle;
 }
 #nickname:hover {
-  display: block;
+  display: flex;
+  align-items: center;
+}
+#nickname > span:nth-child(1) {
+  font-size: 14px;
+  font-family: NanumSquareRoundR;
+  /* border: 1px solid yellow; */
+  margin-right: 10px;
+}
+#nickname > span:nth-child(2) {
+  width: 16px;
+  height: 16px;
+  /* border: 1px solid yellow; */
+  display: inline-block;
+  margin-right: 5px;
+}
+#nickname > span:nth-child(3) {
+  width: 17px;
+  height: 17px;
+  /* border: 1px solid yellow; */
+  display: inline-block;
+}
+svg {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+svg:hover {
+  cursor: pointer;
 }
 
 .blinking {
@@ -112,10 +143,5 @@ const subAudioChange = () => {
   100% {
     opacity: 1;
   }
-}
-#img {
-  height: 10px;
-  width: 10px;
-  background: white;
 }
 </style>
