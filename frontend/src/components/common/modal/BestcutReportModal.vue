@@ -25,7 +25,7 @@ const currentModal = computed(() => store.state.commonStore.currentModal);
 const accessToken = computed(() => store.state.memberStore.accessToken).value;
 
 const reportBestcut = (reportType) => {
-  if (!accessToken.value) {
+  if (!accessToken) {
     alert("로그인 후 이용해주세요.");
     setCurrentModalAsync("catch");
   }

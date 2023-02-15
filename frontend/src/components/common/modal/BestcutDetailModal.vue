@@ -78,13 +78,13 @@ import { useStore } from "vuex";
 const IMAGE_PATH = process.env.VUE_APP_IMAGE_PATH;
 const store = useStore();
 const currentModal = computed(() => store.state.commonStore.currentModal);
-const accessToken = computed(() => store.state.memberStore.accessToken);
+const accessToken = computed(() => store.state.memberStore.accessToken).value;
 const date = computed(() => currentModal.value.data.createdDate.substr(0, 10));
 const api = apiInstance();
 
 //베스트컷 좋아요
 const bestcutLike = () => {
-  if (!accessToken.value) {
+  if (!accessToken) {
     alert("로그인 후 이용해주세요.");
     return;
   }
@@ -102,7 +102,7 @@ const bestcutLike = () => {
 
 //베스트컷 좋아요 취소
 const bestcutDislike = () => {
-  if (!accessToken.value) {
+  if (!accessToken) {
     alert("로그인 후 이용해주세요.");
     return;
   }
