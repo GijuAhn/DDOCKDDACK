@@ -124,15 +124,31 @@
         class="btn-video-control"
         @click="pubAudioOff(openviduInfo.publisher)"
       >
+        <img
+          v-if="isPubAudioEnable"
+          :src="require(`@/assets/images/microphone-on.png`)"
+        />
         <span v-if="isPubAudioEnable">음소거</span>
-        <span v-else>음소거 해제</span>
+        <img
+          v-if="!isPubAudioEnable"
+          :src="require(`@/assets/images/microphone-off.png`)"
+        />
+        <span v-if="!isPubAudioEnable">음소거 해제</span>
       </button>
       <button
         class="btn-video-control"
         @click="pubVideoOff(openviduInfo.publisher)"
       >
+        <img
+          v-if="isPubVideoEnable"
+          :src="require(`@/assets/images/camera-on.png`)"
+        />
         <span v-if="isPubVideoEnable">비디오 중지</span>
-        <span v-else>비디오 시작</span>
+        <img
+          v-if="!isPubVideoEnable"
+          :src="require(`@/assets/images/camera-off.png`)"
+        />
+        <span v-if="!isPubVideoEnable">비디오 시작</span>
       </button>
       <button class="btn-close" @click="leaveSession">
         <img
@@ -807,17 +823,28 @@ const captureSoundOff = () => {
 }
 .btn-video-control {
   border: 1px solid #464646;
-  font-size: 18px;
-  font-family: "NanumSquareRoundR";
   padding: 10px 0;
   background: none;
   color: white;
-  width: 140px;
+  width: 170px;
   height: 45px;
   border-radius: 45px;
 }
+.btn-video-control {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.btn-video-control img {
+  width: 24px;
+  height: 24px;
+  margin-right: 10px;
+}
+.btn-video-control span {
+  font-size: 18px;
+  font-family: "NanumSquareRoundR";
+}
 .btn-close {
-  border: 1px solid #db1f2e;
   background-color: #db1f2e;
   width: 45px;
   height: 45px;
