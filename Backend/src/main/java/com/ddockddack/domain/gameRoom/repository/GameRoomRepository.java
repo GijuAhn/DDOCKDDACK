@@ -2,6 +2,7 @@ package com.ddockddack.domain.gameRoom.repository;
 
 import com.ddockddack.domain.game.entity.Game;
 import com.ddockddack.domain.game.entity.GameImage;
+import com.ddockddack.domain.gameRoom.repository.GameRoom;
 import com.ddockddack.domain.gameRoom.entity.GameRoomHistory;
 import com.ddockddack.domain.gameRoom.request.GameSignalReq;
 import com.ddockddack.domain.gameRoom.response.GameMemberRes;
@@ -155,17 +156,22 @@ public class GameRoomRepository {
         if (gameRoom.getScoreCount() == gameRoom.getMembers().size()) {
             List<GameMemberRes> roundResultData = findRoundResult(gameRoom);
             int maxRoundScore = Collections.max(roundResultData, Comparator.comparing(GameMemberRes::getRoundScore)).getRoundScore();
-            int scaledRoundScore = (int) (((double)rawScore/maxRoundScore) * 100); //max score per round is +100 point
-            gameMember.setScaledRoundScore(scaledRoundScore);
-            gameMember.setTotalScore(gameMember.getTotalScore() + scaledRoundScore);
+//            iterate every gameMember in the GameRoom and calculate scaledRoundScore and totalScore
+//            members is Map(String, GameMember)
+            for (GameMember member : gameRoom.getMembers().values()) {
+                int scaledRoundScore = (int) (((double) member.getRoundScore() / maxRoundScore) * 100); //max score per round is +100 point
+                member.setScaledRoundScore(scaledRoundScore);
+                member.setTotalScore(member.getTotalScore() + scaledRoundScore);
+            }
 
             String resultData = mapper.writeValueAsString(roundResultData);
             String signal = createSignal(pinNumber, "roundResult", resultData);
 
             log.info("roundResult memberNickname : {}", gameMember.getNickname());
-            log.info("roundResult rawScore : {}", rawScore);
+//            log.info("roundResult signal : {}", signal);
+            log.info("roundResult rawScore : {}", gameMember.getRoundScore());
             log.info("roundResult maxRoundScore : {}", maxRoundScore);
-            log.info("roundResult scaledRoundScore : {}", scaledRoundScore);
+            log.info("roundResult scaledRoundScore : {}", gameMember.getScaledRoundScore());
             log.info("roundResult totalScore : {}", gameMember.getTotalScore());
 
             sendSignal(signal);
@@ -227,6 +233,7 @@ public class GameRoomRepository {
             if (pq.isEmpty()) break;
             result.add(GameMemberRes.from(pq.poll(), gameRoom.getRound() - 1));
         }
+        log.info("roundResult : {}", result);
         return result;
     }
 
