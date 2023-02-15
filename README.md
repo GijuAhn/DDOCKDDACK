@@ -13,11 +13,17 @@
 
 1. [주요 기능](#주요-기능)
 2. [개발 환경](#개발-환경)
-3.
+3. [서비스 아키텍쳐](#서비스-아키텍쳐)
+4. [이미지 분석 알고리즘](#이미지-분석-알고리즘)
+5. [협업툴](#협업툴)
+6. [기능 명세서](#기능-명세서)
+7. [API 명세서](#api-명세서)
+8. [화면 설계서](#화면-설계서)
+9. [ER Diagram](#er-diagram)
+10. [컨벤션 전략](#컨벤션-전략)
+11. [EC2 포트 정리](#ec2-포트-정리)
 
 ## 주요 기능
-
----
 
 - webRTC를 이용한 실시간 화상 게임
 - 사용자가 직접 커스터마이징 가능한 문제
@@ -25,8 +31,6 @@
 - 게임 기록 보관, 확인
 
 ## 개발 환경
-
----
 
 | Category        | Tech stack         | Version                    | Docker                |     |
 | --------------- | ------------------ | -------------------------- | --------------------- | --- |
@@ -58,13 +62,9 @@
 
 ## 서비스 아키텍쳐
 
----
-
 ![서비스 아키텍처](./ReadMe_contents/Architecture.jpg)
 
 ## Jenkins를 이용한 CD 구축
-
----
 
 Jenkins를 이용하여 빌드하고 전달, ansible playbook, dockerCompose를 이용하여 docker container로 배포하였습니다. <br>
 letsencrypt를 이용하여 ssl 인증서를 적용하였고, 프론트엔드는 443(https)로 프록시로 분기, 백엔드는 /api 경로로 프록시를 걸어줬습니다.
@@ -77,8 +77,6 @@ letsencrypt를 이용하여 ssl 인증서를 적용하였고, 프론트엔드는
 
 ## 협업툴
 
----
-
 - Git
 - Jira
 - Notion
@@ -88,16 +86,12 @@ letsencrypt를 이용하여 ssl 인증서를 적용하였고, 프론트엔드는
 
 ## 기능 명세서
 
----
-
 ![기능 명세서 회원](./ReadMe_contents/Functional%20Specification_1.png)
 ![기능 명세서 방](./ReadMe_contents/Functional%20Specification_2.png)
 ![기능 명세서 게임](./ReadMe_contents/Functional%20Specification_3.png)
 ![기능 명세서 베스트 컷, 관리자](./ReadMe_contents/Functional%20Specification_4.png)
 
 ## API 명세서
-
----
 
 ![API 명세서_1](./ReadMe_contents/API%20Specification_1.png)
 ![API 명세서_2](./ReadMe_contents/API%20Specification_2.png)
@@ -106,8 +100,6 @@ letsencrypt를 이용하여 ssl 인증서를 적용하였고, 프론트엔드는
 ![API 명세서_5](./ReadMe_contents/API%20Specification_5.png)
 
 ## 화면 설계서
-
----
 
 ### 전체
 
@@ -124,8 +116,6 @@ letsencrypt를 이용하여 ssl 인증서를 적용하였고, 프론트엔드는
 
 ## ER Diagram
 
----
-
 ![ER Diagram](./ReadMe_contents/ddockddackERD.png)
 
 ## 컨벤션 전략
@@ -133,8 +123,6 @@ letsencrypt를 이용하여 ssl 인증서를 적용하였고, 프론트엔드는
 ### [상세 보기](./ReadMe_contents/convention.md)
 
 ### **Git Commit Message Convention**
-
----
 
 > [지라 티켓 번호] [타입]: [제목] (Ticket-Number Type: Subject)
 >
@@ -147,8 +135,6 @@ letsencrypt를 이용하여 ssl 인증서를 적용하였고, 프론트엔드는
 > \*(optional) 꼬리말 (Footer)
 
 ### **Git Branch Convention**
-
----
 
 **1. master branch**
 
@@ -164,8 +150,6 @@ letsencrypt를 이용하여 ssl 인증서를 적용하였고, 프론트엔드는
 
 ### **Jira Convention**
 
----
-
 **Epic > Story > Task > Sub-Task**
 
 **Epic : 기능단위 분류**
@@ -173,8 +157,6 @@ letsencrypt를 이용하여 ssl 인증서를 적용하였고, 프론트엔드는
 **Story : 세부 기능**
 
 ## **[Notion](https://jet-play-ae5.notion.site/0de091d9369048ea806dd8140734cfae)**
-
----
 
 ![노션 예시](./ReadMe_contents/notion_example.png)
 
@@ -185,8 +167,6 @@ letsencrypt를 이용하여 ssl 인증서를 적용하였고, 프론트엔드는
 - 학습 내용 공유 : 서로 알아두면 좋은 내용 공유
 
 ## EC2 포트 정리
-
----
 
 |   **PORT**    |                           **이름**                           |
 | :-----------: | :----------------------------------------------------------: |
