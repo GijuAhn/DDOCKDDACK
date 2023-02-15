@@ -39,7 +39,7 @@ public class CheckBanUserInterceptor implements HandlerInterceptor {
 
             Long id = tokenService.getUid(accessToken);
             Member member = memberService.getMemberById(id).orElse(null);
-
+            log.info("id, member {}, {}", id, member);
             // 정지가 풀리는 날이라면
             if (member.getRole() == Role.BAN && member.getReleaseDate().isBefore(LocalDate.now())){
 

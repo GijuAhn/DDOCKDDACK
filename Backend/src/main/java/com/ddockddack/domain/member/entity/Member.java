@@ -50,7 +50,4 @@ public class Member {
     public void modifyProfile(String profile) {
         this.profile = profile;
     }
-
-
-
 }
