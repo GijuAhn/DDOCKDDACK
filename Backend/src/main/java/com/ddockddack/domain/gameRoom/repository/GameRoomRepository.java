@@ -163,7 +163,7 @@ public class GameRoomRepository {
             String signal = createSignal(pinNumber, "roundResult", resultData);
 
             log.info("roundResult memberNickname : {}", gameMember.getNickname());
-            log.info("roundResult signal : {}", signal);
+//            log.info("roundResult signal : {}", signal);
             log.info("roundResult rawScore : {}", rawScore);
             log.info("roundResult maxRoundScore : {}", maxRoundScore);
             log.info("roundResult scaledRoundScore : {}", scaledRoundScore);
