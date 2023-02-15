@@ -3,12 +3,13 @@ package com.ddockddack.domain.similarity.service;
 import org.opencv.core.Mat;
 
 import java.util.List;
+
 import lombok.extern.slf4j.Slf4j;
 
 
 public class EnsembleModel {
 
-//    Hashing(Grayscale) + FeatureExtraction(KAZE) + StructuralSimilarity(SSIM, Grayscale) + log{Histogram(RGB)}
+    //    Hashing(Grayscale) + FeatureExtraction(KAZE) + StructuralSimilarity(SSIM, Grayscale) + log{Histogram(RGB)}
 //    InputStream once ended, cannot reuse.
 //    Image data input format from frontend: ByteArray
 //    public static double CalculateSimilarity(InputStream inputStream1, InputStream inputStream2) throws Exception {
@@ -45,8 +46,8 @@ public class EnsembleModel {
 
 //      [+] *8192
         double featureScore = (featureDetectorDescriptor.compareFeatures(
-                        ImageUtil.ByteArray2InputStream(byteArray1),
-                        ImageUtil.ByteArray2InputStream(byteArray2)));
+                ImageUtil.ByteArray2InputStream(byteArray1),
+                ImageUtil.ByteArray2InputStream(byteArray2)));
 
 //      [+] *512
         double structureScore = (structuralSimilarity.compareImages(
@@ -59,8 +60,8 @@ public class EnsembleModel {
                 perceptualHash.getHash(ImageUtil.ByteArray2InputStream(byteArray2))));
 
 //      [-] *2, if NaN batch -32.0
-        double histogramDiff = (double) baseLog(imageHistogram.compareHistograms(hist1, hist2),2);
-        if (Double.isNaN(histogramDiff)){
+        double histogramDiff = (double) baseLog(imageHistogram.compareHistograms(hist1, hist2), 2);
+        if (Double.isNaN(histogramDiff)) {
             histogramDiff = 1.0;
         }
 
@@ -71,7 +72,12 @@ public class EnsembleModel {
 
 //        result = (int) Math.round((8192 * featureScore) + (512 * structureScore) - (2 * hashDistance) - (2 * histogramDiff));
 //        adjust(ease) weight cause of relative evaluation
-        result = (int) Math.round((4000 * featureScore) + (400 * structureScore) - (hashDistance) - (histogramDiff));
+        result = (int) Math.round((10000 * featureScore) + (500 * structureScore) - (hashDistance) - (4 * histogramDiff));
+
+        System.out.println("[+] featureScore * 10000: " + (10000 * featureScore));
+        System.out.println("[+] structureScore * 500: " + (500 * structureScore));
+        System.out.println("[-] hashDistance: " + (hashDistance));
+        System.out.println("[-] histogramDiff * 4: " + (4 * histogramDiff));
 
 //        final similarity score
 //        estimated 500±500
