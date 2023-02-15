@@ -48,11 +48,32 @@
       </div>
 
       <div id="email">
-        <span>{{ myProfile.email }}</span>
+        <div style="float: left">
+          <span>{{ myProfile.email }}</span>
+        </div>
+        <div
+          id="etcSection"
+          v-click-outside-element="onClickOutside"
+          style="float: left"
+        >
+          <div id="etcButton" @click="open">
+            <img
+              :src="require(`@/assets/images/etc-button.png`)"
+              alt="기타버튼"
+              class="etc"
+            />
+          </div>
+          <div id="etc" v-show="state">
+            <div>
+              <span @click="withdrawal">회원 탈퇴</span>
+            </div>
+          </div>
+        </div>
       </div>
-      <div id="deleteMember" v-if="save">
+
+      <!-- <div id="deleteMember" v-if="save">
         <span id="btn_withdrawal" @click="withdrawal">회원탈퇴</span>
-      </div>
+      </div> -->
       <!-- ${{ props.profile.gameId }}, ${{ props.profile.gameId }} -->
     </div>
   </div>
@@ -70,14 +91,14 @@ const accessToken = computed(() => store.state.memberStore.accessToken);
 const myProfile = computed(() => store.state.memberStore.memberInfo).value;
 const IMAGE_PATH = process.env.VUE_APP_IMAGE_PATH;
 const maxSize = 2 * 1024 * 1024;
-
+const state = ref(false);
 console.log(myProfile);
 
-let name = myProfile.nickname.value;
-let profile = myProfile.profile.value;
-
+let name = myProfile.nickname;
+let profile = myProfile.profile;
 let save = ref(false);
 let checkNickname = ref(false);
+
 const modifyNameInput = () => {
   //form형태로 변경
   console.log("click ", save.value);
@@ -142,10 +163,10 @@ const modifyProfileImg = (f) => {
         headers: { "access-token": accessToken.value },
       })
       .then(() => {
-        store.dispatch("memberStore/getMemberInfo");
-        myProfile.value = computed(
-          () => store.state.memberStore.memberInfo
-        ).value;
+        // store.dispatch("memberStore/getMemberInfo");
+        // myProfile.value = computed(
+        //   () => store.state.memberStore.memberInfo
+        // ).value;
       })
       .catch((err) => {
         if (err.response.status === 401) {
@@ -163,24 +184,36 @@ const modifyProfileImg = (f) => {
 };
 
 const withdrawal = () => {
-  console.log("탈퇴!");
-  api
-    .delete(`/api/members`, {
-      headers: { "access-token": accessToken.value },
-    })
-    .then(() => {
-      window.location.assign(`/`);
-    })
-    .catch((err) => {
-      console.log(err);
-      // alert("회원 탈퇴에 실패했습니다.");
-      window.location.assign(`/`);
-    })
-    .finally(() => {
-      store.state.memberStore.$reset;
-      // store.state.memberStore.accessToken = "";
-      // store.state.memberStore.memberInfo = {};
-    });
+  if (confirm("정말 탈퇴 하시겠습니까??") == true) {
+    // console.log("탈퇴!");
+    api
+      .delete(`/api/members`, {
+        headers: { "access-token": accessToken.value },
+      })
+      .then(() => {
+        window.location.assign(`/`);
+      })
+      .catch((err) => {
+        console.log(err);
+        // alert("회원 탈퇴에 실패했습니다.");
+        window.location.assign(`/`);
+      })
+      .finally(() => {
+        store.state.memberStore.$reset;
+        // store.state.memberStore.accessToken = "";
+        // store.state.memberStore.memberInfo = {};
+      });
+  } else {
+    return;
+  }
+};
+
+const onClickOutside = () => {
+  state.value = false;
+};
+
+const open = () => {
+  state.value = !state.value;
 };
 </script>
 
@@ -197,6 +230,15 @@ input {
   margin-bottom: 5px;
 }
 
+#etcSection {
+  position: relative;
+  left: 5%;
+}
+
+#nameAndEmail {
+  /* position: absolute; */
+  top: 22%;
+}
 #image {
   border-radius: 75%;
   box-shadow: 0 0px 3px #999;
@@ -259,6 +301,7 @@ input {
 #email {
   font-size: 20px;
   margin-top: 5px;
+  position: relative;
 }
 
 #btn_withdrawal {
@@ -290,5 +333,51 @@ button {
   font-size: 14px;
   cursor: pointer;
   border-radius: 4px;
+}
+
+#etc-button {
+  position: absolute;
+  /* top: 0px;
+  left: 290px;
+  width: 30px;
+  height: 30px; */
+  border-radius: 50%;
+  text-align: center;
+}
+#etc-button:hover {
+  background-color: #d9d9d9;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.etc {
+  width: 20px;
+  height: 20px;
+  /* top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);  */
+}
+
+#etc {
+  position: absolute;
+  top: 30px;
+  /* left: 290px; */
+  background-color: white;
+  width: 130px;
+  box-shadow: 0 0 10px #8b8b8b;
+  z-index: 1;
+  border-radius: 10px;
+  padding: 10px 0;
+  display: block;
+}
+#etc :hover {
+  cursor: pointer;
+}
+#etc span {
+  font-size: 16px;
+  display: block;
+  padding: 10px;
+}
+#etc span:hover {
+  background-color: #d9d9d9;
 }
 </style>
