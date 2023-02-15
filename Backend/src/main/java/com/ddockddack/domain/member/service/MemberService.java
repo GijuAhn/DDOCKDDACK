@@ -133,6 +133,7 @@ public class MemberService {
     @Transactional
     public void deleteMemberById(Long memberId) {
         List<Long> bestcutIds = bestcutService.findByMemberId(memberId);
+        bestcutService.removeByMemberId(memberId);
         bestcutService.removeAllByIds(bestcutIds);
 
         List<Long> gameIds = gameRepositorySupport.findAllGameIdByMemberId(memberId);

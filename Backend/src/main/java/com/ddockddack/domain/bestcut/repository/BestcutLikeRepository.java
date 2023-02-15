@@ -44,4 +44,8 @@ public class BestcutLikeRepository {
     public void deleteByBestcutIdIn(@Param("ids") List<Long> bestcutIds) {
         em.createQuery("DELETE FROM BestcutLike l WHERE l.bestcut.id in :ids").setParameter("ids", bestcutIds).executeUpdate();
     }
+
+    public void deleteByMemberId(@Param("id") Long memberId){
+        em.createQuery("DELETE FROM BestcutLike l WHERE l.member.id = :id").setParameter("id", memberId).executeUpdate();
+    }
 }
