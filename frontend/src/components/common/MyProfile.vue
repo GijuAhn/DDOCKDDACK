@@ -3,7 +3,11 @@
   <div class="user-info">
     <div id="profile">
       <div id="profileImg" style="float: left">
-        <img :src="`${IMAGE_PATH}/${myProfile.profile}`" alt="" id="image" />
+        <img
+          :src="`${IMAGE_PATH}/${myProfile.profile}`"
+          alt="profileImg"
+          id="image"
+        />
         <div id="div_modifyImg">
           <input
             type="file"
@@ -63,14 +67,14 @@ import process from "process";
 const store = useStore();
 const api = apiInstance();
 const accessToken = computed(() => store.state.memberStore.accessToken);
-let myProfile = computed(() => store.state.memberStore.memberInfo);
+const myProfile = computed(() => store.state.memberStore.memberInfo).value;
 const IMAGE_PATH = process.env.VUE_APP_IMAGE_PATH;
 const maxSize = 2 * 1024 * 1024;
 
 console.log(myProfile);
 
-let name = myProfile.value.nickname;
-let profile = myProfile.value.profile;
+let name = myProfile.nickname.value;
+let profile = myProfile.profile.value;
 
 let save = ref(false);
 let checkNickname = ref(false);
@@ -139,12 +143,18 @@ const modifyProfileImg = (f) => {
       })
       .then(() => {
         store.dispatch("memberStore/getMemberInfo");
-        myProfile = computed(() => store.state.memberStore.memberInfo).value;
+        myProfile.value = computed(
+          () => store.state.memberStore.memberInfo
+        ).value;
       })
       .catch((err) => {
         if (err.response.status === 401) {
           alert("로그인 후 이용해주세요.");
+          window.location.assign(`/`);
         }
+      })
+      .finally(() => {
+        window.location.reload();
       });
   } else {
     alert("2MB이하의 jpg, jpeg, png 이미지만 가능합니다!");

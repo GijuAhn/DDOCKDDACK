@@ -5,41 +5,27 @@ import com.ddockddack.domain.game.repository.GameImageRepository;
 import com.ddockddack.domain.game.repository.GameRepository;
 import com.ddockddack.domain.game.repository.GameRepositorySupport;
 import com.ddockddack.domain.game.repository.StarredGameRepository;
-import com.ddockddack.domain.gameRoom.entity.GameRoomHistory;
 import com.ddockddack.domain.gameRoom.repository.GameRoomHistoryRepository;
 import com.ddockddack.domain.gameRoom.repository.GameRoomHistoryRepositorySupport;
-import com.ddockddack.domain.gameRoom.repository.GameRoomRepository;
 import com.ddockddack.domain.member.entity.Member;
 import com.ddockddack.domain.member.entity.Role;
 import com.ddockddack.domain.member.repository.MemberRepository;
 import com.ddockddack.domain.member.request.MemberModifyNameReq;
-import com.ddockddack.domain.member.request.MemberModifyReq;
 import com.ddockddack.domain.report.repository.ReportedGameRepository;
 import com.ddockddack.global.error.ErrorCode;
 import com.ddockddack.global.error.exception.ImageExtensionException;
 import com.ddockddack.global.error.exception.NotFoundException;
 import com.ddockddack.global.service.AwsS3Service;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.env.Environment;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.util.UriComponentsBuilder;
 
 @Service
 @Slf4j
@@ -61,10 +47,8 @@ public class MemberService {
     private final AwsS3Service awsS3Service;
 
 
-
     //    private final RedisTemplate redisTemplate;
     private RestTemplate rt;
-
 
 //    /**
 //     * @param memberId
@@ -89,7 +73,8 @@ public class MemberService {
     @Transactional
     public void modifyMemberNickname(Long memberId, MemberModifyNameReq modifyMemberNickname) {
         Member member = memberRepository.findById(memberId).get();
-        log.info("log! {}, {}", modifyMemberNickname.getNickname(), modifyMemberNickname.getNickname().isEmpty());
+        log.info("log! {}, {}", modifyMemberNickname.getNickname(),
+            modifyMemberNickname.getNickname().isEmpty());
         if (!member.getNickname().equals(modifyMemberNickname.getNickname())) {
             member.modifyNickname(modifyMemberNickname.getNickname());
         }
@@ -110,7 +95,9 @@ public class MemberService {
 
         try {
             String fileName = awsS3Service.multipartFileUpload(modifyProfileImg);
-            awsS3Service.deleteObject(member.getProfile());
+            if (!member.getProfile().equals("default_profile_img.png")) {
+                awsS3Service.deleteObject(member.getProfile());
+            }
             member.modifyProfile(fileName);
         } catch (Exception e) {
             throw new RuntimeException("UPLOAD_FAILED"); //Exception 추가
@@ -141,7 +128,8 @@ public class MemberService {
         reportedGameRepository.deleteAllByGameId(gameIds);
         gameRepository.deleteAllByGameId(gameIds);
 
-        List<Long> gameRoomHistoryIds = gameRoomHistoryRepositorySupport.findAllGameRoomHistoryIdByMemberId(memberId);
+        List<Long> gameRoomHistoryIds = gameRoomHistoryRepositorySupport.findAllGameRoomHistoryIdByMemberId(
+            memberId);
 
         log.info(gameRoomHistoryIds.toString());
 
@@ -182,13 +170,13 @@ public class MemberService {
 //                    TimeUnit.MILLISECONDS);
 //        }
     }
-/*
+    /*
 
-    */
+     */
 /**
-     * @param code
-     * @return Access 토큰
-     *//*
+ * @param code
+ * @return Access 토큰
+ *//*
 
     public String getKaKaoAccessToken(String code) {
         //카카오 서버에 POST 방식으로 엑세스 토큰을 요청
@@ -231,7 +219,8 @@ public class MemberService {
     }
 
     */
-/**
+
+    /**
      * @param accessToken
      * @return 카카오 사용자 정보
      *//*
@@ -303,7 +292,6 @@ public class MemberService {
         return responsememberInfo;
     }
 */
-
     @Transactional
     public Member banMember(Long memberId, BanLevel banLevel) {
         Member memberToModify = memberRepository.findById(memberId).get();
