@@ -536,7 +536,7 @@ const captureSoundOff = () => {
   captureAudio.currenttime = 0;
 };
 
-// setCurrentModalAsync("finalResult"); //체크
+// setCurrentModalAsync("intermediateResult"); //체크
 </script>
 
 <style scoped>
