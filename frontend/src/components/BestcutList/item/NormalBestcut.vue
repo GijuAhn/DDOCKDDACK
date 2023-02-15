@@ -18,7 +18,7 @@
     </div>
     <div id="bottom-section">
       <img
-        :src="`https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/340px-Default_pfp.svg.png?20220226140232`"
+        :src="`${IMAGE_PATH}/${props.bestcut.profileImgUrl}`"
         alt="유저프로필사진"
         class="profile-image"
       />
@@ -85,8 +85,6 @@ const emit = defineEmits(["bestcutLike", "bestcutDislike"]);
 const IMAGE_PATH = process.env.VUE_APP_IMAGE_PATH;
 const state = ref(false);
 const store = useStore();
-
-console.log(" @#@#@# ");
 
 const onClickOutside = () => {
   state.value = false;

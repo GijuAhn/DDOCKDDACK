@@ -37,28 +37,14 @@
     </div>
 
     <div v-else>
-      채점 중입니다.
-      <div class="clock"></div>
+      <div class="loader">
+        <div class="circle" id="a"></div>
+        <div class="circle" id="b"></div>
+        <div class="circle" id="c"></div>
+      </div>
+      <div class="caption"><span>채점 중입니다...</span></div>
     </div>
   </div>
-  <!-- <div class="white-bg">
-    <div v-if="true">
-      <div v-if="true" id="rankContainer">
-        <div v-for="(e, index) in 3" :key="e" :id="`box${index}`">
-          <div>
-            <span>{{ rankTitle[index] }}</span>
-          </div>
-          <div>
-            <img
-              :id="`rank${index}`"
-              src="https://source.unsplash.com/category/portrait/"
-            />
-          </div>
-          <div><span>닉네임</span></div>
-        </div>
-      </div>
-    </div>
-  </div> -->
 </template>
 
 <script setup>
@@ -79,91 +65,66 @@ const rankTitle = ["1st", "2nd", "3rd"];
 
 <style scoped>
 .white-bg {
-  background-color: white;
+  background-color: #fdf8ec;
   width: 1300px;
   height: 750px;
   border-radius: 10px;
   position: relative;
 }
-.clock {
-  border-radius: 60px;
-  border: 3px solid #000;
-  height: 80px;
-  width: 80px;
-  position: relative;
-
-  top: 28%;
-  top: -webkit-calc(50% - 43px);
-  top: calc(50% - 43px);
-  left: 35%;
-  left: -webkit-calc(50% - 43px);
-  left: calc(50% - 43px);
-}
-.clock:after {
-  content: "";
+.loader {
+  height: 70px;
+  display: flex;
+  width: 510px;
+  /* border: 1px solid yellow; */
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   position: absolute;
-  background-color: #000;
-  top: 2px;
-  left: 48%;
-  height: 38px;
-  width: 4px;
-  border-radius: 5px;
-  -webkit-transform-origin: 50% 97%;
-  transform-origin: 50% 97%;
-  -webkit-animation: grdAiguille 2s linear infinite;
-  animation: grdAiguille 2s linear infinite;
 }
-
-@-webkit-keyframes grdAiguille {
-  0% {
-    -webkit-transform: rotate(0deg);
-  }
-  100% {
-    -webkit-transform: rotate(360deg);
-  }
+.circle {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  margin: 0 45px;
+  animation: jump 1s linear infinite;
 }
-
-@keyframes grdAiguille {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
+.circle:nth-child(1) {
+  background: #f87c7b;
 }
-
-.clock:before {
-  content: "";
+.circle:nth-child(2) {
+  background: #f9cf5c;
+}
+.circle:nth-child(3) {
+  background: #77a4cc;
+}
+.caption {
+  font-size: 40px;
+  color: black;
+  top: 70%;
+  left: 50%;
+  transform: translate(-50%, -70%);
   position: absolute;
-  background-color: #000;
-  top: 6px;
-  left: 48%;
-  height: 35px;
-  width: 4px;
-  border-radius: 5px;
-  -webkit-transform-origin: 50% 94%;
-  transform-origin: 50% 94%;
-  -webkit-animation: ptAiguille 12s linear infinite;
-  animation: ptAiguille 12s linear infinite;
+  font-family: NanumSquareRoundEB;
 }
-
-@-webkit-keyframes ptAiguille {
+@keyframes jump {
   0% {
-    -webkit-transform: rotate(0deg);
+    margin-top: 0;
   }
-  100% {
-    -webkit-transform: rotate(360deg);
+  35% {
+    margin-top: -75px;
+  }
+  70% {
+    margin-top: 0px;
   }
 }
 
-@keyframes ptAiguille {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
+#b {
+  animation-delay: 0.2s;
 }
+#c {
+  animation-delay: 0.4s;
+}
+
 #rankContainer {
   display: flex;
   justify-content: space-evenly;
