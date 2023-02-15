@@ -45,6 +45,9 @@
           <div @click="setCurrentModalAsync(`bestcutReport`)">
             <span>신고</span>
           </div>
+          <div @click="deleteBestcut(props.bestcut.bestcutId)">
+            <span>삭제</span>
+          </div>
         </div>
       </div>
 
@@ -81,7 +84,7 @@ import { defineProps, defineEmits, ref } from "vue";
 import { useStore } from "vuex";
 
 const props = defineProps({ bestcut: Object });
-const emit = defineEmits(["bestcutLike", "bestcutDislike"]);
+const emit = defineEmits(["bestcutLike", "bestcutDislike", "deleteBestcut"]);
 const IMAGE_PATH = process.env.VUE_APP_IMAGE_PATH;
 const state = ref(false);
 const store = useStore();
@@ -100,6 +103,10 @@ const bestcutLike = (bestcutId) => {
 
 const bestcutDislike = (bestcutId) => {
   emit("bestcutDislike", bestcutId);
+};
+
+const deleteBestcut = (bestcutId) => {
+  emit("deleteBestcut", bestcutId);
 };
 
 const setCurrentModalAsync = (what) => {
