@@ -137,7 +137,9 @@ public class MemberService {
 
         List<Long> gameIds = gameRepositorySupport.findAllGameIdByMemberId(memberId);
         gameImageRepository.deleteAllByGameId(gameIds);
+        starredGameRepository.deleteByMemberId(memberId);
         starredGameRepository.deleteAllByGameId(gameIds);
+        reportedGameRepository.deleteByMemberId(memberId);
         reportedGameRepository.deleteAllByGameId(gameIds);
         gameRepository.deleteAllByGameId(gameIds);
 

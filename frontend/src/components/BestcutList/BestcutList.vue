@@ -218,7 +218,7 @@ const changePage = (page) => {
 
 //베스트컷 좋아요
 const bestcutLike = (bestcutId) => {
-  if (!accessToken.value) {
+  if (!accessToken) {
     alert("로그인 후 이용해주세요.");
     return;
   }

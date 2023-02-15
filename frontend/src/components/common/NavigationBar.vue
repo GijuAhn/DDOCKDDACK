@@ -51,6 +51,10 @@ const logout = () => {
     })
     .catch((error) => {
       console.log(error);
+    })
+    .finally(() => {
+      store.state.memberStore.$reset;
+      // store.state.memberStore.memberInfo = {};
     });
 };
 </script>
