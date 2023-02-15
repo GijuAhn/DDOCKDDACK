@@ -1,11 +1,14 @@
 <template>
   <div id="view">
     <div id="list">
-      <normal-bestcut
+      <my-bestcut
         v-for="bestcut in myBestcuts"
         :key="bestcut"
         :bestcut="bestcut"
-      ></normal-bestcut>
+        @bestcutLike="(bestcutId) => bestcutLike(bestcutId)"
+        @bestcutDislike="(bestcutId) => bestcutDislike(bestcutId)"
+        @deleteBestcut="(bestcutId) => deleteBestcut(bestcutId)"
+      ></my-bestcut>
     </div>
     <loading-spinner id="imgLoading" v-show="isLoading">
       <!-- 이미지 로딩 중 -->
@@ -17,7 +20,7 @@
 </template>
 
 <script setup>
-import NormalBestcut from "@/components/BestcutList/item/NormalBestcut";
+import MyBestcut from "@/components/BestcutList/item/MyBestcut";
 import { apiInstance } from "@/api/index";
 import { useStore } from "vuex";
 import { ref, computed } from "vue";
@@ -28,7 +31,7 @@ const api = apiInstance();
 const accessToken = computed(() => store.state.memberStore.accessToken).value;
 const isLoading = ref(true);
 
-let myBestcuts = ref();
+let myBestcuts = ref([]);
 
 let pageConditionReq = ref({
   order: "RECENT",
@@ -70,6 +73,63 @@ const callApi = async () => {
 callApi();
 
 store.dispatch("commonStore/setMemberTabAsync", 3);
+
+//베스트컷 좋아요
+const bestcutLike = (bestcutId) => {
+  if (!accessToken) {
+    alert("로그인 후 이용해주세요.");
+    return;
+  }
+  api
+    .post(
+      `/api/bestcuts/like/${bestcutId}`,
+      {},
+      { headers: { "access-token": accessToken } }
+    )
+    .then(() => {
+      let bestcut = myBestcuts.value.find((e) => e.bestcutId === bestcutId);
+      bestcut.isLiked = true;
+      bestcut.popularity++;
+    })
+    .catch((err) => {
+      if (err.response.status === 401) {
+        alert("로그인 후 이용해주세요.");
+      }
+    });
+};
+
+//베스트컷 좋아요 취소
+const bestcutDislike = (bestcutId) => {
+  api
+    .delete(`/api/bestcuts/dislike/${bestcutId}`, {
+      headers: { "access-token": accessToken },
+    })
+    .then(() => {
+      let bestcut = myBestcuts.value.find((e) => e.bestcutId === bestcutId);
+      bestcut.isLiked = false;
+      bestcut.popularity--;
+    })
+    .catch((err) => {
+      if (err.response.status === 401) {
+        alert("로그인 후 이용해주세요.");
+      }
+    });
+};
+
+//베스트컷 삭제
+const deleteBestcut = (bestcutId) => {
+  if (window.confirm("정말 삭제하시겠습니까?")) {
+    api
+      .delete(`/api/bestcuts/${bestcutId}`, {
+        headers: { "access-token": accessToken },
+      })
+      .then(() => {
+        myBestcuts.value = myBestcuts.value.filter(
+          (e) => e.bestcutId != bestcutId
+        );
+      });
+  }
+};
 </script>
 
 <style scoped>
