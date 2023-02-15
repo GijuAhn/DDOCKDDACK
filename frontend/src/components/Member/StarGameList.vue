@@ -7,12 +7,12 @@
         :game="game"
       ></normal-game>
     </div>
-    <loading-spinner id="imgLoading" v-if="isLoading">
+    <loading-spinner id="imgLoading" v-show="isLoading">
       <!-- 이미지 로딩 중 -->
     </loading-spinner>
-    <span id="noItem" v-show="!starredGames && !isLoading">
+    <div id="noItem" v-show="!starredGames && !isLoading">
       즐겨찾기한 게임이 없습니다!
-    </span>
+    </div>
   </div>
 </template>
 
@@ -26,24 +26,22 @@ import LoadingSpinner from "./item/LoadingSpinner.vue";
 const store = useStore();
 
 const api = apiInstance();
-const memberId = computed(() => store.state.memberStore.memberInfo.id).value;
 const accessToken = computed(() => store.state.memberStore.accessToken).value;
 const isLoading = ref(true);
 
 const starredGames = ref();
 const callApi = async () => {
   await api
-    .get(`/api/members/${memberId}/starred`, {
+    .get(`/api/members/starred`, {
       headers: {
         "access-token": accessToken, // 변수로 가지고있는 AccessToken
       },
     })
     .then((response) => {
-      console.log("access-star: ", response.data);
+      // console.log("access-star: ", response.data);
       if (response.data.length > 0) {
         starredGames.value = response.data;
       }
-      console.log(starredGames.value == undefined);
     })
     .catch((error) => {
       console.log(error);
@@ -78,6 +76,7 @@ store.dispatch("commonStore/setMemberTabAsync", 1);
   margin: 2%;
 }
 #noItem {
+  margin-top: 10%;
   font-size: 20px;
   margin-left: 25%;
 }

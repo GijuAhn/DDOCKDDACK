@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.PostConstruct;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.UUID;
 
 @Service
@@ -47,10 +48,12 @@ public class AwsS3Service {
 
     public String multipartFileUpload(MultipartFile uploadFile) {
         String fileName = UUID.randomUUID().toString() + uploadFile.getOriginalFilename();
-        try {
+        try (InputStream inputStream = uploadFile.getInputStream()){
             ObjectMetadata om = new ObjectMetadata();
             om.setContentType(uploadFile.getContentType());
-            s3Client.putObject(new PutObjectRequest(bucket, fileName, uploadFile.getInputStream(), om).withCannedAcl(CannedAccessControlList.PublicRead));
+            byte[] bytes = uploadFile.getBytes();
+            om.setContentLength(bytes.length);
+            s3Client.putObject(new PutObjectRequest(bucket, fileName, inputStream, om).withCannedAcl(CannedAccessControlList.PublicRead));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -59,9 +62,11 @@ public class AwsS3Service {
 
     public String InputStreamUpload(byte[] byteImages) {
         ObjectMetadata om = new ObjectMetadata();
+        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteImages);
         om.setContentType("image/jpg");
+        om.setContentLength(byteImages.length);
         String fileName = UUID.randomUUID().toString() + ".jpg";
-        s3Client.putObject(new PutObjectRequest(bucket, fileName, new ByteArrayInputStream(byteImages), om).withCannedAcl(CannedAccessControlList.PublicRead));
+        s3Client.putObject(new PutObjectRequest(bucket, fileName, byteArrayInputStream, om).withCannedAcl(CannedAccessControlList.PublicRead));
         return fileName;
     }
 
@@ -77,7 +82,7 @@ public class AwsS3Service {
         return bytes;
     }
 
-    public void deleteObject(String fileName){
+    public void deleteObject(String fileName) {
         s3Client.deleteObject(new DeleteObjectRequest(bucket, fileName));
     }
 

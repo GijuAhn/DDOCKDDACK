@@ -4,8 +4,8 @@
       <my-profile />
     </div>
     <div class="tab-info">
-      <span :class="tab1">
-        <router-link to="/member/recentGame">최근 플레이</router-link></span
+      <span :class="tab4"
+        ><router-link to="/member/myBestcut">나의 베스트 컷</router-link></span
       >
       <span :class="tab2"
         ><router-link to="/member/starGame">즐겨찾기</router-link></span
@@ -13,8 +13,8 @@
       <span :class="tab3"
         ><router-link to="/member/myGame">내가 만든 게임</router-link></span
       >
-      <span :class="tab4"
-        ><router-link to="/member/myBestcut">나의 베스트 컷</router-link></span
+      <span :class="tab1">
+        <router-link to="/member/recentGame">최근 플레이</router-link></span
       >
     </div>
   </div>
