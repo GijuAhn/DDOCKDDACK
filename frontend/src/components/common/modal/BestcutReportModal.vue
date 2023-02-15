@@ -25,6 +25,10 @@ const currentModal = computed(() => store.state.commonStore.currentModal);
 const accessToken = computed(() => store.state.memberStore.accessToken).value;
 
 const reportBestcut = (reportType) => {
+  if (!accessToken) {
+    alert("로그인 후 이용해주세요.");
+    setCurrentModalAsync("catch");
+  }
   api
     .post(
       `/api/bestcuts/report/${currentModal.value.data.bestcutId}`,
@@ -37,8 +41,9 @@ const reportBestcut = (reportType) => {
       setCurrentModalAsync("then");
     })
     .catch((error) => {
-      console.log(error);
-      alert("이미 신고한 베스트컷입니다!");
+      if (error.response.status == 400) {
+        alert("이미 신고한 베스트컷입니다!");
+      }
       setCurrentModalAsync("catch");
     });
 };

@@ -1,17 +1,6 @@
 <template>
   <div id="session">
     <modal-frame v-if="currentModal.length !== 0" />
-    <div>
-      <result-modal
-        v-if="resultMode"
-        :round="round"
-        :result="result"
-        :isEnd="isEnd"
-        :winner="winner"
-        :publisher="openviduInfo.publisher"
-      />
-    </div>
-
     <div id="session-header">
       <span id="session-title">
         {{ room.gameTitle }} [방 코드 - {{ room.pinNumber }}]
@@ -84,7 +73,9 @@
                   <button @click="setCurrentModalAsync(`bestcutUpload`)">
                     내 사진 보기
                   </button>
-                  <button>최종 결과</button>
+                  <button @click="setCurrentModalAsync(`finalResult`)">
+                    최종 결과
+                  </button>
                 </div>
               </div>
             </div>
@@ -163,7 +154,6 @@ import { useStore } from "vuex";
 import router from "@/router/index.js";
 import process from "process";
 import ModalFrame from "@/components/common/ModalFrame";
-import ResultModal from "@/components/Gameroom/item/ResultModal.vue";
 import html2canvas from "html2canvas";
 import captureSound from "@/assets/sounds/capture_sound.mp3";
 import backgroundSound from "@/assets/sounds/background_sound.mp3";
@@ -213,23 +203,24 @@ const captureAudio = new Audio(captureSound);
 const backgroundAudio = new Audio(backgroundSound);
 
 onBeforeMount(() => {
-  api
-    .post(`/api/game-rooms/${route.params.pinNumber}`, {})
-    .then((res) => {
-      //access-token 없으면 닉네임 입력 받도록 수정 필요
-      if (!accessToken.value) {
-        do {
-          nickname.value = prompt("닉네임을 입력해주세요.");
-          if (nickname.value == null) {
-            router.replace("/");
-          }
-        } while (nickname.value.trim() == "");
-      } else {
-        nickname.value = tempNickname.value;
+  //access-token 없으면 닉네임 입력 받도록 수정 필요
+  if (!accessToken.value) {
+    do {
+      nickname.value = prompt("닉네임을 입력해주세요.");
+      if (nickname.value == null) {
+        router.replace("/");
       }
-
+    } while (nickname.value.trim() == "");
+  } else {
+    nickname.value = tempNickname.value;
+  }
+  api
+    .post(`/api/game-rooms/${route.params.pinNumber}`, {
+      nickname: nickname.value,
+    })
+    .then((res) => {
       openviduInfo.value.OV = new OpenVidu();
-      openviduInfo.value.OV.enableProdMode();
+      // openviduInfo.value.OV.enableProdMode();
       openviduInfo.value.session = openviduInfo.value.OV.initSession();
       // On every new Stream received...
       openviduInfo.value.session.on("streamCreated", ({ stream }) => {
@@ -265,6 +256,7 @@ onBeforeMount(() => {
               if (timerCount.value === 0) {
                 clearInterval(timer);
                 capture(signal.data - 1);
+                setCurrentModalAsync("intermediateResult"); //주석
                 timerCount.value = 5;
                 resultMode.value = true;
               }
@@ -276,6 +268,7 @@ onBeforeMount(() => {
             if (timerCount.value === 0) {
               clearInterval(timer);
               capture(signal.data - 1);
+              setCurrentModalAsync("intermediateResult"); //주석
               timerCount.value = 5;
               resultMode.value = true;
             }
@@ -288,7 +281,9 @@ onBeforeMount(() => {
         setTimeout(() => {
           resultMode.value = false;
           result.value.length = 0;
+          setCurrentModalAsync(""); //주석
           if (round.value < 5 && isHost.value) {
+            //체크
             api.get(`/api/game-rooms/${route.params.pinNumber}/round`);
           } else if (isHost.value) {
             api.get(`/api/game-rooms/${route.params.pinNumber}/final`);
@@ -297,21 +292,10 @@ onBeforeMount(() => {
       });
 
       openviduInfo.value.session.on("finalResult", async (signal) => {
+        backgroundSoundOff();
         resultMode.value = true;
         isEnd.value = true;
-        backgroundAudio.pause();
-        backgroundAudio.currentTime = 0;
-        const result = await JSON.parse(signal.data);
-        result.forEach((id, index) => {
-          if (openviduInfo.value.session.connection.connectionId === id) {
-            winner.value.splice(index, 0, openviduInfo.value.publisher);
-          } else {
-            const sub = openviduInfo.value.subscribers.find(
-              (s) => s.stream.connection.connectionId === id
-            );
-            winner.value.splice(index, 0, sub);
-          }
-        });
+        result.value = await JSON.parse(signal.data);
         setTimeout(() => {
           resultMode.value = false;
         }, 5000);
@@ -319,6 +303,10 @@ onBeforeMount(() => {
 
       openviduInfo.value.session.on("signal:host", () => {
         isHost.value = true;
+      });
+
+      openviduInfo.value.session.on("signal:playMusic", () => {
+        backgroundAudio.play();
       });
 
       if (!accessToken.value) {
@@ -408,13 +396,22 @@ const leaveSession = () => {
         console.log(err);
       });
     }
+    backgroundSoundOff();
+    captureSoundOff();
     openviduInfo.value.session.disconnect();
     openviduInfo.value.session = undefined;
     openviduInfo.value.mainStreamManager = undefined;
     openviduInfo.value.publisher = undefined;
     openviduInfo.value.subscribers = [];
     openviduInfo.value.OV = undefined;
-    room.value.pinNumber = undefined;
+    openviduInfo.value = undefined;
+    room.value = undefined;
+    isStart.value = false;
+    round.value = 1;
+    isHost.value = false;
+    isEnd.value = false;
+    resultMode.value = false;
+    captureMode.value = false;
   }
 
   // Remove beforeunload listener
@@ -438,7 +435,9 @@ const play = () => {
   api
     .put(`/api/game-rooms/${route.params.pinNumber}`)
     .then(() => {
-      backgroundAudio.play();
+      openviduInfo.value.session.signal({
+        type: "playMusic",
+      });
     })
     .catch(() => {
       alert("게임시작에 실패 하였습니다.");
@@ -498,12 +497,25 @@ const capture = async (index) => {
 };
 
 const setCurrentModalAsync = (what) => {
-  store.dispatch("commonStore/setCurrentModalAsync", {
-    name: what,
-    data: [resultImages, openviduInfo.value.publisher, room],
-  });
+  if (what === "bestcutUpload") {
+    store.dispatch("commonStore/setCurrentModalAsync", {
+      name: what,
+      data: [resultImages, openviduInfo.value.publisher, room],
+    });
+  } else if (what === "intermediateResult") {
+    store.dispatch("commonStore/setCurrentModalAsync", {
+      name: what,
+      data: [round, result, isEnd, winner, openviduInfo.value.publisher],
+    });
+  } else if (what === "finalResult") {
+    store.dispatch("commonStore/setCurrentModalAsync", {
+      name: what,
+      data: result,
+    });
+  } else if (what === "") {
+    store.dispatch("commonStore/setCurrentModalAsync", "");
+  }
 };
-
 const pubVideoOff = (video) => {
   isPubVideoEnable.value = !isPubVideoEnable.value;
   video.publishVideo(isPubVideoEnable.value);
@@ -513,6 +525,18 @@ const pubAudioOff = (video) => {
   isPubAudioEnable.value = !isPubAudioEnable.value;
   video.publishAudio(isPubAudioEnable);
 };
+
+const backgroundSoundOff = () => {
+  backgroundAudio.pause();
+  backgroundAudio.currentTime = 0;
+};
+
+const captureSoundOff = () => {
+  captureAudio.pause();
+  captureAudio.currenttime = 0;
+};
+
+// setCurrentModalAsync("finalResult"); //주석
 </script>
 
 <style scoped>
@@ -664,7 +688,7 @@ const pubAudioOff = (video) => {
   font-size: 24px;
   color: white;
   border-radius: 24px;
-  width: 80px;
+  width: 90px;
   height: 36px;
   text-align: center;
   line-height: 36px;

@@ -13,7 +13,6 @@ import com.ddockddack.domain.gameRoom.response.GameRoomHistoryRes;
 import com.ddockddack.domain.gameRoom.response.GameRoomRes;
 import com.ddockddack.domain.member.entity.Member;
 import com.ddockddack.domain.member.repository.MemberRepository;
-import com.ddockddack.domain.report.repository.ReportedGameRepository;
 import com.ddockddack.domain.similarity.service.EnsembleModel;
 import com.ddockddack.global.error.ErrorCode;
 import com.ddockddack.global.error.exception.AccessDeniedException;
@@ -22,16 +21,17 @@ import com.ddockddack.global.service.AwsS3Service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.openvidu.java.client.OpenViduHttpException;
 import io.openvidu.java.client.OpenViduJavaClientException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.PriorityQueue;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.PriorityQueue;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -82,11 +82,11 @@ public class GameRoomService {
         GameRoom gameRoom = this.findGameRoom(pinNumber);
 
         //중복 접속 방지 (허용하려면 주석처리)
-        for(GameMember gameMember : gameRoom.getMembers().values()) {
-            if(clientIp.equals(gameMember.getClientIp())) {
-                throw new AccessDeniedException(ErrorCode.NOT_AUTHORIZED);
-            }
-        }
+//        for (GameMember gameMember : gameRoom.getMembers().values()) {
+//            if (clientIp.equals(gameMember.getClientIp())) {
+//                throw new AccessDeniedException(ErrorCode.NOT_AUTHORIZED);
+//            }
+//        }
 
         String token = gameRoomRepository.join(pinNumber, member, nickname, clientIp);
 
@@ -215,22 +215,6 @@ public class GameRoomService {
             result.add(GameMemberRes.from(pq.poll(), round));
         }
         return result;
-    }
-
-    /**
-     * 게임 이력 저장
-     *
-     * @param gameRoomHistoryReq
-     */
-    @Transactional
-    public void saveGameRoomHistory(GameRoomHistoryReq gameRoomHistoryReq) {
-        //유저가 없는경우
-        memberRepository.findById(gameRoomHistoryReq.getMemberId()).orElseThrow(() ->
-                new NotFoundException(ErrorCode.MEMBER_NOT_FOUND)
-        );
-
-        GameRoomHistory gameRoomHistory = GameRoomHistory.of(gameRoomHistoryReq);
-        gameRoomHistoryRepository.save(gameRoomHistory);
     }
 
     /**

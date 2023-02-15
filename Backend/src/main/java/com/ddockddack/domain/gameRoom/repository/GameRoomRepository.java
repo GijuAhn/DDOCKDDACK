@@ -2,6 +2,7 @@ package com.ddockddack.domain.gameRoom.repository;
 
 import com.ddockddack.domain.game.entity.Game;
 import com.ddockddack.domain.game.entity.GameImage;
+import com.ddockddack.domain.gameRoom.entity.GameRoomHistory;
 import com.ddockddack.domain.gameRoom.request.GameSignalReq;
 import com.ddockddack.domain.gameRoom.response.GameMemberRes;
 import com.ddockddack.domain.member.entity.Member;
@@ -11,9 +12,6 @@ import com.ddockddack.global.error.exception.NotFoundException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.openvidu.java.client.*;
-
-import java.util.*;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,10 +20,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import org.springframework.web.client.RestTemplate;
 
 @Repository
 @Slf4j
@@ -35,6 +34,7 @@ public class GameRoomRepository {
     private final Integer PIN_NUMBER_BOUND = 1_000_000;
     private final Random random = new Random();
     private final ObjectMapper mapper = new ObjectMapper();
+    private final GameRoomHistoryRepository gameRoomHistoryRepository;
     @Value("${OPENVIDU_URL}")
     private String OPENVIDU_URL;
     @Value("${OPENVIDU_SECRET}")
@@ -47,7 +47,7 @@ public class GameRoomRepository {
     @PostConstruct
     public void init() {
         this.openvidu = new OpenVidu(OPENVIDU_URL, OPENVIDU_SECRET);
-        OPENVIDU_HEADER = "Basic " + Base64.getEncoder().encodeToString(("OPENVIDUAPP:"+OPENVIDU_SECRET).getBytes());
+        OPENVIDU_HEADER = "Basic " + Base64.getEncoder().encodeToString(("OPENVIDUAPP:" + OPENVIDU_SECRET).getBytes());
         log.info("OPENVIDU_URL" + OPENVIDU_URL);
     }
 
@@ -137,7 +137,7 @@ public class GameRoomRepository {
         sendSignal(signal);
     }
 
-    public void nextRound(String pinNumber) throws JsonProcessingException{
+    public void nextRound(String pinNumber) throws JsonProcessingException {
         GameRoom gameRoom = this.gameRooms.get(pinNumber);
 
         String signal = createSignal(pinNumber, "roundStart", String.valueOf(gameRoom.getRound()));
@@ -152,18 +152,18 @@ public class GameRoomRepository {
         gameMember.setRoundScore(rawScore);
         gameRoom.increaseScoreCnt();
 
-        if(gameRoom.getScoreCount() == gameRoom.getMembers().size()){
+        if (gameRoom.getScoreCount() == gameRoom.getMembers().size()) {
             List<GameMemberRes> roundResultData = findRoundResult(gameRoom);
             int maxRoundScore = Collections.max(roundResultData, Comparator.comparing(GameMemberRes::getRoundScore)).getRoundScore();
-            int scaledRoundScore = (int) ((double)rawScore/maxRoundScore) * 100; //max score per round is +100 point
+            int scaledRoundScore = (int) (((double)rawScore/maxRoundScore) * 100); //max score per round is +100 point
             gameMember.setScaledRoundScore(scaledRoundScore);
-            gameMember.setTotalScore(gameMember.getTotalScore()+scaledRoundScore);
+            gameMember.setTotalScore(gameMember.getTotalScore() + scaledRoundScore);
 
             String resultData = mapper.writeValueAsString(roundResultData);
             String signal = createSignal(pinNumber, "roundResult", resultData);
 
             log.info("roundResult memberNickname : {}", gameMember.getNickname());
-            log.info("roundResult signal : {}", signal);
+//            log.info("roundResult signal : {}", signal);
             log.info("roundResult rawScore : {}", rawScore);
             log.info("roundResult maxRoundScore : {}", maxRoundScore);
             log.info("roundResult scaledRoundScore : {}", scaledRoundScore);
@@ -177,12 +177,11 @@ public class GameRoomRepository {
 
     public void finalResult(String pinNumber) throws JsonProcessingException {
         GameRoom gameRoom = this.gameRooms.get(pinNumber);
-
         String resultData = mapper.writeValueAsString(findFinalResult(gameRoom));
+
         String signal = createSignal(pinNumber, "finalResult", resultData);
         sendSignal(signal);
     }
-
 
 
     private String createSignal(String pinNumber, String signalName, String data) throws JsonProcessingException {
@@ -199,7 +198,7 @@ public class GameRoomRepository {
     private void sendSignal(String signal) {
         RestTemplate restTemplate = new RestTemplate();
 
-        String url = OPENVIDU_URL+"/api/signal";
+        String url = OPENVIDU_URL + "/api/signal";
 
         HttpHeaders headers = new HttpHeaders();
 
@@ -209,7 +208,6 @@ public class GameRoomRepository {
         HttpEntity<String> httpEntity = new HttpEntity<>(signal, headers);
         restTemplate.exchange(url, HttpMethod.POST, httpEntity, String.class);
     }
-
 
 
     public byte[] findByImageIndex(String pinNumber, String sessionId, int index) {
@@ -228,23 +226,39 @@ public class GameRoomRepository {
         List<GameMemberRes> result = new ArrayList<>();
         for (int i = 0; i < 3; i++) {
             if (pq.isEmpty()) break;
-            result.add(GameMemberRes.from(pq.poll(), gameRoom.getRound()-1));
+            result.add(GameMemberRes.from(pq.poll(), gameRoom.getRound() - 1));
         }
         return result;
     }
 
 
-    public List<String> findFinalResult(GameRoom gameRoom){
+    public List<GameMemberRes> findFinalResult(GameRoom gameRoom) {
         List<GameMember> members = new ArrayList<>(gameRoom.getMembers().values());
         PriorityQueue<GameMember> pq = new PriorityQueue<>((a, b) -> b.getTotalScore() - a.getTotalScore());
         pq.addAll(members);
-        List<String> finalResult = new ArrayList<>();
-        for (int i = 0; i < 3; i++) {
-            if (pq.isEmpty()) break;
-            finalResult.add(pq.poll().getSocketId());
-        }
+        List<GameMemberRes> finalResult = new ArrayList<>();
+        List<GameRoomHistory> historyList = new ArrayList<>();
 
+        int ranking = 1;
+        while (!pq.isEmpty()) {
+            GameMember gameMember = pq.poll();
+            finalResult.add(GameMemberRes.from(gameMember));
+            Optional<Member> member = Optional.ofNullable(gameMember.getMember());
+            if (member.isPresent()) {
+                Member getMember = member.get();
+                GameRoomHistory grh = GameRoomHistory
+                        .builder()
+                        .gameTitle(gameRoom.getGameTitle())
+                        .memberId(getMember.getId())
+                        .ranking(ranking)
+                        .build();
+                historyList.add(grh);
+            }
+            ranking++;
+        }
+        if (historyList.size() != 0) {
+            gameRoomHistoryRepository.saveAll(historyList);
+        }
         return finalResult;
     }
-
 }

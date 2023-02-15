@@ -26,6 +26,14 @@
       class="modalContent"
       v-if="currentModal.name === `bestcutUpload`"
     />
+    <intermediate-result-modal
+      class="modalContent"
+      v-if="currentModal.name === `intermediateResult`"
+    />
+    <final-result-modal
+      class="modalContent"
+      v-if="currentModal.name === `finalResult`"
+    />
   </div>
 </template>
 
@@ -38,6 +46,8 @@ import BestcutDetailModal from "@/components/common/modal/BestcutDetailModal";
 import BestcutReportModal from "@/components/common/modal/BestcutReportModal";
 import LoginModal from "@/components/common/modal/LoginModal";
 import BestcutUploadModal from "@/components/common/modal/BestcutUploadModal";
+import IntermediateResultModal from "@/components/common/modal/IntermediateResultModal";
+import FinalResultModal from "@/components/common/modal/FinalResultModal";
 
 import { computed } from "vue";
 

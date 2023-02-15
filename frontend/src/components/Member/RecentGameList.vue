@@ -19,6 +19,12 @@
         <td>{{ recentGame.playedTime }}</td>
       </tr>
     </table>
+    <div
+      id="noItem"
+      v-show="(!recentGames || !recentGames.length) && !isLoading"
+    >
+      최근 플레이한 게임이 없습니다!
+    </div>
   </div>
 </template>
 
@@ -30,19 +36,18 @@ import { ref, computed } from "vue";
 const store = useStore();
 
 const api = apiInstance();
-const memberId = computed(() => store.state.memberStore.memberInfo.id).value;
 const accessToken = computed(() => store.state.memberStore.accessToken).value;
 
 const recentGames = ref();
 const callApi = () => {
   api
-    .get(`/api/members/${memberId}/records`, {
+    .get(`/api/members/records`, {
       headers: {
         "access-token": accessToken, // 변수로 가지고있는 AccessToken
       },
     })
     .then((response) => {
-      console.log("access-games: ", response.data);
+      // console.log("access-games: ", response.data);
       recentGames.value = response.data;
     })
     .catch((error) => {
@@ -79,6 +84,7 @@ table {
   width: 100%;
   margin-top: 10px;
   text-align: center;
+  margin-bottom: 20%;
 }
 
 thead {
@@ -97,5 +103,10 @@ td,
 tr,
 th {
   border-bottom: 1px solid #737373;
+}
+
+#noItem {
+  font-size: 20px;
+  margin-left: 40%;
 }
 </style>
