@@ -4,8 +4,10 @@
     <div id="title"><span>RANKING</span></div>
     <div id="ranking">
       <div v-for="(r, index) in result" :key="r">
-        <span v-if="index <= 3">!</span>
-        <span v-else>{{ index }}</span>
+        <span v-if="index <= 2" class="badge">
+          <img :src="require(`@/assets/images/medal${index + 1}.png`)" />
+        </span>
+        <span v-else class="number">{{ index + 1 }}</span>
         <span>{{ r.nickname }}</span>
         <span>{{ r.totalScore }}</span>
       </div>
@@ -63,7 +65,17 @@ const result = ref(currentModal.value.data);
   font-size: 36px;
   display: inline-block;
 }
-#ranking > div > span:nth-child(1) {
+.badge {
+  width: 50px;
+  height: 40px;
+  text-align: center;
+}
+.badge img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.number {
   color: #717171;
   /* border: 1px solid red; */
   width: 50px;
