@@ -57,7 +57,7 @@
           <div v-if="props.game.isStarred === 1" @click="unstarredGame">
             <span>즐겨찾기 해제</span>
           </div>
-          <div><span>베스트 컷</span></div>
+          <!-- <div><span>베스트 컷</span></div> -->
           <div @click="setCurrentModalAsync(`preview`)">
             <span>문제 미리보기</span>
           </div>
@@ -136,7 +136,7 @@ const starredGame = () => {
     })
     .catch((error) => {
       error;
-      alert("로그인이 필요합니다.");
+      alert("로그인이 필요한 기능입니다.");
     });
 };
 const unstarredGame = () => {
@@ -150,7 +150,7 @@ const unstarredGame = () => {
     })
     .catch((error) => {
       error;
-      alert("로그인이 필요합니다.");
+      alert("로그인이 필요한 기능입니다.");
     });
 };
 </script>

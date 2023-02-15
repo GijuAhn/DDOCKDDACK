@@ -291,10 +291,9 @@ onBeforeMount(() => {
       });
 
       openviduInfo.value.session.on("finalResult", async (signal) => {
+        backgroundSoundOff();
         resultMode.value = true;
         isEnd.value = true;
-        backgroundAudio.pause();
-        backgroundAudio.currentTime = 0;
         result.value = await JSON.parse(signal.data);
         setTimeout(() => {
           resultMode.value = false;
@@ -303,6 +302,10 @@ onBeforeMount(() => {
 
       openviduInfo.value.session.on("signal:host", () => {
         isHost.value = true;
+      });
+
+      openviduInfo.value.session.on("signal:playMusic", () => {
+        backgroundAudio.play();
       });
 
       if (!accessToken.value) {
@@ -371,6 +374,7 @@ onBeforeMount(() => {
 });
 
 const leaveSession = () => {
+  backgroundSoundOff();
   // --- 7) Leave the session by calling 'disconnect' method over the Session object ---
   if (openviduInfo.value.session) {
     let socketId = openviduInfo.value.session.connection.connectionId;
@@ -422,7 +426,9 @@ const play = () => {
   api
     .put(`/api/game-rooms/${route.params.pinNumber}`)
     .then(() => {
-      backgroundAudio.play();
+      openviduInfo.value.session.signal({
+        type: "playMusic",
+      });
     })
     .catch(() => {
       alert("게임시작에 실패 하였습니다.");
@@ -509,6 +515,11 @@ const pubVideoOff = (video) => {
 const pubAudioOff = (video) => {
   isPubAudioEnable.value = !isPubAudioEnable.value;
   video.publishAudio(isPubAudioEnable);
+};
+
+const backgroundSoundOff = () => {
+  backgroundAudio.pause();
+  backgroundAudio.currentTime = 0;
 };
 
 // setCurrentModalAsync("finalResult"); //주석
