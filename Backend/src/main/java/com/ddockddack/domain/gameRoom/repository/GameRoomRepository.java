@@ -159,7 +159,7 @@ public class GameRoomRepository {
 //            iterate every gameMember in the GameRoom and calculate scaledRoundScore and totalScore
 //            members is Map(String, GameMember)
             for (GameMember member : gameRoom.getMembers().values()) {
-                int scaledRoundScore = (int) (((double) member.getRoundScore() / maxRoundScore) * 1000); //max score per round is +1000 point
+                int scaledRoundScore = (int) (((double) member.getRoundScore() / maxRoundScore) * 100); //max score per round is +100 point
                 member.setScaledRoundScore(scaledRoundScore);
                 member.setTotalScore(member.getTotalScore() + scaledRoundScore);
             }
