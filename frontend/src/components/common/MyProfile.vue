@@ -1,9 +1,13 @@
-<!-- require(`@/../../Backend/images/profile/${myProfile.id}/${myProfile.profile}`) -->
 <template>
   <div class="user-info">
     <div id="profile">
       <div id="profileImg" style="float: left">
-        <img :src="`${IMAGE_PATH}/${myProfile.profile}`" alt="" id="image" />
+        <img
+          :src="`${IMAGE_PATH}/${myProfile.profile}`"
+          alt=""
+          id="image"
+          :key="updateImage"
+        />
         <div id="div_modifyImg">
           <input
             type="file"
@@ -66,11 +70,6 @@
           </div>
         </div>
       </div>
-
-      <!-- <div id="deleteMember" v-if="save">
-        <span id="btn_withdrawal" @click="withdrawal">회원탈퇴</span>
-      </div> -->
-      <!-- ${{ props.profile.gameId }}, ${{ props.profile.gameId }} -->
     </div>
   </div>
 </template>
@@ -83,15 +82,16 @@ import process from "process";
 
 const store = useStore();
 const api = apiInstance();
+const IMAGE_PATH = process.env.VUE_APP_IMAGE_PATH;
+
 const accessToken = computed(() => store.state.memberStore.accessToken);
 const myProfile = computed(() => store.state.memberStore.memberInfo).value;
-const IMAGE_PATH = process.env.VUE_APP_IMAGE_PATH;
+
 const maxSize = 2 * 1024 * 1024;
 const state = ref(false);
-console.log(myProfile);
+const updateImage = ref(0);
 
 let name = myProfile.nickname;
-let profile = myProfile.profile;
 let save = ref(false);
 let checkNickname = ref(false);
 
@@ -106,9 +106,7 @@ const modifyNameInput = () => {
 
 let reg_nickname = /^[A-z가-힣0-9_-]{2,15}$/;
 const modifyName = () => {
-  console.log("enter ", name);
   if (reg_nickname.test(name)) {
-    console.log("OK!", name, " ", profile);
     api
       .put(
         `/api/members/nickname`,
@@ -127,9 +125,7 @@ const modifyName = () => {
           alert("로그인 후 이용해주세요.");
         }
       });
-
     save.value = !save.value;
-    // checkNickname.value = !checkNickname.value;
   } else {
     console.log("닉네임 규칙에 맞게");
     if (!checkNickname.value) {
@@ -139,7 +135,6 @@ const modifyName = () => {
 };
 
 const imgUploadEvent = (e) => {
-  console.log("i e ", e);
   modifyProfileImg(e.target.files);
 };
 
@@ -150,28 +145,20 @@ const modifyProfileImg = (f) => {
   let formData = new FormData();
   formData.append("profileImg", f[0]);
 
-  console.log(formData);
-
   const ext = modifyImgName.split(".").pop().toLowerCase();
   if (reg_img.includes(ext) && f[0].size < maxSize) {
     api
       .put(`/api/members/profile`, formData, {
         headers: { "access-token": accessToken.value },
       })
-      .then(() => {
-        // store.dispatch("memberStore/getMemberInfo");
-        // myProfile.value = computed(
-        //   () => store.state.memberStore.memberInfo
-        // ).value;
+      .then((response) => {
+        myProfile.profile = response.data;
       })
       .catch((err) => {
         if (err.response.status === 401) {
           alert("로그인 후 이용해주세요.");
           window.location.assign(`/`);
         }
-      })
-      .finally(() => {
-        window.location.reload();
       });
   } else {
     alert("2MB이하의 jpg, jpeg, png 이미지만 가능합니다!");
@@ -181,7 +168,6 @@ const modifyProfileImg = (f) => {
 
 const withdrawal = () => {
   if (confirm("정말 탈퇴 하시겠습니까??") == true) {
-    // console.log("탈퇴!");
     api
       .delete(`/api/members`, {
         headers: { "access-token": accessToken.value },
@@ -189,15 +175,12 @@ const withdrawal = () => {
       .then(() => {
         window.location.assign(`/`);
       })
-      .catch((err) => {
-        console.log(err);
+      .catch(() => {
         // alert("회원 탈퇴에 실패했습니다.");
         window.location.assign(`/`);
       })
       .finally(() => {
         store.state.memberStore.$reset;
-        // store.state.memberStore.accessToken = "";
-        // store.state.memberStore.memberInfo = {};
       });
   } else {
     return;
