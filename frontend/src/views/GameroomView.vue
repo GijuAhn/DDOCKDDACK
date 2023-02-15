@@ -256,7 +256,7 @@ onBeforeMount(() => {
               if (timerCount.value === 0) {
                 clearInterval(timer);
                 capture(signal.data - 1);
-                setCurrentModalAsync("intermediateResult"); //주석
+                setCurrentModalAsync("intermediateResult");
                 timerCount.value = 5;
                 resultMode.value = true;
               }
@@ -268,7 +268,7 @@ onBeforeMount(() => {
             if (timerCount.value === 0) {
               clearInterval(timer);
               capture(signal.data - 1);
-              setCurrentModalAsync("intermediateResult"); //주석
+              setCurrentModalAsync("intermediateResult");
               timerCount.value = 5;
               resultMode.value = true;
             }
@@ -281,7 +281,7 @@ onBeforeMount(() => {
         setTimeout(() => {
           resultMode.value = false;
           result.value.length = 0;
-          setCurrentModalAsync(""); //주석
+          setCurrentModalAsync("");
           if (round.value < 5 && isHost.value) {
             //체크
             api.get(`/api/game-rooms/${route.params.pinNumber}/round`);
@@ -536,7 +536,7 @@ const captureSoundOff = () => {
   captureAudio.currenttime = 0;
 };
 
-// setCurrentModalAsync("finalResult"); //주석
+// setCurrentModalAsync("finalResult"); //체크
 </script>
 
 <style scoped>
