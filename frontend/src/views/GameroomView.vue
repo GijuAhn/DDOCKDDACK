@@ -283,6 +283,7 @@ onBeforeMount(() => {
           result.value.length = 0;
           setCurrentModalAsync(""); //주석
           if (round.value < 5 && isHost.value) {
+            //체크
             api.get(`/api/game-rooms/${route.params.pinNumber}/round`);
           } else if (isHost.value) {
             api.get(`/api/game-rooms/${route.params.pinNumber}/final`);
