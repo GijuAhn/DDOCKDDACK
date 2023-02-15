@@ -124,13 +124,15 @@
         class="btn-video-control"
         @click="pubAudioOff(openviduInfo.publisher)"
       >
-        음소거
+        <span v-if="isPubAudioEnable">음소거</span>
+        <span v-else>음소거 해제</span>
       </button>
       <button
         class="btn-video-control"
         @click="pubVideoOff(openviduInfo.publisher)"
       >
-        화면 중지
+        <span v-if="isPubVideoEnable">비디오 중지</span>
+        <span v-else>비디오 시작</span>
       </button>
       <button class="btn-close" @click="leaveSession">
         <img
