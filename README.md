@@ -22,7 +22,7 @@
 9. [ER Diagram](https://lab.ssafy.com/s08-webmobile1-sub2/S08P12A409/-/blob/develop/README.md#er-diagram)
 10. [컨벤션 전략](https://lab.ssafy.com/s08-webmobile1-sub2/S08P12A409/-/blob/develop/README.md#%EC%BB%A8%EB%B2%A4%EC%85%98-%EC%A0%84%EB%9E%B5)
 11. [EC2 포트 정리](https://lab.ssafy.com/s08-webmobile1-sub2/S08P12A409/-/blob/develop/README.md#ec2-%ED%8F%AC%ED%8A%B8-%EC%A0%95%EB%A6%AC)
-12. [팀원 역할]()
+12. [팀원 역할](https://lab.ssafy.com/s08-webmobile1-sub2/S08P12A409#%ED%8C%80%EC%9B%90-%EC%97%AD%ED%95%A0)
 
 ## 주요 기능
 
@@ -73,8 +73,6 @@ letsencrypt를 이용하여 ssl 인증서를 적용하였고, 프론트엔드는
 <br>
 
 **[상세 보기](./exec/PortingMenual.md)**
-
-<br>
 
 ## 이미지 분석 알고리즘
 
