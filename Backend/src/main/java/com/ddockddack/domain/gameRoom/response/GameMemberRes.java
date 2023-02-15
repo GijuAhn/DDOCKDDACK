@@ -40,7 +40,7 @@ public class GameMemberRes {
         return GameMemberRes.builder()
                 .socketId(gameMember.getSocketId())
                 .nickname(gameMember.getNickname())
-                .roundScore(gameMember.getTotalScore())
+                .totalScore(gameMember.getTotalScore())
                 .build();
     }
 }
