@@ -3,6 +3,8 @@ package com.ddockddack.domain.similarity.service;
 import org.opencv.core.Mat;
 
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
+
 
 public class EnsembleModel {
 
@@ -23,7 +25,7 @@ public class EnsembleModel {
         List<Mat> hist1 = imageHistogram.getHistogram(ImageUtil.ByteArray2InputStream(byteArray1));
         List<Mat> hist2 = imageHistogram.getHistogram(ImageUtil.ByteArray2InputStream(byteArray2));
 
-        Integer result;
+        int result;
 
 //        result = (double) (
 //                8192 * (featureDetectorDescriptor.compareFeatures(
@@ -59,7 +61,7 @@ public class EnsembleModel {
 //      [-] *2, if NaN batch -32.0
         double histogramDiff = (double) baseLog(imageHistogram.compareHistograms(hist1, hist2),2);
         if (Double.isNaN(histogramDiff)){
-            histogramDiff = 16.0;
+            histogramDiff = 1.0;
         }
 
 //        System.out.println("[+] featureScore * 8192: " + (8192 * featureScore));
@@ -67,7 +69,9 @@ public class EnsembleModel {
 //        System.out.println("[-] hashDistance * 2: " + (2 * hashDistance));
 //        System.out.println("[-] histogramDiff * 2: " + (2 * histogramDiff));
 
-        result = (int) Math.round((8192 * featureScore) + (512 * structureScore) - (2 * hashDistance) - (2 * histogramDiff));
+//        result = (int) Math.round((8192 * featureScore) + (512 * structureScore) - (2 * hashDistance) - (2 * histogramDiff));
+//        adjust(ease) weight cause of relative evaluation
+        result = (int) Math.round((4000 * featureScore) + (400 * structureScore) - (hashDistance) - (histogramDiff));
 
 //        final similarity score
 //        estimated 500±500

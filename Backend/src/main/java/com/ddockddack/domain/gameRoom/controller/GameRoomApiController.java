@@ -1,5 +1,6 @@
 package com.ddockddack.domain.gameRoom.controller;
 
+import com.ddockddack.domain.gameRoom.repository.GameRoom;
 import com.ddockddack.domain.gameRoom.response.GameMemberRes;
 import com.ddockddack.domain.gameRoom.response.GameRoomRes;
 import com.ddockddack.domain.gameRoom.service.GameRoomService;
@@ -109,6 +110,9 @@ public class GameRoomApiController {
     })
     public ResponseEntity startGame(@PathVariable String pinNumber) throws JsonProcessingException {
         gameRoomService.startGame(pinNumber);
+        final GameRoom gameRoom = gameRoomService.findGameRoom(pinNumber);
+        System.out.println("asdasdasddasdsdsdasdasd");
+        System.out.println(gameRoom.isStarted());
         return ResponseEntity.ok().build();
     }
 
@@ -119,7 +123,8 @@ public class GameRoomApiController {
             @ApiResponse(responseCode = "404", description = "존재 하지 않는 게임방")
     })
     public ResponseEntity<Boolean> getIsStartedGame(@PathVariable String pinNumber) {
-
+        System.out.println("여기불리언");
+        System.out.println(gameRoomService.isStartedGame(pinNumber));
         return ResponseEntity.ok(gameRoomService.isStartedGame(pinNumber));
     }
 

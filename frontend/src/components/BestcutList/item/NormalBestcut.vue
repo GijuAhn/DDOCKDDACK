@@ -86,8 +86,6 @@ const IMAGE_PATH = process.env.VUE_APP_IMAGE_PATH;
 const state = ref(false);
 const store = useStore();
 
-console.log(" @#@#@# ");
-
 const onClickOutside = () => {
   state.value = false;
 };

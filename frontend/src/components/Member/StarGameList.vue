@@ -38,16 +38,13 @@ const callApi = async () => {
       },
     })
     .then((response) => {
-      // console.log("access-star: ", response.data);
+      console.log("access-star: ", response.data);
       if (response.data.length > 0) {
         starredGames.value = response.data;
       }
     })
     .catch((error) => {
       console.log(error);
-      // if (error.response.status == 401) {
-      //   getAccessTokenByRefreshToken(); // refresh 토큰으로 다시
-      // }
     })
     .finally(() => {
       isLoading.value = false;

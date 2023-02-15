@@ -112,6 +112,12 @@ public class BestcutService {
     }
 
     @Transactional
+    public void removeByMemberId(Long memberId){
+        bestcutLikeRepository.deleteByMemberId(memberId);
+        reportedBestcutRepository.deleteByMemberId(memberId);
+    }
+
+    @Transactional
     public void reportBestcut(Long memberId, Long bestcutId, ReportType reportType) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new org.webjars.NotFoundException("존재하지 않는 멤버"));
