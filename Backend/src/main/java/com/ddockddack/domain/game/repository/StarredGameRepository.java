@@ -22,6 +22,12 @@ public interface StarredGameRepository extends JpaRepository<StarredGame, Long> 
     void deleteByGameId(Long id);
 
     @Modifying(clearAutomatically = true)
+    @Query("DELETE FROM StarredGame sg WHERE sg.member.id = :memberId")
+    void deleteByMemberId(Long memberId);
+
+    @Modifying(clearAutomatically = true)
     @Query("DELETE FROM StarredGame sg WHERE sg.game.id in :id")
     void deleteAllByGameId(@Param("id") List<Long> gameId);
+
+
 }

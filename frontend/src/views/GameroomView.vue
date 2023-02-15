@@ -374,7 +374,6 @@ onBeforeMount(() => {
 });
 
 const leaveSession = () => {
-  backgroundSoundOff();
   // --- 7) Leave the session by calling 'disconnect' method over the Session object ---
   if (openviduInfo.value.session) {
     let socketId = openviduInfo.value.session.connection.connectionId;
@@ -396,13 +395,22 @@ const leaveSession = () => {
         console.log(err);
       });
     }
+    backgroundSoundOff();
+    captureSoundOff();
     openviduInfo.value.session.disconnect();
     openviduInfo.value.session = undefined;
     openviduInfo.value.mainStreamManager = undefined;
     openviduInfo.value.publisher = undefined;
     openviduInfo.value.subscribers = [];
     openviduInfo.value.OV = undefined;
-    room.value.pinNumber = undefined;
+    openviduInfo.value = undefined;
+    room.value = undefined;
+    isStart.value = false;
+    round.value = 1;
+    isHost.value = false;
+    isEnd.value = false;
+    resultMode.value = false;
+    captureMode.value = false;
   }
 
   // Remove beforeunload listener
@@ -520,6 +528,11 @@ const pubAudioOff = (video) => {
 const backgroundSoundOff = () => {
   backgroundAudio.pause();
   backgroundAudio.currentTime = 0;
+};
+
+const captureSoundOff = () => {
+  captureAudio.pause();
+  captureAudio.currenttime = 0;
 };
 
 // setCurrentModalAsync("finalResult"); //주석
