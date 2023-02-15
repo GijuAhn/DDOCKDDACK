@@ -82,7 +82,7 @@ public class MemberService {
     }
 
     @Transactional
-    public void modifyMemberProfileImg(Long memberId, MultipartFile modifyProfileImg) {
+    public String modifyMemberProfileImg(Long memberId, MultipartFile modifyProfileImg) {
         Member member = memberRepository.findById(memberId).get();
 
         if (!(modifyProfileImg.getContentType().contains("image/jpg") ||
@@ -99,6 +99,8 @@ public class MemberService {
                 awsS3Service.deleteObject(member.getProfile());
             }
             member.modifyProfile(fileName);
+
+            return fileName;
         } catch (Exception e) {
             throw new RuntimeException("UPLOAD_FAILED"); //Exception 추가
         }
