@@ -282,7 +282,7 @@ onBeforeMount(() => {
           resultMode.value = false;
           result.value.length = 0;
           setCurrentModalAsync(""); //주석
-          if (round.value < 1 && isHost.value) {
+          if (round.value < 5 && isHost.value) {
             api.get(`/api/game-rooms/${route.params.pinNumber}/round`);
           } else if (isHost.value) {
             api.get(`/api/game-rooms/${route.params.pinNumber}/final`);
@@ -511,7 +511,7 @@ const pubAudioOff = (video) => {
   video.publishAudio(isPubAudioEnable);
 };
 
-setCurrentModalAsync("finalResult"); //주석
+// setCurrentModalAsync("finalResult"); //주석
 </script>
 
 <style scoped>
