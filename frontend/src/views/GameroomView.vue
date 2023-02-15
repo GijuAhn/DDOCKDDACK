@@ -73,7 +73,9 @@
                   <button @click="setCurrentModalAsync(`bestcutUpload`)">
                     내 사진 보기
                   </button>
-                  <button>최종 결과</button>
+                  <button @click="setCurrentModalAsync(`finalResult`)">
+                    최종 결과
+                  </button>
                 </div>
               </div>
             </div>
@@ -293,17 +295,7 @@ onBeforeMount(() => {
         isEnd.value = true;
         backgroundAudio.pause();
         backgroundAudio.currentTime = 0;
-        const result = await JSON.parse(signal.data);
-        result.forEach((id, index) => {
-          if (openviduInfo.value.session.connection.connectionId === id) {
-            winner.value.splice(index, 0, openviduInfo.value.publisher);
-          } else {
-            const sub = openviduInfo.value.subscribers.find(
-              (s) => s.stream.connection.connectionId === id
-            );
-            winner.value.splice(index, 0, sub);
-          }
-        });
+        result.value = await JSON.parse(signal.data);
         setTimeout(() => {
           resultMode.value = false;
         }, 5000);
@@ -500,6 +492,11 @@ const setCurrentModalAsync = (what) => {
       name: what,
       data: [round, result, isEnd, winner, openviduInfo.value.publisher],
     });
+  } else if (what === "finalResult") {
+    store.dispatch("commonStore/setCurrentModalAsync", {
+      name: what,
+      data: result,
+    });
   } else if (what === "") {
     store.dispatch("commonStore/setCurrentModalAsync", "");
   }
@@ -514,7 +511,7 @@ const pubAudioOff = (video) => {
   video.publishAudio(isPubAudioEnable);
 };
 
-// setCurrentModalAsync("intermediateResult"); //주석
+// setCurrentModalAsync("finalResult"); //주석
 </script>
 
 <style scoped>
