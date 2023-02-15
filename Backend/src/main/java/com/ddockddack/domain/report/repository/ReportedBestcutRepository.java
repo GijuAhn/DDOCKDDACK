@@ -20,4 +20,8 @@ public interface ReportedBestcutRepository extends JpaRepository<ReportedBestcut
     @Modifying
     @Query("DELETE FROM ReportedBestcut r WHERE r.bestcut.id in :ids")
     void deleteByBestcutIdIn(@Param("ids") List<Long> bestcutIds);
+
+    @Modifying
+    @Query("DELETE FROM ReportedBestcut r WHERE r.reportedMember.id = :id OR r.reportMember.id =:id")
+    void deleteByMemberId(@Param("id") Long memberId);
 }
