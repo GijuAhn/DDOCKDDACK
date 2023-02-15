@@ -155,7 +155,7 @@ public class GameRoomRepository {
         if (gameRoom.getScoreCount() == gameRoom.getMembers().size()) {
             List<GameMemberRes> roundResultData = findRoundResult(gameRoom);
             int maxRoundScore = Collections.max(roundResultData, Comparator.comparing(GameMemberRes::getRoundScore)).getRoundScore();
-            int scaledRoundScore = (int) ((double) rawScore / maxRoundScore) * 100; //max score per round is +100 point
+            int scaledRoundScore = (int) (((double)rawScore/maxRoundScore) * 100); //max score per round is +100 point
             gameMember.setScaledRoundScore(scaledRoundScore);
             gameMember.setTotalScore(gameMember.getTotalScore() + scaledRoundScore);
 
