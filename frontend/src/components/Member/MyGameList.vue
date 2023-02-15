@@ -2,11 +2,13 @@
   <div id="view">
     <!-- <h1>내가 만든 게임 목록 입니다.</h1> -->
     <div id="list">
-      <normal-game
-        v-for="game in myGames"
-        :key="game"
+      <my-game-item
+        v-for="(game, index) in myGames"
+        :key="index"
         :game="game"
-      ></normal-game>
+        :index="index"
+        @updateProps="(value) => updateMyGames(value)"
+      ></my-game-item>
     </div>
     <loading-spinner id="imgLoading" v-show="isLoading">
       <!-- 이미지 로딩 중 -->
@@ -18,7 +20,8 @@
 </template>
 
 <script setup>
-import NormalGame from "@/components/GameList/item/NormalGame";
+// import NormalGame from "@/components/GameList/item/NormalGame";
+import MyGameItem from "@/components/Member/item/MyGameItem.vue";
 import { apiInstance } from "@/api/index";
 import { useStore } from "vuex";
 import { ref, computed } from "vue";
@@ -65,6 +68,10 @@ const callApi = () => {
     .finally(() => {
       isLoading.value = false;
     });
+};
+
+const updateMyGames = (value) => {
+  myGames.value.splice(value, 1);
 };
 
 callApi();

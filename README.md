@@ -2,7 +2,7 @@
 
 ## 똑딱 의미
 
-'똑' 닮았다. <br>'딱' 닮았다.
+'똑' 닮았다. <br>'딱' 알겠다.
 
 ## 개요
 
@@ -50,7 +50,7 @@
 
 ## 서비스 아키텍쳐
 
-![서비스 아키텍처](ReadMe_contents\Architecture.jpg)
+![서비스 아키텍처](./ReadMe_contents/Architecture.jpg)
 
 ## Jenkins를 이용한 CD 구축
 
@@ -70,3 +70,19 @@ letsencrypt를 이용하여 ssl 인증서를 적용하였고, 프론트엔드는
 - Notion
 - Mattermost
 - Webex
+- Figma
+
+## mock-up
+
+# 전체
+
+![전체 목업](./ReadMe_contents/mockup_whole.png)
+
+# 목록 목업
+
+![목록 목업](./ReadMe_contents/mockup_list.png)
+
+# 요소 목업
+
+![요소 목업_1](./ReadMe_contents/mockup_common_component_1.png)
+![요소 목업_2](./ReadMe_contents/mockup_common_component_2.png)

@@ -103,9 +103,9 @@ public class MemberApiController {
 
             log.info("profileImg {}", profileImg.getOriginalFilename());
 
-            memberService.modifyMemberProfileImg(member.get().getId(), profileImg);
+            String imageName = memberService.modifyMemberProfileImg(member.get().getId(), profileImg);
 
-            return ResponseEntity.ok().build();
+            return ResponseEntity.ok().body(imageName);
         } catch (Exception e) {
             return ResponseEntity.status(500).body(e.getMessage());
         }
