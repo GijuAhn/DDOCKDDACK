@@ -165,8 +165,9 @@ const setCurrentModalAsync = (what) => {
 }
 
 .profile-image {
-  widows: 30px;
+  width: 30px;
   height: 30px;
+  border-radius: 75%;
 }
 
 .image:hover ~ .image-behind2 {
