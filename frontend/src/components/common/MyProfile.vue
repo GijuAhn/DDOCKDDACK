@@ -3,11 +3,7 @@
   <div class="user-info">
     <div id="profile">
       <div id="profileImg" style="float: left">
-        <img
-          :src="`${IMAGE_PATH}/${myProfile.profile}`"
-          alt="profileImg"
-          id="image"
-        />
+        <img :src="`${IMAGE_PATH}/${myProfile.profile}`" alt="" id="image" />
         <div id="div_modifyImg">
           <input
             type="file"
