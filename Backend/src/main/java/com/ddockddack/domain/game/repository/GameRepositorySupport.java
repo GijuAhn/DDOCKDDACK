@@ -130,29 +130,28 @@ public class GameRepositorySupport {
     public List<StarredGameRes> findAllStarredGame(Long memberId) {
         return jpaQueryFactory
                 .select(new QStarredGameRes(
-                        game.id.as("gameId"),
-                        game.category.as("gameCategory").stringValue(),
-                        game.title.as("gameTitle"),
-                        game.member.nickname.as("creator"),
-                        game.createdAt.as("regDate").stringValue(),
+                        starredGame.game.id.as("gameId"),
+                        starredGame.game.category.as("gameCategory").stringValue(),
+                        starredGame.game.title.as("gameTitle"),
+                        starredGame.game.member.nickname.as("creator"),
+                        starredGame.game.createdAt.as("regDate").stringValue(),
                         isStarred(memberId),
-                        game.playCount.as("popularity"),
+                        starredGame.game.playCount.as("playCnt"),
                         gameImage.imageUrl.min().as("thumbnail")
                 ))
-                .from(game)
-                .innerJoin(game.member, member)
-                .innerJoin(game.images, gameImage)
-                .join(starredGame).on(starredGame.game.id.eq(game.id)
-                        .and(starredGame.member.id.eq(member.id)))
+                .from(starredGame)
+                .innerJoin(starredGame.game, game)
+                .innerJoin(starredGame.game.member, member)
+                .innerJoin(starredGame.game.images, gameImage)
                 .where(starredGame.member.id.eq(memberId))
                 .groupBy(
                         starredGame.id,
-                        game.id,
-                        game.category,
-                        game.title,
-                        game.member.nickname,
-                        game.createdAt,
-                        game.playCount)
+                        starredGame.game.id,
+                        starredGame.game.category,
+                        starredGame.game.title,
+                        starredGame.game.member.nickname,
+                        starredGame.game.createdAt,
+                        starredGame.game.playCount)
                 .orderBy(starredGame.id.desc())
                 .fetch();
 
