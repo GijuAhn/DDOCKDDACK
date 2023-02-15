@@ -3,6 +3,8 @@ package com.ddockddack.domain.similarity.service;
 import org.opencv.core.Mat;
 
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
+
 
 public class EnsembleModel {
 
@@ -68,8 +70,8 @@ public class EnsembleModel {
 //        System.out.println("[-] histogramDiff * 2: " + (2 * histogramDiff));
 
 //        result = (int) Math.round((8192 * featureScore) + (512 * structureScore) - (2 * hashDistance) - (2 * histogramDiff));
-//        ease weight cause of relative evaluation
-        result = (int) Math.round((1000 * featureScore) + (100 * structureScore) - (hashDistance) - (histogramDiff));
+//        adjust(ease) weight cause of relative evaluation
+        result = (int) Math.round((4000 * featureScore) + (400 * structureScore) - (hashDistance) - (histogramDiff));
 
 //        final similarity score
 //        estimated 500±500
