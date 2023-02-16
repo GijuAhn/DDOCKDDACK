@@ -262,4 +262,4 @@ docker-compose up
 
 ### 5. Nginx 설정과 ssl 인증서 발급 및 적용
 
-Openvidu 같은 경우, 카메라를 사용하기 위해서는 반드시 https로 이용해야 하기에 SSL 인증서를 발급받아야 합니다만, 해당 작업은 OPENVIDU에서 처리해줍니다.
+Openvidu 같은 경우, 카메라를 사용하기 위해서는 반드시 https로 이용해야 하기에 SSL 인증서를 발급받아야 합니다만, 해당 작업은 .env 파일을 정상적으로 수정했다면 Openvidu 컨테이너 작동 시 알아서 발급합니다.
