@@ -33,6 +33,7 @@ import org.opencv.imgproc.Imgproc;
 import org.opencv.objdetect.CascadeClassifier;
 import org.opencv.objdetect.Objdetect;
 import org.opencv.videoio.VideoCapture;
+import org.springframework.scheduling.annotation.Async;
 
 
 import javax.imageio.ImageIO;
@@ -95,8 +96,8 @@ public class PerceptualHash {
         }
         c[0] = 1 / Math.sqrt(2.0);
     }
-
-    private double[][] applyDCT(double[][] f) {
+    @Async
+    public double[][] applyDCT(double[][] f) {
         int N = size;
 
         double[][] F = new double[N][N];
@@ -114,7 +115,7 @@ public class PerceptualHash {
         }
         return F;
     }
-
+    @Async
     public String getHash(InputStream is) throws Exception {
 
         // Returns a 'binary string' (like. 001010111011100010) which is easy to do a hamming distance on.

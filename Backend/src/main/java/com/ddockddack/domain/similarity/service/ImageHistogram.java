@@ -15,9 +15,10 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.ddockddack.domain.similarity.service.ImageUtil;
+import org.springframework.scheduling.annotation.Async;
 
 public class ImageHistogram {
-
+    @Async
     public List<Mat> getHistogram(InputStream is) throws IOException {
         OpenCV.loadLocally();
 

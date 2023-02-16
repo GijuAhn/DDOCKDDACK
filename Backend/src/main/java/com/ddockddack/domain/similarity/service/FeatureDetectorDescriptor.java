@@ -4,6 +4,7 @@ import nu.pattern.OpenCV;
 import org.opencv.core.*;
 import org.opencv.features2d.DescriptorMatcher;
 import org.opencv.features2d.KAZE;
+import org.springframework.scheduling.annotation.Async;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -22,7 +23,7 @@ public class FeatureDetectorDescriptor {
 
     }
 
-
+    @Async
     public double compareFeatures(InputStream input1, InputStream input2) throws IOException {
 
         BufferedImage img1 = ImageIO.read(input1);
