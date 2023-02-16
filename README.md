@@ -179,7 +179,7 @@ letsencrypt를 이용하여 ssl 인증서를 적용하였고, 프론트엔드는
 |      80       |                      from HTTP to HTTPS                      |
 |      443      |                            HTTPS                             |
 |     3478      |       used by STUN/TURN server to resolve clients IPs.       |
-|     8443      |                           Openvidu                           |
+|     5443      |                           Openvidu                           |
 |     3306      |                            MySQL                             |
 |     7080      |                 vue, NginX Docker Container                  |
 |     8080      |                           Jenkins                            |
