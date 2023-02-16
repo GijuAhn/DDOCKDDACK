@@ -265,6 +265,7 @@ onBeforeMount(() => {
       });
 
       openviduInfo.value.session.on("roundStart", async (signal) => {
+        backgroundAudio.play();
         round.value = signal.data;
         if (signal.data == 1) {
           intro.value = true;
@@ -490,6 +491,7 @@ const linkShare = async () => {
 
 const capture = async (index) => {
   captureAudio.play();
+  backgroundSoundOff();
   let me = document.getElementById("myVideo2");
   captureMode.value = true;
   setTimeout(() => {
