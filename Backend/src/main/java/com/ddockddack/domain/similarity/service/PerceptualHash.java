@@ -115,7 +115,7 @@ public class PerceptualHash {
         }
         return F;
     }
-    @Async
+    @Async("threadPoolTaskExecutor")
     public String getHash(InputStream is) throws Exception {
 
         // Returns a 'binary string' (like. 001010111011100010) which is easy to do a hamming distance on.

@@ -82,11 +82,11 @@ public class GameRoomService {
         GameRoom gameRoom = this.findGameRoom(pinNumber);
 
         //중복 접속 방지 (허용하려면 주석처리)
-        for (GameMember gameMember : gameRoom.getMembers().values()) {
-            if (clientIp.equals(gameMember.getClientIp())) {
-                throw new AccessDeniedException(ErrorCode.NOT_AUTHORIZED);
-            }
-        }
+//        for (GameMember gameMember : gameRoom.getMembers().values()) {
+//            if (clientIp.equals(gameMember.getClientIp())) {
+//                throw new AccessDeniedException(ErrorCode.NOT_AUTHORIZED);
+//            }
+//        }
 
         String token = gameRoomRepository.join(pinNumber, member, nickname, clientIp);
 
@@ -179,7 +179,7 @@ public class GameRoomService {
      * @param sessionId
      * @param param
      */
-    @Async
+    @Async("threadPoolTaskExecutor")
     public void scoringImage(String pinNumber, String sessionId, Map<String, String> param)
             throws Exception {
         gameRoomRepository.findById(pinNumber).orElseThrow(() ->
@@ -187,10 +187,13 @@ public class GameRoomService {
         byte[] byteGameImage = awsS3Service.getObject(param.get("gameImage"));
         byte[] byteImage = Base64.decodeBase64(param.get("memberGameImage"));
 
-        System.out.println();
+        long beforeTime = System.currentTimeMillis();
+
 
         int rawScore = EnsembleModel.CalculateSimilarity(byteGameImage, byteImage);
-
+        long afterTime = System.currentTimeMillis();
+        long secDiffTime = (afterTime - beforeTime)/1000;
+        System.out.println("걸린시간 : " +secDiffTime);
         gameRoomRepository.saveScore(pinNumber, sessionId, byteImage, rawScore);
     }
 

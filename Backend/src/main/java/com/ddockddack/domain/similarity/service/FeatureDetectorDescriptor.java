@@ -23,7 +23,7 @@ public class FeatureDetectorDescriptor {
 
     }
 
-    @Async
+    @Async("threadPoolTaskExecutor")
     public double compareFeatures(InputStream input1, InputStream input2) throws IOException {
 
         BufferedImage img1 = ImageIO.read(input1);
