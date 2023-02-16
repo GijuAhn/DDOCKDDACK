@@ -32,6 +32,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -247,6 +248,7 @@ public class MemberApiController {
         Long memberId = ((MemberAccessRes)authentication.getPrincipal()).getId();
         try {
             List<GameRoomHistoryRes> roomHistory = gameRoomService.findAllRoomHistory(memberId);
+            Collections.reverse(roomHistory);
             return ResponseEntity.ok(roomHistory);
         } catch (Exception e) {
             return ResponseEntity.status(500).body(e);
