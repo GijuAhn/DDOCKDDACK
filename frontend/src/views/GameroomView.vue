@@ -204,7 +204,8 @@ const room = ref({
   gameDescription: undefined,
   gameImages: undefined,
 });
-const timerCount = ref(5);
+const timeSet = 10;
+const timerCount = ref(timeSet);
 const isStart = ref(false);
 const round = ref(1);
 const isHost = ref(false);
@@ -275,7 +276,7 @@ onBeforeMount(() => {
                 clearInterval(timer);
                 capture(signal.data - 1);
                 setCurrentModalAsync("intermediateResult");
-                timerCount.value = 5;
+                timerCount.value = timeSet;
                 resultMode.value = true;
               }
             }, 1000);
@@ -287,7 +288,7 @@ onBeforeMount(() => {
               clearInterval(timer);
               capture(signal.data - 1);
               setCurrentModalAsync("intermediateResult");
-              timerCount.value = 5;
+              timerCount.value = timeSet;
               resultMode.value = true;
             }
           }, 1000);
@@ -300,7 +301,7 @@ onBeforeMount(() => {
           resultMode.value = false;
           result.value.length = 0;
           setCurrentModalAsync("");
-          if (round.value < 5 && isHost.value) {
+          if (round.value < 10 && isHost.value) {
             //체크
             api.get(`/api/game-rooms/${route.params.pinNumber}/round`);
           } else if (isHost.value) {
