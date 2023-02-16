@@ -9,6 +9,38 @@
 친구들끼리 사람 혹은 사물을 보며 서로 자기가 더 닮았다고 설전을 펼치신 적 있으신가요?<br>
 더 이상 그럴 필요 없습니다. '똑딱'이 4가지 이미지 분석 알고리즘을 이용해 누가 더 닮았는지 알려드리겠습니다.
 
+## 팀원
+
+| 이름   | GitHub                                                     |
+| ------ | ---------------------------------------------------------- |
+| 이해건 | [@Supreme-ignorance](https://github.com/Supreme-ignorance) |
+| 오세솔 | [@OhSeSol](https://github.com/OhSeSol)                     |
+| 소지현 | [@verandaaa](https://github.com/verandaaa)                 |
+| 선준용 | [@sjy4974](https://github.com/sjy4974)                     |
+| 이종민 | [@ljm0726](https://github.com/ljm0726)                     |
+| 안기주 | [@swhana](https://github.com/GijuAhn)                      |
+
+<p>
+<a href="https://github.com/Supreme-ignorance">
+  <img src="https://github.com/Supreme-ignorance.png" width="100">
+</a>
+<a href="https://github.com/OhSeSol">
+  <img src="https://github.com/OhSeSol.png" width="100">
+</a>
+<a href="https://github.com/verandaaa">
+  <img src="https://github.com/verandaaa.png" width="100">
+</a>
+<a href="https://github.com/sjy4974">
+  <img src="https://github.com/sjy4974.png" width="100">
+</a>
+<a href="https://github.com/swhana">
+  <img src="https://github.com/swhana.png" width="100">
+</a>
+<a href="https://github.com/GijuAhn">
+  <img src="https://github.com/GijuAhn.png" width="100">
+</a>
+</p>
+
 ## 목차
 
 1. [주요 기능](#주요-기능)
@@ -75,8 +107,6 @@ letsencrypt를 이용하여 ssl 인증서를 적용하였고, 프론트엔드는
 **[상세 보기](./exec/PortingMenual.md)**
 
 ## 이미지 분석 알고리즘
-
----
 
 설명 추가 필요
 
