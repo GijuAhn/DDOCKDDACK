@@ -1,70 +1,68 @@
 <template>
-  <div class="black-bg">
-    <div class="white-bg">
-      <div class="top-section">
-        <div>
-          <div id="bestcut-title">
-            <span>{{ currentModal.data.bestcutImgTitle }}</span>
-          </div>
-          <button
-            v-if="!currentModal.data.isLiked"
-            @click="bestcutLike(currentModal.data.bestcutId)"
-            class="like-button"
-          >
-            <img
-              :src="require(`@/assets/images/like-button.svg`)"
-              alt="좋아요아이콘"
-              class="like"
-            />
-            <span>{{ currentModal.data.popularity }}</span>
-          </button>
-          <button
-            v-else
-            @click="bestcutDislike(currentModal.data.bestcutId)"
-            class="like-button"
-          >
-            <img
-              :src="require(`@/assets/images/dislike-button.svg`)"
-              alt="좋아요취소아이콘"
-              class="dislike"
-            />
-            <span>{{ currentModal.data.popularity }}</span>
-          </button>
+  <div class="white-bg">
+    <div class="top-section">
+      <div>
+        <div id="bestcut-title">
+          <span>{{ currentModal.data.bestcutImgTitle }}</span>
         </div>
-        <div>
+        <button
+          v-if="!currentModal.data.isLiked"
+          @click="bestcutLike(currentModal.data.bestcutId)"
+          class="like-button"
+        >
           <img
-            :src="`https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/340px-Default_pfp.svg.png?20220226140232`"
-            alt="유저프로필사진"
-            class="profile-image"
+            :src="require(`@/assets/images/like-button.svg`)"
+            alt="좋아요아이콘"
+            class="like"
           />
-          <div id="nickname">
-            <span>{{ currentModal.data.nickname }} | {{ date }}</span>
-          </div>
+          <span>{{ currentModal.data.popularity }}</span>
+        </button>
+        <button
+          v-else
+          @click="bestcutDislike(currentModal.data.bestcutId)"
+          class="like-button"
+        >
+          <img
+            :src="require(`@/assets/images/dislike-button.svg`)"
+            alt="좋아요취소아이콘"
+            class="dislike"
+          />
+          <span>{{ currentModal.data.popularity }}</span>
+        </button>
+      </div>
+      <div>
+        <img
+          :src="`https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/340px-Default_pfp.svg.png?20220226140232`"
+          alt="유저프로필사진"
+          class="profile-image"
+        />
+        <div id="nickname">
+          <span>{{ currentModal.data.nickname }} | {{ date }}</span>
         </div>
       </div>
+    </div>
 
-      <hr />
-      <div class="img-section">
-        <img
-          :src="`${IMAGE_PATH}/${currentModal.data.gameImgUrl}`"
-          alt="원본사진"
-          class="image"
-        />
-        <img
-          :src="`${IMAGE_PATH}/${currentModal.data.bestcutImgUrl}`"
-          alt="베스트컷"
-          class="image"
-        />
-      </div>
-      <hr />
+    <hr />
+    <div class="img-section">
+      <img
+        :src="`${IMAGE_PATH}/${currentModal.data.gameImgUrl}`"
+        alt="원본사진"
+        class="image"
+      />
+      <img
+        :src="`${IMAGE_PATH}/${currentModal.data.bestcutImgUrl}`"
+        alt="베스트컷"
+        class="image"
+      />
+    </div>
+    <hr />
 
-      <div class="bottom-section">
-        <div id="game-info">
-          <span>
-            {{ currentModal.data.gameTitle }} |
-            {{ currentModal.data.gameImgDesc }}
-          </span>
-        </div>
+    <div class="bottom-section">
+      <div id="game-info">
+        <span>
+          {{ currentModal.data.gameTitle }} |
+          {{ currentModal.data.gameImgDesc }}
+        </span>
       </div>
     </div>
   </div>
@@ -118,20 +116,13 @@ const bestcutDislike = () => {
 </script>
 
 <style scoped>
-.black-bg {
-  box-shadow: rgba(0, 0, 0, 0.5) 0 0 0 9999px;
-  z-index: 100;
-  position: absolute;
-  box-sizing: border-box;
-}
-
 .white-bg {
   width: 100%;
   background: white;
   padding: 20px;
   width: 1020px;
   height: 560px;
-  box-shadow: 0 4px 4px -2px gray;
+  border-radius: 10px;
 }
 
 #bestcut-title {
@@ -153,6 +144,9 @@ const bestcutDislike = () => {
   height: 30px;
   top: 50px;
   right: 87px;
+}
+.like-button:hover {
+  cursor: pointer;
 }
 .like-button span {
   position: absolute;
@@ -244,7 +238,7 @@ const bestcutDislike = () => {
 }
 
 #nickname {
-  margin-top: 14px;
+  margin-top: 18px;
   width: 100%;
   display: inline;
   position: absolute;
@@ -252,7 +246,7 @@ const bestcutDislike = () => {
 }
 
 #nickname span {
-  font-size: 30px;
+  font-size: 20px;
   font-weight: 100;
   font-style: normal;
   color: #6d6d6d;

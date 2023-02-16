@@ -259,6 +259,7 @@ const setCurrentModalAsync = (what) => {
   top: 78px;
   left: 255px;
 }
+
 .like-button span {
   position: absolute;
   top: 30%;
@@ -279,7 +280,6 @@ const setCurrentModalAsync = (what) => {
   top: 6px;
   position: absolute;
 }
-
 .like-button:hover .like {
   filter: invert(100%) sepia(0%) saturate(6054%) hue-rotate(358deg)
     brightness(97%) contrast(113%);
