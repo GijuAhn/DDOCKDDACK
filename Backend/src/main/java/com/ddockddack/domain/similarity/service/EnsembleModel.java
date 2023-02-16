@@ -79,6 +79,11 @@ public class EnsembleModel {
         System.out.println("[-] hashDistance: " + (hashDistance));
         System.out.println("[-] histogramDiff * 4: " + (4 * histogramDiff));
 
+        System.out.println("[+] raw featureScore: " + (featureScore));
+        System.out.println("[+] raw structureScore: " + (structureScore));
+        System.out.println("[-] raw hashDistance: " + (hashDistance));
+        System.out.println("[-] raw histogramDiff: " + (histogramDiff));
+
 //        final similarity score
 //        estimated 500±500
         return result;
