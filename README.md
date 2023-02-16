@@ -65,31 +65,31 @@
 
 ## 개발 환경
 
-| Category        | Tech stack         | Version                    | Docker                |     |
-| --------------- | ------------------ | -------------------------- | --------------------- | --- |
-| Version Control | GitLab             |                            |                       |     |
-|                 | Jira               |                            |                       |     |
-| Documentation   | notion             |                            |                       |     |
-| Front-End       | HTML5              |                            |                       |     |
-|                 | CSS3               |                            |                       |     |
-|                 | JavaScript(ES6)    |                            |                       |     |
-|                 | vue/cli            | 5.0.8                      |                       |     |
-|                 | Vue.js (Vue3)      | 3.2.45                     |                       |     |
-|                 | node.js            | 14.19.0                    |                       |     |
-|                 | Visual Studio Code | 1.74.2                     |                       |     |
-| Back-End        | Java               | OpenJDK Azul zulu 11.60.19 | official docker image |     |
-|                 | gradle             | 7.6                        | official docker image |     |
-|                 | SpringBoot         | 2.7.7                      |                       |     |
-|                 | Intellij           | 2022.3                     |                       |     |
-| DB              | MySQL              | 8.0.31                     | official docker image |     |
-| Server          | AWS EC2            |                            |                       |     |
-|                 | AWS S3             |                            |                       |     |
-|                 | Nginx              |                            | official docker image |     |
-|                 | Ubuntu             | 22.04.1 LTS                | official docker image |     |
-|                 | Openvidu           | 2.25.0                     | official docker image |     |
-| CI/CD           | Docker             |                            |                       |     |
-|                 | Jenkins            |                            |                       |     |
-|                 | Ansible            |                            |                       |     |
+| Category        | Tech stack         | Version                    | Docker                |
+| --------------- | ------------------ | -------------------------- | --------------------- |
+| Version Control | GitLab             |                            |                       |
+|                 | Jira               |                            |                       |
+| Documentation   | notion             |                            |                       |
+| Front-End       | HTML5              |                            |                       |
+|                 | CSS3               |                            |                       |
+|                 | JavaScript(ES6)    |                            |                       |
+|                 | vue/cli            | 5.0.8                      |                       |
+|                 | Vue.js (Vue3)      | 3.2.45                     |                       |
+|                 | node.js            | 14.19.0                    |                       |
+|                 | Visual Studio Code | 1.74.2                     |                       |
+| Back-End        | Java               | OpenJDK Azul zulu 11.60.19 | official docker image |
+|                 | gradle             | 7.6                        | official docker image |
+|                 | SpringBoot         | 2.7.7                      |                       |
+|                 | Intellij           | 2022.3                     |                       |
+| DB              | MySQL              | 8.0.31                     | official docker image |
+| Server          | AWS EC2            |                            |                       |
+|                 | AWS S3             |                            |                       |
+|                 | Nginx              |                            | official docker image |
+|                 | Ubuntu             | 22.04.1 LTS                | official docker image |
+|                 | Openvidu           | 2.25.0                     | official docker image |
+| CI/CD           | Docker             |                            |                       |
+|                 | Jenkins            |                            |                       |
+|                 | Ansible            |                            |                       |
 
 ---
 
