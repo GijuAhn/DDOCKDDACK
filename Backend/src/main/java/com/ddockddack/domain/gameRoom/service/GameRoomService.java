@@ -7,7 +7,6 @@ import com.ddockddack.domain.gameRoom.repository.GameMember;
 import com.ddockddack.domain.gameRoom.repository.GameRoom;
 import com.ddockddack.domain.gameRoom.repository.GameRoomHistoryRepository;
 import com.ddockddack.domain.gameRoom.repository.GameRoomRepository;
-import com.ddockddack.domain.gameRoom.request.GameRoomHistoryReq;
 import com.ddockddack.domain.gameRoom.response.GameMemberRes;
 import com.ddockddack.domain.gameRoom.response.GameRoomHistoryRes;
 import com.ddockddack.domain.gameRoom.response.GameRoomRes;
@@ -23,7 +22,6 @@ import io.openvidu.java.client.OpenViduHttpException;
 import io.openvidu.java.client.OpenViduJavaClientException;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.codec.binary.Base64;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,6 +40,7 @@ public class GameRoomService {
     private final MemberRepository memberRepository;
     private final GameRoomHistoryRepository gameRoomHistoryRepository;
     private final AwsS3Service awsS3Service;
+    private final EnsembleModel ensembleModel;
 
 
     /**
@@ -82,11 +81,11 @@ public class GameRoomService {
         GameRoom gameRoom = this.findGameRoom(pinNumber);
 
         //중복 접속 방지 (허용하려면 주석처리)
-//        for (GameMember gameMember : gameRoom.getMembers().values()) {
-//            if (clientIp.equals(gameMember.getClientIp())) {
-//                throw new AccessDeniedException(ErrorCode.NOT_AUTHORIZED);
-//            }
-//        }
+        for (GameMember gameMember : gameRoom.getMembers().values()) {
+            if (clientIp.equals(gameMember.getClientIp())) {
+                throw new AccessDeniedException(ErrorCode.NOT_AUTHORIZED);
+            }
+        }
 
         String token = gameRoomRepository.join(pinNumber, member, nickname, clientIp);
 
@@ -179,21 +178,17 @@ public class GameRoomService {
      * @param sessionId
      * @param param
      */
-    @Async("threadPoolTaskExecutor")
     public void scoringImage(String pinNumber, String sessionId, Map<String, String> param)
             throws Exception {
         gameRoomRepository.findById(pinNumber).orElseThrow(() ->
                 new NotFoundException(ErrorCode.GAME_ROOM_NOT_FOUND));
         byte[] byteGameImage = awsS3Service.getObject(param.get("gameImage"));
         byte[] byteImage = Base64.decodeBase64(param.get("memberGameImage"));
-
-        long beforeTime = System.currentTimeMillis();
-
-
-        int rawScore = EnsembleModel.CalculateSimilarity(byteGameImage, byteImage);
-        long afterTime = System.currentTimeMillis();
-        long secDiffTime = (afterTime - beforeTime)/1000;
-        System.out.println("걸린시간 : " +secDiffTime);
+//        long beforeTime = System.currentTimeMillis();
+        int rawScore = ensembleModel.CalculateSimilarity(byteGameImage, byteImage);
+//        long afterTime = System.currentTimeMillis();
+//        long secDiffTime = (afterTime - beforeTime) / 1000;
+//        System.out.println("걸린시간 : " + secDiffTime);
         gameRoomRepository.saveScore(pinNumber, sessionId, byteImage, rawScore);
     }
 

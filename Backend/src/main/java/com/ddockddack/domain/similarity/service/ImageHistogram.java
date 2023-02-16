@@ -13,13 +13,15 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import com.ddockddack.domain.similarity.service.ImageUtil;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.Async;
-
+@Configuration
 public class ImageHistogram {
     @Async("threadPoolTaskExecutor")
-    public List<Mat> getHistogram(InputStream is) throws IOException {
+    public CompletableFuture<List<Mat>> getHistogram(InputStream is) throws IOException {
         OpenCV.loadLocally();
 
         BufferedImage img = ImageIO.read(is);
@@ -85,10 +87,11 @@ public class ImageHistogram {
             histogram.add(gHist);
             histogram.add(rHist);
 
+
         } catch (CvException e) {
             histogram = null;
         } finally {
-            return histogram;
+            return CompletableFuture.completedFuture(histogram);
         }
     }
 
