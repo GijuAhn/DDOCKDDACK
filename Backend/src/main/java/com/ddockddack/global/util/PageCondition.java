@@ -20,7 +20,7 @@ public class PageCondition {
 
     @Builder
     public PageCondition(String order, String period, String search, String keyword, int page) {
-        OrderCondition orderCondition = (order == null || order.isBlank()) ? OrderCondition.RECENT : OrderCondition.valueOf(order);
+        OrderCondition orderCondition = (order == null || order.isBlank()) ? OrderCondition.POPULARITY : OrderCondition.valueOf(order);
         this.periodCondition = (period == null || period.isBlank()) ? null : PeriodCondition.valueOf(period);
         this.searchCondition = (search == null || search.isBlank()) ? null : SearchCondition.valueOf(search);
         this.keyword = keyword;

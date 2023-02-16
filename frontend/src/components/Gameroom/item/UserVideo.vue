@@ -1,192 +1,138 @@
 <template>
-  <div>
-    <div v-if="props.streamManager">
-      <span v-if="props.isStart && !props.isEnd">
-        <img
-          :src="`${GAMEIMAGES_PATH}/${props.room.gameId}/${
-            props.room.gameImages[round - 1].gameImage
-          }`"
-        />
+  <div id="ovVideoContainer" v-if="props.streamManager">
+    <ov-video
+      id="ovVideo"
+      :class="{ blinking: captureMode }"
+      :stream-manager="props.streamManager"
+    />
+
+    <div id="nickname" v-if="props.isSub">
+      <span>{{ clientData }}</span>
+      <span>
+        <svg-icon
+          v-if="isSubVideoEnable"
+          @click="subVideoChange"
+          type="mdi"
+          :path="path[0]"
+        ></svg-icon>
+        <svg-icon
+          v-if="!isSubVideoEnable"
+          @click="subVideoChange"
+          type="mdi"
+          :path="path[1]"
+        ></svg-icon>
       </span>
-      <div class="parent">
-        <ov-video
-          class="child1"
-          :class="{ blinking: resultMode }"
-          :stream-manager="props.streamManager"
-        />
-      </div>
-
-      <div>
-        <p>{{ clientData }}</p>
-      </div>
-    </div>
-    <br />
-    <br />
-    <div v-if="props.isEnd">
-      <button @click="getMyImages">결과보기</button>
-    </div>
-
-    <div v-if="isShow">
-      <div v-for="(image, index) in resultImages" :key="index">
-        <div>
-          <input
-            type="checkbox"
-            :value="index"
-            @change="check(index)"
-          />체크박스
-          <br />
-          <input
-            id="bestcutTitle"
-            type="text"
-            v-model="inputs[index]"
-            placeholder="제목을 입력하세요"
-          />
-          <img
-            :src="`${GAMEIMAGES_PATH}/${props.room.gameId}/${props.room.gameImages[index].gameImage}`"
-          />
-          <img :src="image" id="bestcutImg" /> <br />
-        </div>
-      </div>
-
-      <button @click="upload">베스트 컷 게시</button>
+      <span>
+        <svg-icon
+          v-if="isSubAudioEnable"
+          @click="subAudioChange"
+          type="mdi"
+          :path="path[2]"
+        ></svg-icon>
+        <svg-icon
+          v-if="!isSubAudioEnable"
+          @click="subAudioChange"
+          type="mdi"
+          :path="path[3]"
+        ></svg-icon>
+      </span>
     </div>
   </div>
 </template>
 
 <script setup>
 import OvVideo from "./OvVideo";
-import html2canvas from "html2canvas";
-import { apiInstance } from "@/api/index";
-import { computed, defineProps, watch, ref, onMounted } from "vue";
-import process from "process";
 
-const api = apiInstance();
+import { computed, defineProps, ref } from "vue";
+
+import SvgIcon from "@jamescoyle/vue-icon";
+import {
+  mdiMonitor,
+  mdiMonitorOff,
+  mdiVolumeHigh,
+  mdiVolumeOff,
+} from "@mdi/js";
+
+const isSubVideoEnable = ref(true);
+const isSubAudioEnable = ref(true);
 const props = defineProps({
   streamManager: Object,
-  timerCount: Number,
-  isEnd: Boolean,
-  isStart: Boolean,
-  round: Number,
-  room: Object,
-  resultMode: Boolean,
+  captureMode: Boolean,
+  isSub: Boolean,
 });
-
-const GAMEIMAGES_PATH = process.env.VUE_APP_GAMEIMAGES_PATH;
-const resultImages = ref([]);
-const bestcutSaveReq = ref({
-  pinNumber: undefined,
-  sessionId: undefined,
-  gameTitle: undefined,
-  images: [],
-});
-const inputs = ref([]);
-const isChecked = ref([]);
-const rankingImage = ref([]);
-const isShow = ref(false);
+const path = ref([mdiMonitor, mdiMonitorOff, mdiVolumeHigh, mdiVolumeOff]);
 
 const clientData = computed(() => {
   const { clientData } = getConnectionData();
   return clientData;
 });
 
-onMounted(() => {
-  init();
-});
-
-watch(
-  () => props.timerCount,
-  (value) => {
-    if (value === 0) {
-      capture();
-    }
-  },
-  { immediate: true }
-);
-
-const capture = () => {
-  let me = document.getElementById("local-video-undefined");
-  html2canvas(me).then((canvas) => {
-    let myImg;
-    const sessionId = props.streamManager.session.connection.connectionId;
-    const pinNumber = props.streamManager.session.sessionId;
-    myImg = canvas.toDataURL("image/jpeg");
-    let byteString = myImg.replace("data:image/jpeg;base64,", "");
-
-    let param = {
-      memberGameImage: byteString,
-    };
-    api.post(`/api/game-rooms/${pinNumber}/${sessionId}/images`, param);
-
-    resultImages.value.push(myImg);
-  });
-};
-
 const getConnectionData = () => {
   const { connection } = props.streamManager.stream;
   return JSON.parse(connection.data);
 };
 
-const init = () => {
-  resultImages.value = [];
-  isShow.value = false;
-  bestcutSaveReq.value = {
-    pinNumber: undefined,
-    sessionId: undefined,
-    gameTitle: undefined,
-    images: [],
-  };
-  inputs.value = ["", "", "", "", "", "", "", "", "", ""];
-  isChecked.value = [
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-  ];
-  rankingImage.value = [];
+const subVideoChange = () => {
+  isSubVideoEnable.value = !isSubVideoEnable.value;
+  props.streamManager.subscribeToVideo(isSubVideoEnable.value);
 };
 
-const getMyImages = () => {
-  isShow.value = true;
-};
-
-const check = (index) => {
-  isChecked.value[index] = !isChecked.value[index];
-};
-
-const upload = () => {
-  bestcutSaveReq.value.pinNumber = props.streamManager.session.sessionId;
-  bestcutSaveReq.value.sessionId =
-    props.streamManager.session.connection.connectionId;
-  bestcutSaveReq.value.gameTitle = props.room.gameTitle;
-  isChecked.value.forEach((element, index) => {
-    if (element) {
-      bestcutSaveReq.value.images.push({
-        bestcutIndex: index,
-        bestcutImgTitle: inputs.value[index],
-        gameImgUrl: props.room.gameImages[index].gameImage,
-        gameImgDesc: props.room.gameImages[index].gameImageDesc,
-      });
-    }
-  });
-  api
-    .post("/api/bestcuts", bestcutSaveReq.value)
-    .then(() => {
-      alert("업로드가 완료 되었습니다.");
-    })
-    .catch((err) => {
-      err;
-      alert("업로드 실패");
-    });
+const subAudioChange = () => {
+  isSubAudioEnable.value = !isSubAudioEnable.value;
+  props.streamManager.subscribeToAudio(isSubAudioEnable.value);
 };
 </script>
 
 <style scoped>
+#ovVideoContainer {
+  position: relative;
+}
+#ovVideo:hover ~ #nickname {
+  display: flex;
+  align-items: center;
+}
+#nickname {
+  position: absolute;
+  bottom: 14px;
+  left: 20px;
+  padding: 2px;
+  display: none;
+  background-color: black;
+  /* border: 1px solid red; */
+  vertical-align: middle;
+}
+#nickname:hover {
+  display: flex;
+  align-items: center;
+}
+#nickname > span:nth-child(1) {
+  font-size: 14px;
+  font-family: NanumSquareRoundR;
+  /* border: 1px solid yellow; */
+  margin-right: 10px;
+}
+#nickname > span:nth-child(2) {
+  width: 16px;
+  height: 16px;
+  /* border: 1px solid yellow; */
+  display: inline-block;
+  margin-right: 5px;
+}
+#nickname > span:nth-child(3) {
+  width: 17px;
+  height: 17px;
+  /* border: 1px solid yellow; */
+  display: inline-block;
+}
+svg {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+svg:hover {
+  cursor: pointer;
+}
+
 .blinking {
   animation: blink 0.5s ease-in-out infinite alternate;
 }
@@ -197,13 +143,5 @@ const upload = () => {
   100% {
     opacity: 1;
   }
-}
-
-.parent {
-  position: relative;
-}
-.child,
-.child {
-  position: absolute;
 }
 </style>

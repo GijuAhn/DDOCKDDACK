@@ -2,31 +2,26 @@ package com.ddockddack.domain.report.repository;
 
 import com.ddockddack.domain.report.entity.ReportedBestcut;
 import java.util.List;
-import java.util.Optional;
-import javax.persistence.EntityManager;
-import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-@RequiredArgsConstructor
-public class ReportedBestcutRepository {
+public interface ReportedBestcutRepository extends JpaRepository<ReportedBestcut, Long> {
 
-    private final EntityManager em;
+    boolean existsByReportMemberIdAndBestcutId(Long memberId, Long bestcutId);
 
-    public void save(ReportedBestcut reportedBestcut) {
-        em.persist(reportedBestcut);
-    }
+    @Modifying
+    @Query("DELETE FROM ReportedBestcut r WHERE r.bestcut.id = :id")
+    void deleteByBestcutId(@Param("id") Long bestcutId);
 
-    public Optional<ReportedBestcut> findOne(Long bestcutId, Long memberId) {
-        List<ReportedBestcut> resultList = em.createQuery(
-                "SELECT r " +
-                    "FROM ReportedBestcut r " +
-                    "WHERE r.bestcut.id = :bestcut AND r.reportMember.id = :member"
-                , ReportedBestcut.class)
-            .setParameter("bestcut", bestcutId)
-            .setParameter("member", memberId)
-            .getResultList();
+    @Modifying
+    @Query("DELETE FROM ReportedBestcut r WHERE r.bestcut.id in :ids")
+    void deleteByBestcutIdIn(@Param("ids") List<Long> bestcutIds);
 
-        return resultList.stream().findAny();
-    }
+    @Modifying
+    @Query("DELETE FROM ReportedBestcut r WHERE r.reportedMember.id = :id OR r.reportMember.id =:id")
+    void deleteByMemberId(@Param("id") Long memberId);
 }

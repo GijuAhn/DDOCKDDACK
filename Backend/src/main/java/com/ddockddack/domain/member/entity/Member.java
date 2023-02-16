@@ -1,8 +1,10 @@
 package com.ddockddack.domain.member.entity;
 
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 
 @Entity
 @Getter @Setter
@@ -26,7 +28,11 @@ public class Member {
 
     @Enumerated(EnumType.STRING)
     @Column(length = 10, nullable = false)
-    private Role role; // member, ADMIN
+    private Role role; // member, ADMIN, BAN
+
+    @Column(name = "member_release_date", nullable = true)
+    private LocalDate releaseDate;
+
 
     @Builder
     public Member(String email, String nickname, String profile, Role role) {
@@ -34,6 +40,14 @@ public class Member {
         this.nickname = nickname;
         this.profile = profile;
         this.role = role;
+        this.releaseDate = null;
     }
 
+    public void modifyNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public void modifyProfile(String profile) {
+        this.profile = profile;
+    }
 }

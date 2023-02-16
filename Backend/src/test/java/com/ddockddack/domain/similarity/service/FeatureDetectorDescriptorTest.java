@@ -43,6 +43,11 @@ class FeatureDetectorDescriptorTest {
         File face4 = new File("./src/test/resources/testImage/image_similarity_test/face4.jpeg");
         InputStream faceStream4 = new FileInputStream(face4);
 
+        File ho1 = new File("./src/test/resources/testImage/image_similarity_test/ho1.jpg");
+        InputStream ho1Stream = new FileInputStream(ho1);
+
+        File worstcase = new File("./src/test/resources/testImage/image_similarity_test/worstcase.jpg");
+        InputStream worstcaseStream = new FileInputStream(worstcase);
 
 //        InputStream cannot be reusable (if stream reaches to the end, destroyed and cannot revert)
         System.out.println("같은 동작 비교");
@@ -56,9 +61,10 @@ class FeatureDetectorDescriptorTest {
         System.out.println("-------------------------");
         System.out.println("비슷한 오브젝트, 다른 도메인 비교");
         System.out.println("face(사람얼굴,사람얼굴그림) 1,2: " + featureDetectorDescriptor.compareFeatures(faceStream1, faceStream2));
-        System.out.println("face(호랑이얼굴,화난얼굴) 3,4: " + featureDetectorDescriptor.compareFeatures(faceStream3, faceStream4));
 
-
-
+        System.out.println("-------------------------");
+        System.out.println("feature extraction 안되는 경우 발생");
+        System.out.println("feature 못찾을 경우: " + featureDetectorDescriptor.compareFeatures(ho1Stream, worstcaseStream));
+        
     }
 }

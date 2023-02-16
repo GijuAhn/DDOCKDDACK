@@ -1,6 +1,7 @@
 package com.ddockddack.domain.game.repository;
 
 import com.ddockddack.domain.game.response.*;
+import com.ddockddack.domain.report.repository.ReportedGameRepository;
 import com.ddockddack.global.util.PageCondition;
 import com.ddockddack.global.util.PeriodCondition;
 import com.ddockddack.global.util.SearchCondition;
@@ -68,12 +69,13 @@ public class GameRepositorySupport {
         return new PageImpl<>(list, pageCondition.getPageable(), getTotalPageCount(memberId, pageCondition));
     }
 
+//
     private long getTotalPageCount(Long memberId, PageCondition pageCondition) {
-        return jpaQueryFactory.select(Wildcard.count)
+        return jpaQueryFactory.selectDistinct(game.id)
                 .from(game)
                 .innerJoin(game.member, member)
                 .innerJoin(game.images, gameImage)
-                .where(searchCond(pageCondition.getSearchCondition(), pageCondition), periodCond(pageCondition.getPeriodCondition())).fetch().get(0);
+                .where(searchCond(pageCondition.getSearchCondition(), pageCondition), periodCond(pageCondition.getPeriodCondition())).fetch().size();
     }
 
     // 게임 상세 조회
@@ -94,8 +96,9 @@ public class GameRepositorySupport {
     }
 
     // 내가 만든 게임 전체 조회
-    public List<GameRes> findAllByMemberId(Long memberId) {
-        return jpaQueryFactory.select(
+    public PageImpl<GameRes> findAllByMemberId(Long memberId, PageCondition pageCondition) {
+
+        List<GameRes> list = jpaQueryFactory.select(
                         new QGameRes(game.id.as("gameId"),
                                 game.category.as("gameCategory").stringValue(),
                                 game.title.as("gameTitle"),
@@ -109,42 +112,46 @@ public class GameRepositorySupport {
                 .from(game)
                 .innerJoin(game.member, member)
                 .innerJoin(game.images, gameImage)
-                .join(starredGame.game).on(starredGame.game.id.eq(game.id),
-                        starredGame.member.id.eq(member.id))
-//                .where(starredGame.game.member.id.eq(memberId))
-                .groupBy(starredGame.id)
-                .having(starredGame.game.member.id.eq(memberId))
+                .where(member.id.eq(memberId), searchCond(pageCondition.getSearchCondition(), pageCondition), periodCond(pageCondition.getPeriodCondition()))
+                .offset(pageCondition.getPageable().getOffset())
+                .limit(pageCondition.getPageable().getPageSize())
+                .groupBy(game.id,
+                        game.category,
+                        game.title,
+                        game.description,
+                        game.member.nickname,
+                        game.playCount)
                 .orderBy(game.id.desc())
                 .fetch();
+        return new PageImpl<>(list, pageCondition.getPageable(), getTotalPageCount(memberId, pageCondition));
     }
 
-    // 즐겨찾기 목록 조회
+    // 즐겨찾기 한 게임 목록 조회
     public List<StarredGameRes> findAllStarredGame(Long memberId) {
         return jpaQueryFactory
                 .select(new QStarredGameRes(
-                        game.id.as("gameId"),
-                        game.category.as("gameCategory").stringValue(),
-                        game.title.as("gameTitle"),
-                        game.member.nickname.as("creator"),
-                        game.createdAt.as("regDate").stringValue(),
+                        starredGame.game.id.as("gameId"),
+                        starredGame.game.category.as("gameCategory").stringValue(),
+                        starredGame.game.title.as("gameTitle"),
+                        starredGame.game.member.nickname.as("creator"),
+                        starredGame.game.createdAt.as("regDate").stringValue(),
                         isStarred(memberId),
-                        game.playCount.as("popularity"),
+                        starredGame.game.playCount.as("playCnt"),
                         gameImage.imageUrl.min().as("thumbnail")
                 ))
-                .from(game)
-                .innerJoin(game.member, member)
-                .innerJoin(game.images, gameImage)
-                .join(starredGame).on(starredGame.game.id.eq(game.id)
-                        .and(starredGame.member.id.eq(member.id)))
+                .from(starredGame)
+                .innerJoin(starredGame.game, game)
+                .innerJoin(starredGame.game.member, member)
+                .innerJoin(starredGame.game.images, gameImage)
                 .where(starredGame.member.id.eq(memberId))
                 .groupBy(
                         starredGame.id,
-                        game.id,
-                        game.category,
-                        game.title,
-                        game.member.nickname,
-                        game.createdAt,
-                        game.playCount)
+                        starredGame.game.id,
+                        starredGame.game.category,
+                        starredGame.game.title,
+                        starredGame.game.member.nickname,
+                        starredGame.game.createdAt,
+                        starredGame.game.playCount)
                 .orderBy(starredGame.id.desc())
                 .fetch();
 
@@ -158,7 +165,10 @@ public class GameRepositorySupport {
                         reportedGame.reportMember.id.as("reportMemberId"),
                         reportedGame.reportedMember.id.as("reportedMemberId"),
                         reportedGame.game.id.as("gameId"),
-                        reportedGame.reportType.as("reason").stringValue()
+                        reportedGame.reportType.as("reason").stringValue(),
+                        reportedGame.game.title.as("gameTitle"),
+                        reportedGame.reportMember.nickname.as("reportMemberNickname"),
+                        reportedGame.reportedMember.nickname.as("reportedMemberNickname")
                 ))
                 .from(reportedGame)
                 .innerJoin(reportedGame.reportMember, member)
@@ -167,6 +177,15 @@ public class GameRepositorySupport {
                 .fetch();
     }
 
+    // 회원 탈퇴시 해당 회원이 만든 게임을 삭제 하기 위한 조회
+    public List<Long> findAllGameIdByMemberId(Long memberId) {
+        return jpaQueryFactory
+                .select(game.id
+                )
+                .from(game)
+                .where(game.member.id.eq(memberId))
+                .fetch();
+    }
 
     // 나만 쓸 거야
     // 정렬

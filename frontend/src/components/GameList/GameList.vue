@@ -60,8 +60,9 @@
       </div>
       <div>
         <input
+          @keyup.enter="callApi"
           type="text"
-          v-model="pageConditionReq.keyword"
+          v-model.trim="pageConditionReq.keyword"
           placeholder="검색어를 입력해주세요"
         />
         <button id="btn-s" @click="callApi">검색</button>
@@ -76,6 +77,9 @@
         @updateProps="(value) => updateProps(value)"
       ></normal-game>
     </div>
+    <div id="ifTotalPagesIsZero" v-if="totalPages === 0">
+      <p>게임 검색 결과가 없습니다.</p>
+    </div>
     <page-nav
       :totalPageCount="totalPages"
       :value="pageConditionReq.page"
@@ -85,8 +89,11 @@
 </template>
 
 <script setup>
+import { apiInstance } from "@/api/index";
+import { ref, watch, computed } from "vue";
+import { useStore } from "vuex";
 import NormalGame from "@/components/GameList/item/NormalGame";
-import PageNav from "@/components/GameList/item/PageNav.vue";
+import PageNav from "@/components/common/PageNav.vue";
 
 let totalPages = ref();
 //페이징 이동
@@ -94,9 +101,6 @@ const changePage = (page) => {
   pageConditionReq.value.page = page;
   callApi();
 };
-
-import { apiInstance } from "@/api/index";
-import { ref, watch } from "vue";
 
 const tabP = ref("on");
 const tabR = ref("off");
@@ -154,6 +158,9 @@ const updateSearch = (option) => {
 };
 
 const api = apiInstance();
+const store = useStore();
+const accessToken = computed(() => store.state.memberStore.accessToken).value;
+
 let games = ref();
 let pageConditionReq = ref({
   order: "POPULARITY",
@@ -172,6 +179,7 @@ const callApi = () => {
         keyword: pageConditionReq.value.keyword,
         page: pageConditionReq.value.page,
       },
+      headers: { "access-token": accessToken },
     })
     .then((response) => {
       console.log(response);
@@ -220,6 +228,7 @@ const updateProps = (value) => {
   transform: translate(-50%, 0);
   background-color: white;
   padding: 70px;
+  height: 1460px;
 }
 #searchBar {
   display: flex;
@@ -357,13 +366,6 @@ input {
   background-color: white;
   color: black;
 }
-
-#list {
-  display: grid;
-  gap: 35px 0;
-  grid-template-columns: repeat(3, 1fr);
-  width: 1090px;
-}
 .arrow {
   /* border: 1px solid red; */
   background-size: contain;
@@ -381,5 +383,28 @@ input {
 }
 .search-radius-on .arrow {
   background-image: url("@/assets/images/down-arrow.png");
+}
+#list {
+  display: grid;
+  gap: 35px 0;
+  grid-template-columns: repeat(3, 1fr);
+  width: 1090px;
+}
+#ifTotalPagesIsZero {
+  top: 500px;
+  left: 50%;
+  transform: translate(-50%, 0);
+  position: absolute;
+  display: inline-block;
+  text-align: center;
+}
+#ifTotalPagesIsZero p:first-child {
+  font-size: 36px;
+}
+#nav {
+  position: absolute;
+  bottom: 70px;
+  left: 50%;
+  transform: translate(-50%, 0);
 }
 </style>

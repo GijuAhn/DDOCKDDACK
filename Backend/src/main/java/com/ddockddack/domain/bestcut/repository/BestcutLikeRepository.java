@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import javax.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -36,4 +37,15 @@ public class BestcutLikeRepository {
         em.remove(bestcutLike);
     }
 
+    public void deleteByBestcutId(@Param("id") Long bestcutId){
+        em.createQuery("DELETE FROM BestcutLike l WHERE l.bestcut.id = :id").setParameter("id", bestcutId).executeUpdate();
+    }
+
+    public void deleteByBestcutIdIn(@Param("ids") List<Long> bestcutIds) {
+        em.createQuery("DELETE FROM BestcutLike l WHERE l.bestcut.id in :ids").setParameter("ids", bestcutIds).executeUpdate();
+    }
+
+    public void deleteByMemberId(@Param("id") Long memberId){
+        em.createQuery("DELETE FROM BestcutLike l WHERE l.member.id = :id").setParameter("id", memberId).executeUpdate();
+    }
 }

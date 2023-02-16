@@ -2,11 +2,10 @@
   <div id="content">
     <div id="topSection">
       <img
-        :src="`${GAMEIMAGES_PATH}/${props.game.gameId}/${props.game.thumbnail}`"
+        :src="`${IMAGE_PATH}/${props.game.thumbnail}`"
         alt="대표사진"
         class="image"
       />
-
       <div class="imageBehind">
         <div class="count">
           <span>
@@ -58,7 +57,7 @@
           <div v-if="props.game.isStarred === 1" @click="unstarredGame">
             <span>즐겨찾기 해제</span>
           </div>
-          <div><span>베스트 컷</span></div>
+          <!-- <div><span>베스트 컷</span></div> -->
           <div @click="setCurrentModalAsync(`preview`)">
             <span>문제 미리보기</span>
           </div>
@@ -72,7 +71,7 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits, onMounted, ref } from "vue";
+import { defineProps, defineEmits, onMounted, ref, computed } from "vue";
 import { useStore } from "vuex";
 import { apiInstance } from "@/api/index";
 import router from "@/router/index.js";
@@ -82,7 +81,8 @@ const store = useStore();
 const emit = defineEmits(["updateProps"]);
 const props = defineProps(["game", "index"]);
 const api = apiInstance();
-const GAMEIMAGES_PATH = process.env.VUE_APP_GAMEIMAGES_PATH;
+const IMAGE_PATH = process.env.VUE_APP_IMAGE_PATH;
+const accessToken = computed(() => store.state.memberStore.accessToken).value;
 
 const onClickOutside = () => {
   state.value = false;
@@ -101,37 +101,56 @@ const setCurrentModalAsync = (what) => {
     data: props.game,
   });
 };
-
 onMounted(() => {
-  console.log(process.env);
+  // console.log(process.env);
 });
 
 const createSession = (gameId) => {
-  api.post("/api/game-rooms", { gameId }).then((res) => {
-    router.replace(`/gameroom/${res.data}`);
-  });
+  api
+    .post(
+      "/api/game-rooms",
+      {
+        gameId,
+      },
+      {
+        headers: {
+          "access-token": accessToken,
+        },
+      }
+    )
+    .then((res) => {
+      router.replace(`/gameroom/${res.data}`);
+    });
 };
 
 const starredGame = () => {
   open();
   api
-    .post(`/api/games/starred/${props.game.gameId}`)
+    .post(
+      `/api/games/starred/${props.game.gameId}`,
+      {},
+      { headers: { "access-token": accessToken } }
+    )
     .then(() => {
       emit("updateProps", { status: "starred", index: props.index });
     })
     .catch((error) => {
-      console.log(error);
+      error;
+      alert("로그인이 필요한 기능입니다.");
     });
 };
 const unstarredGame = () => {
   open();
   api
-    .delete(`/api/games/unstarred/${props.game.gameId}`)
+    .delete(`/api/games/unstarred/${props.game.gameId}`, {
+      headers: { "access-token": accessToken },
+    })
     .then(() => {
       emit("updateProps", { status: "unstarred", index: props.index });
     })
     .catch((error) => {
-      console.log(error);
+      error;
+      alert("로그인이 필요한 기능입니다.");
     });
 };
 </script>

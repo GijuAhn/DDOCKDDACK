@@ -20,7 +20,6 @@ public class BestcutImageReq {
 
     @NotBlank(message = "gameImgUrl can't be blank")
     private String gameImgUrl;
-
-    @NotBlank(message = "gameImgDesc can't be blank")
+    
     private String gameImgDesc;
 }

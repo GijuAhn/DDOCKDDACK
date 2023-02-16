@@ -1,6 +1,7 @@
 package com.ddockddack.domain.game.entity;
 
 import com.ddockddack.domain.member.entity.Member;
+import com.ddockddack.domain.report.entity.ReportedGame;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -42,7 +43,7 @@ public class Game {
     @Column(columnDefinition = "DATETIME default now()")
     private LocalDateTime createdAt;
 
-    @OneToMany(mappedBy = "game", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "game", fetch = FetchType.LAZY)
     private List<GameImage> images;
 
     @Builder
@@ -56,6 +57,10 @@ public class Game {
     public void updateGame(String title, String gameDesc) {
         this.title = title;
         this.description = gameDesc;
+    }
+
+    public void increasePlayCount() {
+        this.playCount++;
     }
 
 }

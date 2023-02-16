@@ -1,6 +1,6 @@
 {
-  "name": "frontend",
-  "version": "0.1.0",
+  "name": "ddockddack",
+  "version": "0.6.0",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve --port 8080",
@@ -9,6 +9,8 @@
     "prod": "vue-cli-service build --mode production"
   },
   "dependencies": {
+    "@jamescoyle/vue-icon": "^0.1.2",
+    "@mdi/js": "^7.1.96",
     "axios": "^1.2.5",
     "core-js": "^3.8.3",
     "html2canvas": "^1.4.1",
