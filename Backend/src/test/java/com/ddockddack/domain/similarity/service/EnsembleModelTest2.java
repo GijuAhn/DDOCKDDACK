@@ -46,19 +46,61 @@ public class EnsembleModelTest2 {
         byte[] face4byteArray = Files.readAllBytes(face4.toPath());
 
 
+        File gunny = new File("./src/test/resources/testImage/image_similarity_test/gunny.jpg");
+        byte[] gunnybyteArray = Files.readAllBytes(gunny.toPath());
+
+        File granny = new File("./src/test/resources/testImage/image_similarity_test/granny.jpg");
+        byte[] grannybyteArray = Files.readAllBytes(granny.toPath());
+
+        File homin = new File("./src/test/resources/testImage/image_similarity_test/homin.jpg");
+        byte[] hominbyteArray = Files.readAllBytes(homin.toPath());
+
+        File hwang = new File("./src/test/resources/testImage/image_similarity_test/hwang.jpg");
+        byte[] hwangbyteArray = Files.readAllBytes(hwang.toPath());
+
+        File memeeman = new File("./src/test/resources/testImage/image_similarity_test/memeeman.jpg");
+        byte[] memeemanbyteArray = Files.readAllBytes(memeeman.toPath());
+
+        File pepe = new File("./src/test/resources/testImage/image_similarity_test/pepe.jpg");
+        byte[] pepebyteArray = Files.readAllBytes(pepe.toPath());
+
+        File rock = new File("./src/test/resources/testImage/image_similarity_test/rock.jpg");
+        byte[] rockbyteArray = Files.readAllBytes(rock.toPath());
+
+        File monday = new File("./src/test/resources/testImage/image_similarity_test/monday.jpg");
+        byte[] mondaybyteArray = Files.readAllBytes(monday.toPath());
+
+        System.out.println("---------------------만세------------------");
         System.out.println(EnsembleModel.CalculateSimilarity(hurray1byteArray, hurray2byteArray));
         System.out.println(EnsembleModel.CalculateSimilarity(hurray1byteArray, hurray3byteArray));
         System.out.println(EnsembleModel.CalculateSimilarity(hurray2byteArray, hurray3byteArray));
-        System.out.println("---------------------------------------");
+        
+        System.out.println("----------------------안닮은거-----------------");
+        System.out.println(EnsembleModel.CalculateSimilarity(hurray1byteArray, grannybyteArray));
+        
+        System.out.println("-----------------------팔짱----------------");
         System.out.println(EnsembleModel.CalculateSimilarity(arms1byteArray, arms2byteArray));
         System.out.println(EnsembleModel.CalculateSimilarity(arms1byteArray, arms3byteArray));
         System.out.println(EnsembleModel.CalculateSimilarity(arms2byteArray, arms3byteArray));
-        System.out.println("---------------------------------------");
+        
+        System.out.println("---------------------얼굴------------------");
         System.out.println(EnsembleModel.CalculateSimilarity(face1byteArray, face2byteArray));
         System.out.println(EnsembleModel.CalculateSimilarity(face1byteArray, face3byteArray));
         System.out.println(EnsembleModel.CalculateSimilarity(face1byteArray, face4byteArray));
         System.out.println(EnsembleModel.CalculateSimilarity(face2byteArray, face3byteArray));
         System.out.println(EnsembleModel.CalculateSimilarity(face2byteArray, face4byteArray));
         System.out.println(EnsembleModel.CalculateSimilarity(face3byteArray, face4byteArray));
+        
+        System.out.println("---------------------할머니총------------------");
+        System.out.println(EnsembleModel.CalculateSimilarity(gunnybyteArray, grannybyteArray));
+
+        System.out.println("---------------------할머니총 안닮은거------------------");
+        System.out.println(EnsembleModel.CalculateSimilarity(gunnybyteArray, rockbyteArray));
+
+        System.out.println("-------------------밈맨 락--------------------");
+        System.out.println(EnsembleModel.CalculateSimilarity(memeemanbyteArray, rockbyteArray));
+
+        System.out.println("---------------------밈맨 락 안닮은거------------------");
+        System.out.println(EnsembleModel.CalculateSimilarity(memeemanbyteArray, grannybyteArray));
     }
 }
