@@ -2,9 +2,11 @@
   <div id="view">
     <div id="list">
       <normal-game
-        v-for="game in starredGames"
-        :key="game"
+        v-for="(game, index) in starredGames"
+        :key="index"
         :game="game"
+        :index="index"
+        @updateProps="(value) => updateMyGames(value)"
       ></normal-game>
     </div>
     <loading-spinner id="imgLoading" v-show="isLoading">
@@ -51,6 +53,9 @@ const callApi = async () => {
     });
 };
 
+const updateMyGames = (value) => {
+  starredGames.value.splice(value, 1);
+};
 callApi();
 
 store.dispatch("commonStore/setMemberTabAsync", 1);

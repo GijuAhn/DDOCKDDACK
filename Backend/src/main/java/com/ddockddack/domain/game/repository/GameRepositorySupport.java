@@ -133,9 +133,10 @@ public class GameRepositorySupport {
                         starredGame.game.id.as("gameId"),
                         starredGame.game.category.as("gameCategory").stringValue(),
                         starredGame.game.title.as("gameTitle"),
+                        starredGame.game.description.as("gameDesc"),
                         starredGame.game.member.nickname.as("creator"),
-                        starredGame.game.createdAt.as("regDate").stringValue(),
                         isStarred(memberId),
+                        getStarredCnt(),
                         starredGame.game.playCount.as("playCnt"),
                         gameImage.imageUrl.min().as("thumbnail")
                 ))

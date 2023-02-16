@@ -31,7 +31,7 @@
             </div>
 
             <div id="gameCurrentSection">
-              <span v-show="!isEnd"> {{ round }}/10</span>
+              <span v-show="!isEnd"> {{ round }}/{{ roundSet }}</span>
               <span v-show="!isEnd"> {{ timerCount }} </span>
             </div>
           </div>
@@ -205,6 +205,7 @@ const room = ref({
   gameImages: undefined,
 });
 const timeSet = 10;
+const roundSet = 10;
 const timerCount = ref(timeSet);
 const isStart = ref(false);
 const round = ref(1);
@@ -301,7 +302,7 @@ onBeforeMount(() => {
           resultMode.value = false;
           result.value.length = 0;
           setCurrentModalAsync("");
-          if (round.value < 10 && isHost.value) {
+          if (round.value < roundSet && isHost.value) {
             //체크
             api.get(`/api/game-rooms/${route.params.pinNumber}/round`);
           } else if (isHost.value) {
