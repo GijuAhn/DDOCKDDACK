@@ -15,7 +15,7 @@ import org.springframework.scheduling.annotation.Async;
 
 // grayscale (single channel) SSIM
 public class StructuralSimilarity {
-    @Async
+    @Async("threadPoolTaskExecutor")
     public double compareImages(InputStream image1, InputStream image2) throws IOException {
         BufferedImage rawImg1 = toGrayscale(ImageIO.read(image1));
         BufferedImage rawImg2 = toGrayscale(ImageIO.read(image2));

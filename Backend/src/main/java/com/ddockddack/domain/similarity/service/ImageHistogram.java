@@ -18,7 +18,7 @@ import com.ddockddack.domain.similarity.service.ImageUtil;
 import org.springframework.scheduling.annotation.Async;
 
 public class ImageHistogram {
-    @Async
+    @Async("threadPoolTaskExecutor")
     public List<Mat> getHistogram(InputStream is) throws IOException {
         OpenCV.loadLocally();
 
