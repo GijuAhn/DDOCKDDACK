@@ -86,6 +86,9 @@
         @bestcutDislike="(bestcutId) => bestcutDislike(bestcutId)"
       ></normal-bestcut>
     </div>
+    <div id="ifTotalPagesIsZero" v-if="totalPages === 0">
+      <p>베스트컷 검색 결과가 없습니다.</p>
+    </div>
     <page-nav
       :totalPageCount="totalPages"
       :value="pageConditionReq.page"
@@ -269,6 +272,7 @@ const bestcutDislike = (bestcutId) => {
   transform: translate(-50%, 0);
   background-color: white;
   padding: 70px;
+  height: 1460px;
 }
 #searchBar {
   display: flex;
@@ -431,5 +435,22 @@ input {
 }
 .search-radius-on .arrow {
   background-image: url("@/assets/images/down-arrow.png");
+}
+#ifTotalPagesIsZero {
+  top: 500px;
+  left: 50%;
+  transform: translate(-50%, 0);
+  position: absolute;
+  display: inline-block;
+  text-align: center;
+}
+#ifTotalPagesIsZero p:first-child {
+  font-size: 36px;
+}
+#nav {
+  position: absolute;
+  bottom: 70px;
+  left: 50%;
+  transform: translate(-50%, 0);
 }
 </style>

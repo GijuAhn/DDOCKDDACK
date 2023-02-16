@@ -77,6 +77,9 @@
         @updateProps="(value) => updateProps(value)"
       ></normal-game>
     </div>
+    <div id="ifTotalPagesIsZero" v-if="totalPages === 0">
+      <p>게임 검색 결과가 없습니다.</p>
+    </div>
     <page-nav
       :totalPageCount="totalPages"
       :value="pageConditionReq.page"
@@ -225,6 +228,7 @@ const updateProps = (value) => {
   transform: translate(-50%, 0);
   background-color: white;
   padding: 70px;
+  height: 1460px;
 }
 #searchBar {
   display: flex;
@@ -362,13 +366,6 @@ input {
   background-color: white;
   color: black;
 }
-
-#list {
-  display: grid;
-  gap: 35px 0;
-  grid-template-columns: repeat(3, 1fr);
-  width: 1090px;
-}
 .arrow {
   /* border: 1px solid red; */
   background-size: contain;
@@ -386,5 +383,28 @@ input {
 }
 .search-radius-on .arrow {
   background-image: url("@/assets/images/down-arrow.png");
+}
+#list {
+  display: grid;
+  gap: 35px 0;
+  grid-template-columns: repeat(3, 1fr);
+  width: 1090px;
+}
+#ifTotalPagesIsZero {
+  top: 500px;
+  left: 50%;
+  transform: translate(-50%, 0);
+  position: absolute;
+  display: inline-block;
+  text-align: center;
+}
+#ifTotalPagesIsZero p:first-child {
+  font-size: 36px;
+}
+#nav {
+  position: absolute;
+  bottom: 70px;
+  left: 50%;
+  transform: translate(-50%, 0);
 }
 </style>

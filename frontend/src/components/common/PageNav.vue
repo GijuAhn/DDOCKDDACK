@@ -1,5 +1,5 @@
 <template>
-  <div id="nav">
+  <div id="nav" v-if="totalPageCount > 0">
     <ul class="pagination__inner">
       <li class="pagination-arrow">
         <button :disabled="previousButtonDisabled" @click="previous">
