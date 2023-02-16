@@ -111,8 +111,6 @@ public class GameRoomApiController {
     public ResponseEntity startGame(@PathVariable String pinNumber) throws JsonProcessingException {
         gameRoomService.startGame(pinNumber);
         final GameRoom gameRoom = gameRoomService.findGameRoom(pinNumber);
-        System.out.println("asdasdasddasdsdsdasdasd");
-        System.out.println(gameRoom.isStarted());
         return ResponseEntity.ok().build();
     }
 

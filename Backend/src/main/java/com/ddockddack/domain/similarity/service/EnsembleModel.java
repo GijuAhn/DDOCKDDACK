@@ -75,16 +75,6 @@ public class EnsembleModel {
 //        adjust(ease) weight cause of relative evaluation
         result = (int) Math.round((10000 * featureScore) + (500 * structureScore) - (hashDistance) - (4 * histogramDiff));
 
-        System.out.println("[+] featureScore * 10000: " + (10000 * featureScore));
-        System.out.println("[+] structureScore * 500: " + (500 * structureScore));
-        System.out.println("[-] hashDistance: " + (hashDistance));
-        System.out.println("[-] histogramDiff * 4: " + (4 * histogramDiff));
-
-        System.out.println("[+] raw featureScore: " + (featureScore));
-        System.out.println("[+] raw structureScore: " + (structureScore));
-        System.out.println("[-] raw hashDistance: " + (hashDistance));
-        System.out.println("[-] raw histogramDiff: " + (histogramDiff));
-
 //        final similarity score
 //        estimated 500±500
         return result;

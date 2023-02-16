@@ -187,7 +187,6 @@ public class GameRoomService {
         byte[] byteGameImage = awsS3Service.getObject(param.get("gameImage"));
         byte[] byteImage = Base64.decodeBase64(param.get("memberGameImage"));
 
-        System.out.println();
 
         int rawScore = EnsembleModel.CalculateSimilarity(byteGameImage, byteImage);
 
