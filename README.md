@@ -276,7 +276,7 @@ letsencrypt를 이용하여 ssl 인증서를 적용하였고, 프론트엔드는
   - MyPage 데이터 바인딩 / Vuex
   - MyPage 페이지 디자인 / Vue
 - **안기주** : 팀원
-  - Image similarity measurement(이미지 유사도 평가) / Spring boot, OpenCV
+  - Image similarity measurement(이미지 유사도 측정) / Spring Boot, OpenCV
     - KAZE feature detection and description
     - SSIM(Structural Similarity Index Measure)
     - Image Histogram Analysis

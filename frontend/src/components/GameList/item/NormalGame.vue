@@ -147,6 +147,7 @@ const unstarredGame = () => {
     })
     .then(() => {
       emit("updateProps", { status: "unstarred", index: props.index });
+      emit("updateMyGames", { index: props.index });
     })
     .catch((error) => {
       error;

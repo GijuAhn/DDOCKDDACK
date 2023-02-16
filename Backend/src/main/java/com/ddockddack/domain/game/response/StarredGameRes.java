@@ -11,21 +11,23 @@ public class StarredGameRes {
     private Long gameId;
     private String gameCategory;
     private String gameTitle;
+    private String gameDesc;
     private String creator;
-    private String regDate;
     private int isStarred;
-    private int playCnt;
+    private int starredCnt;
+    private int popularity;
     private String thumbnail;
 
     @QueryProjection
-    public StarredGameRes(Long gameId, String gameCategory, String gameTitle, String creator, String regDate, int isStarred, int playCnt, String thumbnail) {
+    public StarredGameRes(Long gameId, String gameCategory, String gameTitle, String gameDesc, String creator, int isStarred, int starredCnt, int popularity, String thumbnail) {
         this.gameId = gameId;
         this.gameCategory = gameCategory;
         this.gameTitle = gameTitle;
+        this.gameDesc = gameDesc;
         this.creator = creator;
-        this.regDate = regDate;
         this.isStarred = isStarred;
-        this.playCnt = playCnt;
+        this.starredCnt = starredCnt;
+        this.popularity = popularity;
         this.thumbnail = thumbnail;
     }
 }
