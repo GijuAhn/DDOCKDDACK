@@ -53,20 +53,17 @@ public class EnsembleModel {
         CompletableFuture<Double> doubleCompletableFuture = featureDetectorDescriptor.compareFeatures(
                 ImageUtil.ByteArray2InputStream(byteArray1),
                 ImageUtil.ByteArray2InputStream(byteArray2));
-        double featureScore = doubleCompletableFuture.get();
+
 //      [+] *512
 
         CompletableFuture<Double> doubleCompletableFuture1 = structuralSimilarity.compareImages(
                 ImageUtil.ByteArray2InputStream(byteArray1),
                 ImageUtil.ByteArray2InputStream(byteArray2));
-        double structureScore = doubleCompletableFuture1.get();
+
 //      [-] *2
-
         CompletableFuture<String> hash1 = perceptualHash.getHash(ImageUtil.ByteArray2InputStream(byteArray1));
-
         CompletableFuture<String> hash2 = perceptualHash.getHash(ImageUtil.ByteArray2InputStream(byteArray1));
 
-        double hashDistance = (perceptualHash.distance(hash1.get(),hash2.get()));
 //      [-] *2, if NaN batch -32.0
         double histogramDiff = (double) baseLog(imageHistogram.compareHistograms(hist1.get(), hist2.get()), 2);
         if (Double.isNaN(histogramDiff)) {
@@ -79,6 +76,10 @@ public class EnsembleModel {
 
 //        result = (int) Math.round((8192 * featureScore) + (512 * structureScore) - (2 * hashDistance) - (2 * histogramDiff));
 //        adjust(ease) weight cause of relative evaluation
+        double structureScore = doubleCompletableFuture1.get();
+        double featureScore = doubleCompletableFuture.get();
+
+        double hashDistance = (perceptualHash.distance(hash1.get(),hash2.get()));
         result = (int) Math.round((10000 * featureScore) + (500 * structureScore) - (hashDistance) - (4 * histogramDiff));
 
 //        final similarity score
