@@ -86,7 +86,7 @@ public class GameRoomRepository {
                 () -> new NotFoundException(ErrorCode.GAME_ROOM_NOT_FOUND));
 
 
-        if (openvidu.getActiveSession(pinNumber).getConnections().size() == 8) {
+        if (openvidu.getActiveSession(pinNumber).getConnections().size() == 7) {
             throw new AccessDeniedException(ErrorCode.MAXIMUM_MEMBER);
         }
 

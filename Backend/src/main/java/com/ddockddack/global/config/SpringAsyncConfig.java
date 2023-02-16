@@ -5,6 +5,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.util.concurrent.Executor;
+import java.util.concurrent.ThreadPoolExecutor;
 
 @Configuration
 @EnableAsync
@@ -16,6 +17,8 @@ public class SpringAsyncConfig {
         taskExecutor.setMaxPoolSize(100); // 최대 스레드 수
         taskExecutor.setQueueCapacity(150); // Queue 사이즈
         taskExecutor.setThreadNamePrefix("Executor-");
+        taskExecutor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
+        taskExecutor.initialize();
         return taskExecutor;
     }
 }
