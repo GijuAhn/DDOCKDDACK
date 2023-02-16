@@ -6,17 +6,22 @@ import java.awt.image.DataBufferByte;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.Buffer;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import javax.imageio.ImageIO;
 
 import com.ddockddack.domain.similarity.service.ImageUtil;
 import com.ddockddack.global.error.ErrorCode;
 import com.ddockddack.global.error.exception.ImageExtensionException;
+import org.opencv.core.Mat;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.Async;
 
 // grayscale (single channel) SSIM
+@Configuration
 public class StructuralSimilarity {
     @Async("threadPoolTaskExecutor")
-    public double compareImages(InputStream image1, InputStream image2) throws IOException {
+    public CompletableFuture<Double> compareImages(InputStream image1, InputStream image2) throws IOException {
         BufferedImage rawImg1 = toGrayscale(ImageIO.read(image1));
         BufferedImage rawImg2 = toGrayscale(ImageIO.read(image2));
 
@@ -69,7 +74,7 @@ public class StructuralSimilarity {
 //        System.out.println("@ShiftedSSIM = " + shiftedSSIMScore);
 
         //        HIGHER SSIM => HIGHER Similarity
-        return shiftedSSIMScore;
+        return CompletableFuture.completedFuture(shiftedSSIMScore);
     }
 
     private static BufferedImage toGrayscale(BufferedImage image) {

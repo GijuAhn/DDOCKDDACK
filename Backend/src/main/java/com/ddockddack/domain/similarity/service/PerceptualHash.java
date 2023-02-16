@@ -20,6 +20,7 @@ import org.opencv.imgproc.Imgproc;
 import org.opencv.objdetect.CascadeClassifier;
 import org.opencv.objdetect.Objdetect;
 import java.io.ByteArrayInputStream;
+import java.util.concurrent.CompletableFuture;
 
 import nu.pattern.OpenCV;
 import org.opencv.core.Mat;
@@ -33,11 +34,13 @@ import org.opencv.imgproc.Imgproc;
 import org.opencv.objdetect.CascadeClassifier;
 import org.opencv.objdetect.Objdetect;
 import org.opencv.videoio.VideoCapture;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.Async;
 
 
 import javax.imageio.ImageIO;
 
+@Configuration
 public class PerceptualHash {
 
 //    private int size = 32;
@@ -57,6 +60,7 @@ public class PerceptualHash {
     }
 
 //    LOWER Hash Distance => HIGHER Similarity
+
     public int distance(String s1, String s2) {
         int counter = 0;
         for (int k = 0; k < s1.length(); k++) {
@@ -96,7 +100,6 @@ public class PerceptualHash {
         }
         c[0] = 1 / Math.sqrt(2.0);
     }
-    @Async
     public double[][] applyDCT(double[][] f) {
         int N = size;
 
@@ -116,7 +119,7 @@ public class PerceptualHash {
         return F;
     }
     @Async("threadPoolTaskExecutor")
-    public String getHash(InputStream is) throws Exception {
+    public CompletableFuture<String> getHash(InputStream is) throws Exception {
 
         // Returns a 'binary string' (like. 001010111011100010) which is easy to do a hamming distance on.
         BufferedImage img = ImageIO.read(is);
@@ -194,7 +197,7 @@ public class PerceptualHash {
             }
         }
 
-        return hash.toString();
+        return CompletableFuture.completedFuture(hash.toString());
     }
 
 }
