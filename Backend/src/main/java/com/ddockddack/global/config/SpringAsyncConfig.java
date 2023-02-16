@@ -18,7 +18,7 @@ public class SpringAsyncConfig {
         taskExecutor.setQueueCapacity(150); // Queue 사이즈
         taskExecutor.setThreadNamePrefix("Executor-");
         taskExecutor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
-        taskExecutor.initialize();
+//        taskExecutor.initialize();
         return taskExecutor;
     }
 }
