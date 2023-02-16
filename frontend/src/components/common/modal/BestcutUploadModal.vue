@@ -5,7 +5,10 @@
         <div v-for="(image, index) in resultImages" :key="index">
           <img :src="image" @click="updateSelectedIndex(index)" />
           <span
-            @click="check(index)"
+            @click="
+              check(index);
+              updateSelectedIndex(index);
+            "
             :class="{
               isChecked: isChecked[index] === true,
               isNotChecked: isChecked[index] === false,
@@ -25,7 +28,7 @@
         </div>
         <div id="submitSection">
           <div id="bestCutTitleSection">
-            <label for="bestcutTitle">제목</label>
+            <label for="bestcutTitle">{{ selectedIndex + 1 }}번째 컷</label>
             <input
               type="text"
               id="bestcutTitle"
@@ -94,6 +97,18 @@ const updateSelectedIndex = (index) => {
 };
 
 const upload = () => {
+  //유효성 검사
+  if (isCheckedCount.value === 0) {
+    alert("최소 1장의 베스트컷을 업로드 해주세요.");
+    return;
+  }
+  for (let i = 0; i < 10; i++) {
+    if (isChecked.value[i] === true && inputs.value[i].length === 0) {
+      alert(i + 1 + "번째 베스트컷의 제목을 입력해 주세요");
+      return;
+    }
+  }
+
   bestcutSaveReq.value.pinNumber = streamManager.value.session.sessionId;
   bestcutSaveReq.value.socketId =
     streamManager.value.session.connection.connectionId;
@@ -115,6 +130,21 @@ const upload = () => {
       },
     })
     .then(() => {
+      bestcutSaveReq.value.images = [];
+      isChecked.value = [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+      ];
+      isCheckedCount.value = 0;
+
       alert("업로드가 완료 되었습니다.");
     })
     .catch(() => {
