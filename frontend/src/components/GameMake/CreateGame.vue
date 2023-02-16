@@ -155,6 +155,10 @@ const storeImage = (f) => {
         wrongFileCount++;
         continue;
       }
+      if (file.size >= 2097152) {
+        wrongFileCount++;
+        continue;
+      }
 
       gameSaveReq.value.images.push({
         gameImage: file,
@@ -163,7 +167,7 @@ const storeImage = (f) => {
     }
     if (wrongFileCount !== 0) {
       alert(
-        "jpg/jpeg 형식의 이미지 파일만 업로드 가능합니다. " +
+        "2MB 이하의 jpg/jpeg 형식의 이미지 파일만 업로드 가능합니다. " +
           wrongFileCount +
           "개의 이미지가 제외되었습니다."
       );
