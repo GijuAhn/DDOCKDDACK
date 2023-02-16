@@ -171,7 +171,7 @@ letsencrypt를 이용하여 ssl 인증서를 적용하였고, 프론트엔드는
 
 ## 컨벤션 전략
 
-### [상세 보기](./ReadMe_contents/convention.md)
+### [상세 보기](https://lab.ssafy.com/s08-webmobile1-sub2/S08P12A409/-/wikis/%EC%BB%A8%EB%B2%A4%EC%85%98-%EC%A0%84%EB%9E%B5)
 
 ### **Git Commit Message Convention**
 
