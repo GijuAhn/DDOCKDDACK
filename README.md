@@ -64,14 +64,57 @@
 - 게임 기록 보관, 확인
 
 ### 기능 시연
+- **메인**
+
+![Main_1](/ReadMe_contents/Main_1.gif)
+
+![Main_1](/ReadMe_contents/Main_2.gif)
+
+![Main_1](/ReadMe_contents/Main_3.gif)
 
 - **게임 목록**
 
 ![GameList_1](/ReadMe_contents/GameList_1.gif)
 
+![GameList_2](/ReadMe_contents/GameList_2.gif)
+
+![GameList_3](/ReadMe_contents/GameList_3.gif)
+
+![GameList_5](/ReadMe_contents/GameList_4.gif)
+
+![GameList_5](/ReadMe_contents/GameList_5.gif)
+
 - **게임 만들기**
 
+![GameMake_1](/ReadMe_contents/GameMake_1.gif)
+
 - **베스트 컷**
+
+![BestcutList_1](/ReadMe_contents/BestcutList_1.gif)
+
+![BestcutList_2](/ReadMe_contents/BestcutList_2.gif)
+
+![BestcutList_3](/ReadMe_contents/BestcutList_3.gif)
+
+- **마이페이지**
+
+![MyPage_1](/ReadMe_contents/MyPage_1.gif)
+
+![MyPage_2](/ReadMe_contents/MyPage_2.gif)
+
+- **관리자페이지**
+
+- **게임방**
+
+![GameRoom_1](/ReadMe_contents/GameRoom_1.gif)
+
+![GameRoom_2](/ReadMe_contents/GameRoom_2.gif)
+
+![GameRoom_3](/ReadMe_contents/GameRoom_3.gif)
+
+![GameRoom_4](/ReadMe_contents/GameRoom_4.gif)
+
+![GameRoom_5](/ReadMe_contents/GameRoom_5.gif)
 
 ## 개발 환경
 
