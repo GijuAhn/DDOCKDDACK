@@ -61,6 +61,8 @@ Creating openvidu-docker-compose_openvidu-server_1 ... done
 ----------------------------------------------------
 ````
 
+- openvidu-nginx 설정 수정
+
 ```bash
 docker exec -it openvidu-nginx-1 bash
 
