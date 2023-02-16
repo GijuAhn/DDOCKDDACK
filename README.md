@@ -65,7 +65,9 @@
 
 ### 기능 시연
 
-- **게임 플레이**
+- **게임 목록**
+
+![GameList_1](/ReadMe_contents/GameList_1.gif)
 
 - **게임 만들기**
 
