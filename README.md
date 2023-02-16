@@ -18,7 +18,7 @@
 | 소지현 | [@verandaaa](https://github.com/verandaaa)                 |
 | 선준용 | [@sjy4974](https://github.com/sjy4974)                     |
 | 이종민 | [@ljm0726](https://github.com/ljm0726)                     |
-| 안기주 | [@swhana](https://github.com/GijuAhn)                      |
+| 안기주 | [@GijuAhn](https://github.com/GijuAhn)                     |
 
 <p>
 <a href="https://github.com/Supreme-ignorance">
@@ -33,8 +33,8 @@
 <a href="https://github.com/sjy4974">
   <img src="https://github.com/sjy4974.png" width="100">
 </a>
-<a href="https://github.com/swhana">
-  <img src="https://github.com/swhana.png" width="100">
+<a href="https://github.com/ljm0726">
+  <img src="https://github.com/ljm0726.png" width="100">
 </a>
 <a href="https://github.com/GijuAhn">
   <img src="https://github.com/GijuAhn.png" width="100">
@@ -260,8 +260,7 @@ letsencrypt를 이용하여 ssl 인증서를 적용하였고, 프론트엔드는
   - MyPage 데이터 바인딩 / Vuex
   - MyPage 페이지 디자인 / Vue
 - **안기주** : 팀원
-  - 이미지 유사도 평가 로직 구현
-    - Image similarity measurement
+  - Image similarity measurement(이미지 유사도 평가) / Spring boot, OpenCV
     - KAZE feature detection and description
     - SSIM(Structural Similarity Index Measure)
     - Image Histogram Analysis
