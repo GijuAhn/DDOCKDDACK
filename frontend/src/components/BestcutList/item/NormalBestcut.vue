@@ -157,6 +157,9 @@ const setCurrentModalAsync = (what) => {
 #top-section {
   position: relative;
 }
+#top-section:hover {
+  cursor: pointer;
+}
 .image {
   width: 325px;
   height: 260px;
@@ -251,6 +254,9 @@ const setCurrentModalAsync = (what) => {
   height: 30px;
   top: 78px;
   left: 255px;
+}
+.like-button:hover {
+  cursor: pointer;
 }
 .like-button span {
   position: absolute;
