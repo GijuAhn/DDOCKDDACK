@@ -204,8 +204,8 @@ const room = ref({
   gameDescription: undefined,
   gameImages: undefined,
 });
-const timeSet = 10;
-const roundSet = 10;
+const timeSet = 5;
+const roundSet = 3;
 const timerCount = ref(timeSet);
 const isStart = ref(false);
 const round = ref(1);
