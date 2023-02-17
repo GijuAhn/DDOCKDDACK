@@ -63,58 +63,87 @@
 - 게임 과정에서 찍힌 사진을 확인, 공유 가능
 - 게임 기록 보관, 확인
 
-### 기능 시연
-- **메인**
+## 기능 시연
 
-![Main_1](/ReadMe_contents/Main_1.gif)
+- #### 메인 - 카카오 로그인
 
-![Main_1](/ReadMe_contents/Main_2.gif)
+![Main_1](/ReadMe_contents/Main_1.gif)<br/><br/><br/><br/>
 
-![Main_1](/ReadMe_contents/Main_3.gif)
+- #### 메인 - 구글 로그인
 
-- **게임 목록**
+![Main_1](/ReadMe_contents/Main_2.gif)<br/><br/><br/><br/>
 
-![GameList_1](/ReadMe_contents/GameList_1.gif)
+- #### 메인 - PIN 번호로 입장
 
-![GameList_2](/ReadMe_contents/GameList_2.gif)
+![Main_1](/ReadMe_contents/Main_3.gif)<br/><br/><br/><br/>
 
-![GameList_3](/ReadMe_contents/GameList_3.gif)
+- #### 게임 목록 - 정렬 및 검색
 
-![GameList_5](/ReadMe_contents/GameList_4.gif)
+![GameList_1](/ReadMe_contents/GameList_1.gif)<br/><br/><br/><br/>
 
-![GameList_5](/ReadMe_contents/GameList_5.gif)
+- #### 게임 목록 - 방 생성
 
-- **게임 만들기**
+![GameList_2](/ReadMe_contents/GameList_2.gif)<br/><br/><br/><br/>
 
-![GameMake_1](/ReadMe_contents/GameMake_1.gif)
+- #### 게임 목록 - 즐겨찾기
 
-- **베스트 컷**
+![GameList_4](/ReadMe_contents/GameList_4.gif)<br/><br/><br/><br/>
 
-![BestcutList_1](/ReadMe_contents/BestcutList_1.gif)
+- #### 게임 목록 - 문제 미리보기
 
-![BestcutList_2](/ReadMe_contents/BestcutList_2.gif)
+![GameList_5](/ReadMe_contents/GameList_5.gif)<br/><br/><br/><br/>
 
-![BestcutList_3](/ReadMe_contents/BestcutList_3.gif)
+- #### 게임 목록 - 신고하기
 
-- **마이페이지**
+![GameList_6](/ReadMe_contents/GameList_6.gif)<br/><br/><br/><br/>
 
-![MyPage_1](/ReadMe_contents/MyPage_1.gif)
+- #### 게임 만들기
 
-![MyPage_2](/ReadMe_contents/MyPage_2.gif)
+![GameMake_1](/ReadMe_contents/GameMake_1.gif)<br/><br/><br/><br/>
 
-- **관리자페이지**
+- #### 베스트 컷 - 정렬 및 검색
 
-- **게임방**
+![BestcutList_1](/ReadMe_contents/BestcutList_1.gif)<br/><br/><br/><br/>
 
-![GameRoom_1](/ReadMe_contents/GameRoom_1.gif)
+- #### 베스트 컷 - 좋아요
 
-![GameRoom_2](/ReadMe_contents/GameRoom_2.gif)
+![BestcutList_2](/ReadMe_contents/BestcutList_2.gif)<br/><br/><br/><br/>
 
-![GameRoom_3](/ReadMe_contents/GameRoom_3.gif)
+- #### 베스트 컷 - 상세보기
 
-![GameRoom_4](/ReadMe_contents/GameRoom_4.gif)
+![BestcutList_3](/ReadMe_contents/BestcutList_3.gif)<br/><br/><br/><br/>
 
-![GameRoom_5](/ReadMe_contents/GameRoom_5.gif)
+- #### 마이페이지 - 프로필 사진 및 닉네임 수정
+
+![MyPage_1](/ReadMe_contents/MyPage_1.gif)<br/><br/><br/><br/>
+
+- #### 마이페이지 - 나의 베스트 컷, 게임 즐겨찾기, 내가 만든 게임, 최근 플레이 확인
+
+![MyPage_2](/ReadMe_contents/MyPage_2.gif)<br/><br/><br/><br/>
+
+- #### 관리자페이지 - 신고된 게임, 베스트 컷 목록 조회 및 처리 
+
+![AdminPage_1](/ReadMe_contents/AdminPage_1.gif)<br/><br/><br/><br/>
+
+- #### 게임방 - 카카오톡 공유하기
+
+![GameRoom_1](/ReadMe_contents/GameRoom_1.gif)<br/><br/><br/><br/>
+
+- #### 게임방 - 게임 진행 화면
+
+![GameRoom_2](/ReadMe_contents/GameRoom_2.gif)<br/><br/><br/><br/>
+
+- #### 게임방 - 사용자 비디오, 오디오 on/off
+
+![GameRoom_3](/ReadMe_contents/GameRoom_3.gif)<br/><br/><br/><br/>
+
+- #### 게임방 - 게임 종료 후 베스트 컷 업로드
+
+![GameRoom_4](/ReadMe_contents/GameRoom_4.gif)<br/><br/><br/><br/>
+
+- #### 게임방 - 최종 결과
+
+![GameRoom_5](/ReadMe_contents/GameRoom_5.gif)<br/><br/><br/><br/>
 
 ## 개발 환경
 
