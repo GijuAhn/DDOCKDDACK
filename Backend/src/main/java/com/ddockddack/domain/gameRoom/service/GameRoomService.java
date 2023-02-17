@@ -184,11 +184,7 @@ public class GameRoomService {
                 new NotFoundException(ErrorCode.GAME_ROOM_NOT_FOUND));
         byte[] byteGameImage = awsS3Service.getObject(param.get("gameImage"));
         byte[] byteImage = Base64.decodeBase64(param.get("memberGameImage"));
-//        long beforeTime = System.currentTimeMillis();
         int rawScore = ensembleModel.CalculateSimilarity(byteGameImage, byteImage);
-//        long afterTime = System.currentTimeMillis();
-//        long secDiffTime = (afterTime - beforeTime) / 1000;
-//        System.out.println("걸린시간 : " + secDiffTime);
         gameRoomRepository.saveScore(pinNumber, sessionId, byteImage, rawScore);
     }
 

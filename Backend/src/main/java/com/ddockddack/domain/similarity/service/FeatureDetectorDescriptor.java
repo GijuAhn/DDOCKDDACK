@@ -1,12 +1,17 @@
 package com.ddockddack.domain.similarity.service;
 
+import lombok.RequiredArgsConstructor;
 import nu.pattern.OpenCV;
-import org.opencv.core.*;
+import org.opencv.core.DMatch;
+import org.opencv.core.Mat;
+import org.opencv.core.MatOfDMatch;
+import org.opencv.core.MatOfKeyPoint;
 import org.opencv.features2d.DescriptorMatcher;
 import org.opencv.features2d.KAZE;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.Async;
 
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,9 +19,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import javax.imageio.ImageIO;
-
 @Configuration
+@RequiredArgsConstructor
 public class FeatureDetectorDescriptor {
 
     static {
@@ -25,8 +29,11 @@ public class FeatureDetectorDescriptor {
         OpenCV.loadLocally();
 
     }
+
+
     @Async("threadPoolTaskExecutor")
     public CompletableFuture<Double> compareFeatures(InputStream input1, InputStream input2) throws IOException {
+
         BufferedImage img1 = ImageIO.read(input1);
         Mat image1 = ImageUtil.BufferedImage2Mat(img1);
 
@@ -40,12 +47,19 @@ public class FeatureDetectorDescriptor {
 
         // Detect keypoints and compute descriptors using KAZE
         KAZE detector = KAZE.create();
-        detector.detectAndCompute(image1, new Mat(), keypoints1, descriptors1);
-        detector.detectAndCompute(image2, new Mat(), keypoints2, descriptors2);
+        CompletableFuture<Void> voidCompletableFuture = CompletableFuture.runAsync(() -> {
+            detector.detectAndCompute(image1, new Mat(), keypoints1, descriptors1);
+        });
+
+        CompletableFuture<Void> voidCompletableFuture2 = CompletableFuture.runAsync(() -> {
+            detector.detectAndCompute(image2, new Mat(), keypoints2, descriptors2);
+        });
 
         // Match descriptors using Brute-Force matcher
         List<MatOfDMatch> matches = new LinkedList<>();
         DescriptorMatcher matcher = DescriptorMatcher.create(DescriptorMatcher.BRUTEFORCE_L1);
+        CompletableFuture.allOf(voidCompletableFuture, voidCompletableFuture2).join();
+
         matcher.knnMatch(descriptors1, descriptors2, matches, 2);
 
         // Filter matches using the Lowe's ratio test = 0.75f
@@ -79,7 +93,6 @@ public class FeatureDetectorDescriptor {
 
         // Calculate similarity featureScore as the ratio of good matches to total matches
         double featureScore = (double) goodMatches.size() / (double) keypoints1.rows();
-//        System.out.println("@KAZE = " + featureScore);
         return CompletableFuture.completedFuture(featureScore);
     }
 }

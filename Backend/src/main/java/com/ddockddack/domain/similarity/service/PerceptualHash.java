@@ -196,7 +196,6 @@ public class PerceptualHash {
                 }
             }
         }
-
         return CompletableFuture.completedFuture(hash.toString());
     }
 

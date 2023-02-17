@@ -63,7 +63,6 @@ public class EnsembleModel {
 //      [-] *2
         CompletableFuture<String> hash1 = perceptualHash.getHash(ImageUtil.ByteArray2InputStream(byteArray1));
         CompletableFuture<String> hash2 = perceptualHash.getHash(ImageUtil.ByteArray2InputStream(byteArray1));
-
 //      [-] *2, if NaN batch -32.0
         double histogramDiff = (double) baseLog(imageHistogram.compareHistograms(hist1.get(), hist2.get()), 2);
         if (Double.isNaN(histogramDiff)) {
