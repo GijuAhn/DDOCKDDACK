@@ -126,6 +126,13 @@ server {
 }
 ```
 
+## google, kakao, S3 설정
+
+- [kakao share](./outside-service/kakaoShare.md)
+- [kakao login](./outside-service/kakaoLogin.md)
+- [google login](./outside-service/GoogleLogin.md)
+- [aws s3](./outside-service/awsS3.md)
+
 ## 버전
 
 IDE 버전
@@ -184,9 +191,9 @@ RUN mkdir ./dist
 # host pc의 현재경로의 build 폴더를 workdir 의 build 폴더로 복사
 ADD ./dist ./dist
 # nginx 의 default.conf 를 삭제
-RUN rm /etc/nginx/sites-available/default
+RUN rm /etc/nginx/conf.d/default.conf
 # host pc 의 nginx.conf 를 아래 경로에 복사
-COPY ./default /etc/nginx/sites-available
+COPY ./default.conf /etc/nginx/conf.d/default.conf
 # 7080 포트 오픈
 EXPOSE 7080
 # container 실행 시 자동으로 실행할 command. nginx 시작함

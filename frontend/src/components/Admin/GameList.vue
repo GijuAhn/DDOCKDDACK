@@ -58,7 +58,7 @@ callApi();
 
 const deleteGame = function (target) {
   reportedGames.value = reportedGames.value.filter(
-    (item) => item.reportId !== target.value
+    (item) => item.gameId !== target.value
   );
   console.log(reportedGames);
 };

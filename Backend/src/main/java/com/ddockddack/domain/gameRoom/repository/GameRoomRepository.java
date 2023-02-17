@@ -86,7 +86,7 @@ public class GameRoomRepository {
                 () -> new NotFoundException(ErrorCode.GAME_ROOM_NOT_FOUND));
 
 
-        if (openvidu.getActiveSession(pinNumber).getConnections().size() == 13) {
+        if (openvidu.getActiveSession(pinNumber).getConnections().size() == 7) {
             throw new AccessDeniedException(ErrorCode.MAXIMUM_MEMBER);
         }
 
@@ -167,13 +167,6 @@ public class GameRoomRepository {
             String resultData = mapper.writeValueAsString(roundResultData);
             String signal = createSignal(pinNumber, "roundResult", resultData);
 
-            log.info("roundResult memberNickname : {}", gameMember.getNickname());
-//            log.info("roundResult signal : {}", signal);
-            log.info("roundResult rawScore : {}", gameMember.getRoundScore());
-            log.info("roundResult maxRoundScore : {}", maxRoundScore);
-            log.info("roundResult scaledRoundScore : {}", gameMember.getScaledRoundScore());
-            log.info("roundResult totalScore : {}", gameMember.getTotalScore());
-
             sendSignal(signal);
             gameRoom.resetScoreCnt();
             gameRoom.increaseRound();
@@ -233,7 +226,6 @@ public class GameRoomRepository {
             if (pq.isEmpty()) break;
             result.add(GameMemberRes.from(pq.poll(), gameRoom.getRound() - 1));
         }
-        log.info("roundResult : {}", result);
         return result;
     }
 
